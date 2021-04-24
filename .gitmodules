@@ -1,0 +1,3 @@
+[submodule "vendor/Kokoro"]
+	path = vendor/Kokoro
+	url = https://github.com/Mempler/Kokoro

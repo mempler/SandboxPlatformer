@@ -1,0 +1,17 @@
+set(GAME_LIBS
+    ${PROJECT_NAME}Engine
+    
+    Kokoro::Memory
+    Kokoro::Utility
+    Kokoro::FileSystem
+    Kokoro::Exception
+    Kokoro::Config
+)
+
+set(GAME_SOURCES
+    src/main.cc
+)
+
+add_executable(${PROJECT_NAME} ${GAME_SOURCES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${GAME_LIBS})
+    target_include_directories(${PROJECT_NAME} PRIVATE src/)
