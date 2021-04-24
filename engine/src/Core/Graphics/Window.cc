@@ -54,7 +54,7 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
     bgfx::Init bgfxInit;
     // bgfxInit.debug = true; // This slows down the renderer quite a bit
 
-    bgfxInit.type = bgfx::RendererType::OpenGL; // Automatically choose a renderer.
+    bgfxInit.type = bgfx::RendererType::Count; // Automatically choose a renderer. OpenGL for RENDERDOC.
     bgfxInit.platformData = platformData;
     bgfxInit.resolution.width = m_iWidth;
     bgfxInit.resolution.height = m_iHeight;
@@ -68,7 +68,8 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
     LOG_INFO("BGFX Initialized...");
 
     // Setup our drawing surface
-    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x000000FF, 1.0f, 0);
+    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x00000000, 1.0f, 0);
+    // alpha must be 0, we will apply framebuffers onto it ------------^^ 
 
     bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
