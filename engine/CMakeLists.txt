@@ -1,9 +1,14 @@
 set(ENGINE_LIBS
+    bgfx
+    glm
     Kokoro::Memory
     Kokoro::Utility
     Kokoro::FileSystem
     Kokoro::Exception
     Kokoro::Config
+    lw
+    SDL2
+    zlib
 )
 
 set(ENGINE_SOURCES
