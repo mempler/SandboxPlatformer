@@ -7,14 +7,13 @@ set(ENGINE_LIBS
     Kokoro::Exception
     Kokoro::Config
     lw
-    SDL2
+    SDL2-static
     zlib
 )
 
-set(ENGINE_SOURCES
-    src/Engine.cc
-)
+file(GLOB_RECURSE ENGINE_SOURCES src/*.cc)
 
 add_library(${PROJECT_NAME}Engine STATIC ${ENGINE_SOURCES})
-    target_link_libraries(${PROJECT_NAME}Engine PUBLIC ${ENGINE_LIBS})
-    target_include_directories(${PROJECT_NAME}Engine PUBLIC src/)
+target_precompile_headers(${PROJECT_NAME}Engine PUBLIC src/pch.hh)
+target_link_libraries(${PROJECT_NAME}Engine PUBLIC ${ENGINE_LIBS})
+target_include_directories(${PROJECT_NAME}Engine PUBLIC src/)

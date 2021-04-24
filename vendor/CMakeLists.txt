@@ -30,7 +30,23 @@ add_subdirectory(lw)
 
 ###############################################################################################
 
-add_subdirectory(SDL2)
+if (MSVC)
+    if (BITS EQUAL "32")
+        set(OPT_DEF_LIBC ON)
+    endif()
+endif()
+
+if (UNIX)    
+    find_package(SDL2 REQUIRED)
+
+    # It's not static in reality
+    # it's just a wrapper
+    add_library(SDL2-static INTERFACE)
+    target_link_libraries(SDL2-static INTERFACE ${SDL2_LIBRARIES})
+    target_include_directories(SDL2-static INTERFACE ${SDL2_INCLUDE_DIRS})
+else()
+    add_subdirectory(SDL2)
+endif()
 
 ###############################################################################################
 
