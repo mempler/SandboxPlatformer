@@ -1,17 +1,19 @@
 #pragma once
 
-class Engine
-{
-private:
-    // GameWindow
-    // Audio
+#include "pch.hh"
+
+#include "Graphics/Window.hh"
+
+class Engine {
 public:
+private:
+    GameWindow *m_pGameWindow = 0;
+    // Audio
 };
 
-class BaseApp
-{
+class BaseApp {
 private:
-    Engine* m_pEngine;
+    Engine *m_pEngine;
 
 public:
     BaseApp();

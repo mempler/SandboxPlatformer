@@ -13,6 +13,12 @@
 // Logger
 #include "Core/Utils/Logger.hh"
 
+// OS helper
+#if PLATFORM_WIN32
+#define NOMINMAX
+#include <Windows.h>
+#endif
+
 // Graphics helper
 #include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
