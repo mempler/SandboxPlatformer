@@ -37,15 +37,15 @@ if (MSVC)
 endif()
 
 # This will most likely fail on WIN32 so we simply add SDL2 as subdir if it did.
-find_package(SDL)
+find_package(SDL2)
 
-if (SDL_FOUND)
+if (SDL2_FOUND)
     # It's not static in reality
     # it's just a wrapper
 
     add_library(SDL2-static INTERFACE)
-    target_include_directories(SDL2-static INTERFACE ${SDL_INCLUDE_DIR})
-    target_link_libraries(SDL2-static INTERFACE ${SDL_LIBRARY})
+    target_include_directories(SDL2-static INTERFACE ${SDL2_INCLUDE_DIR})
+    target_link_libraries(SDL2-static INTERFACE ${SDL2_LIBRARY})
 else()
     message(WARNING, "SDL2 not found! It'll be compiled manually.")
     

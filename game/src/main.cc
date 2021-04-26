@@ -2,15 +2,21 @@
 
 #include <iostream>
 
-class SandboxGame : public BaseApp
-{
+class SandboxGame : public BaseApp {
+protected:
+    void Init() override {
+    }
+
+    void Tick() override {
+    }
+    void Draw() override {
+    }
 };
 
-int main()
-{
-    BaseApp* app = new SandboxGame;
+int main() {
+    BaseApp *app = new SandboxGame;
 
-    std::cout << "Hello World" << std::endl;
+    app->Run();
 
     return 0;
 }

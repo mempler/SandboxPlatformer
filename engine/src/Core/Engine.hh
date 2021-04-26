@@ -6,17 +6,33 @@
 
 class Engine {
 public:
+    Engine();
+    ~Engine();
+
+    GameWindow &GetWindow();
+
+    void BeginFrame();
+    void EndFrame();
+
 private:
-    GameWindow *m_pGameWindow = 0;
+    GameWindow m_GameWindow;
     // Audio
 private:
 };
 
 class BaseApp {
-private:
-    Engine *m_pEngine;
-
 public:
     BaseApp();
     ~BaseApp();
+
+    void Run();
+
+protected:
+    virtual void Init() = 0;
+
+    virtual void Tick() = 0;
+    virtual void Draw() = 0;
+
+private:
+    Engine *m_pEngine;
 };
