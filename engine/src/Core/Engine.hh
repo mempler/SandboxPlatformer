@@ -9,6 +9,7 @@ public:
 private:
     GameWindow *m_pGameWindow = 0;
     // Audio
+private:
 };
 
 class BaseApp {

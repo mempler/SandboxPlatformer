@@ -1,4 +1,6 @@
 #pragma once
 #include "Kokoro/FileSystem.hh"
-using namespace Kokoro;
+namespace FileSystem {
+    using namespace Kokoro::FileSystem; // XD
+}
 // :P

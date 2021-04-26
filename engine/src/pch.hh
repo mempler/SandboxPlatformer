@@ -28,6 +28,17 @@
 #include <bx/bx.h>
 #include <bx/timer.h>
 
+#if PLATFORM_WIN32
 #include <SDL.h>
 #include <SDL_syswm.h>
+#else // Linux platform difference
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
+#endif
+
+// Dumb X11
+#ifdef None
+#undef None
+#endif
+
 #undef main

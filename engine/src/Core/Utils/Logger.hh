@@ -1,6 +1,6 @@
 #pragma once
 
-// Some basic logger implementation that can be removed 
+// Some basic logger implementation that can be removed
 // later on, I am just too lazy to add some logger lib -loanselot
 
 #include "pch.hh"
@@ -8,7 +8,7 @@
 #define LOG(x, ...) logger::Logf(x "\n", ##__VA_ARGS__)
 
 // clang-format off
-#ifdef _DEBUG
+#if !ENGINE_DEBUG
 #define LOG_INFO(x, ...)        Logger::Logf(" ---- | INFO  | " x "\n", ##__VA_ARGS__)
 #define LOG_WARN(x, ...)        Logger::Logf(" ---- | WARN  | " x "\n", ##__VA_ARGS__)
 #define LOG_ERROR(x, ...)       Logger::Logf(" ---- | ERROR | " x "\n", ##__VA_ARGS__)
@@ -28,4 +28,4 @@
 namespace Logger {
     void Clear();
     void Logf(const char *output, ...);
-} // namespace logger
+} // namespace Logger

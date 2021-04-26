@@ -36,22 +36,34 @@ if (MSVC)
     endif()
 endif()
 
-if (UNIX)    
-    find_package(SDL2 REQUIRED)
+# This will most likely fail on WIN32 so we simply add SDL2 as subdir if it did.
+find_package(SDL)
 
+if (SDL_FOUND)
     # It's not static in reality
     # it's just a wrapper
+
     add_library(SDL2-static INTERFACE)
-    target_link_libraries(SDL2-static INTERFACE ${SDL2_LIBRARIES})
-    target_include_directories(SDL2-static INTERFACE ${SDL2_INCLUDE_DIRS})
+    target_include_directories(SDL2-static INTERFACE ${SDL_INCLUDE_DIR})
+    target_link_libraries(SDL2-static INTERFACE ${SDL_LIBRARY})
 else()
+    message(WARNING, "SDL2 not found! It'll be compiled manually.")
+    
     add_subdirectory(SDL2)
 endif()
 
 ###############################################################################################
 
-add_definitions(-DZLIB_DLL)
+# This will most likely fail on WIN32 so we simply add SDL2 as subdir if it did.
+find_package(ZLIB)
+if (ZLIB_FOUND)
+    add_library(zlib INTERFACE)
+    target_link_libraries(zlib INTERFACE ZLIB::ZLIB)
+else()
+    message(WARNING, "ZLIB not found! It'll be compiled manually.")
 
-add_subdirectory(zlib)
+    add_definitions(-DZLIB_DLL)
+    add_subdirectory(zlib)
+endif()
 
 ###############################################################################################

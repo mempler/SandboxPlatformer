@@ -11,16 +11,33 @@
 #define PLATFORM_IOS            // TODO
 
 #ifdef _WIN32
-#ifdef ENGINE_BUILD_DLL
-#ifdef _ENGINE_IS_SRC
-#define ENGINE_EXPORT __declspec(dllexport)
+    #ifdef ENGINE_BUILD_DLL
+        #ifdef _ENGINE_IS_SRC
+            #define ENGINE_EXPORT __declspec(dllexport)
+        #else
+            #define ENGINE_EXPORT __declspec(dllimport)
+        #endif
+    #else
+        #define ENGINE_EXPORT
+    #endif
 #else
-#define ENGINE_EXPORT __declspec(dllimport)
+    // Unix Systems
+    #ifdef ENGINE_BUILD_DLL
+        #ifdef _ENGINE_IS_SRC
+            #define ENGINE_EXPORT __attribute__((visibility("default")))
+        #else
+            #define ENGINE_EXPORT
+        #endif
+    #else
+        #define ENGINE_EXPORT
+    #endif
 #endif
+
+// Platform Specific
+#ifdef NDEBUG
+    #define ENGINE_DEBUG 1
 #else
-#define ENGINE_EXPORT
+    #define ENGINE_DEBUG 0
 #endif
-#else
-#define ENGINE_EXPORT
-#endif
+
 // clang-format on

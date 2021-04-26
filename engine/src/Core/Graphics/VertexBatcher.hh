@@ -109,18 +109,7 @@ public:
      *****************************************************/
     void SubmitRectangle(Texture2D *pTexture, const glm::mat4 &transform, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
 
-private:
-    BatchEvent &GetVertexData(Texture2D *pTexture) {
-        for (auto &&t : m_vBatchEvents)
-            if (t.first == pTexture)
-                return t.second;
-
-        m_vBatchEvents.push_back(std::make_pair(pTexture, BatchEvent{}));
-
-        return m_vBatchEvents.back().second;
-    }
-
-private:
+private: // Interestingly, we cannot define this bellow the function bellow, GCC/CLANG doesn't like that on linux.
     struct VertexInfo {
         glm::vec2 pos{};
         glm::vec2 uv{};
@@ -132,7 +121,7 @@ private:
         uint32_t indexes = 0;
     };
 
-private:
+private: // same goes for variables, it'll simply not compile.
     std::vector<std::pair<Texture2D *, BatchEvent>> m_vBatchEvents{};
 
     bgfx::VertexLayout m_vlDefaultLayout;
@@ -144,4 +133,15 @@ private:
     // will solve screen flickering while taking screenshots
     // using ShareX, well never tried it but thats the idea -l
     bgfx::FrameBufferHandle m_hScreenFrameBuffer;
+
+private:
+    BatchEvent &GetVertexData(Texture2D *pTexture) {
+        for (auto &&t : m_vBatchEvents)
+            if (t.first == pTexture)
+                return t.second;
+
+        m_vBatchEvents.push_back(std::make_pair(pTexture, BatchEvent{}));
+
+        return m_vBatchEvents.back().second;
+    }
 };
