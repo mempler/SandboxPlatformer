@@ -38,13 +38,29 @@ VertexBatcher::VertexBatcher() {
 VertexBatcher::~VertexBatcher() {
 }
 
+/*****************************************************
+ * BeginFrame
+ *
+ * Use this to take pre-rendering actions.
+ *****************************************************/
 void VertexBatcher::BeginFrame() {
 }
 
+/*****************************************************
+ * EndFrame
+ *
+ * End of all drawing, everything will be submited and
+ * will be drawn into screen.
+ *****************************************************/
 void VertexBatcher::EndFrame() {
     Reset();
 }
 
+/*****************************************************
+ * Flush
+ *
+ * Force finish all events in cache.
+ *****************************************************/
 void VertexBatcher::Flush() {
     for (auto &&event : m_vBatchEvents) {
         Texture2D *texture = event.first;
@@ -54,6 +70,8 @@ void VertexBatcher::Flush() {
         if (vertexes.size() > 0) {
             bgfx::TransientVertexBuffer tvb;
             bgfx::allocTransientVertexBuffer(&tvb, vertexes.size(), m_vlDefaultLayout);
+
+            // suggestion: use std::copy, somehow faster than this
             memcpy(tvb.data, &vertexes[0], vertexes.size() * sizeof(VertexInfo));
 
             bgfx::setVertexBuffer(0, &tvb, 0, vertexes.size());
@@ -68,6 +86,11 @@ void VertexBatcher::Flush() {
     }
 }
 
+/*****************************************************
+ * Reset
+ *
+ * Force finish all events in cache and restart again.
+ *****************************************************/
 void VertexBatcher::Reset() {
     Flush();
 
@@ -75,6 +98,22 @@ void VertexBatcher::Reset() {
     // clear the map
     // for (auto &&event : m_vBatchEvents) FreeSTL(event.second.verts);
 
-    // m_vBatchEvents.clear();
+    m_vBatchEvents.clear();
     // FreeSTL(m_vBatchEvents);
+}
+
+/*****************************************************
+ * Submit
+ *
+ * Add new event into queue but set UVs manually.
+ *****************************************************/
+void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
+}
+
+/*****************************************************
+ * Submit
+ *
+ * Quick function to not deal with UVs
+ *****************************************************/
+void VertexBatcher::SubmitRectangle(Texture2D *pTexture, const glm::mat4 &transform, const glm::vec4 &v4Color) {
 }

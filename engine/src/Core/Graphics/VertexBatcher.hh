@@ -80,7 +80,7 @@ public:
     void Flush();
 
     /*****************************************************
-     * Flush
+     * Reset
      *
      * Force finish all events in cache and restart again.
      *****************************************************/
@@ -133,6 +133,8 @@ private: // same goes for variables, it'll simply not compile.
     // will solve screen flickering while taking screenshots
     // using ShareX, well never tried it but thats the idea -l
     bgfx::FrameBufferHandle m_hScreenFrameBuffer;
+
+    Texture2D
 
 private:
     BatchEvent &GetVertexData(Texture2D *pTexture) {
