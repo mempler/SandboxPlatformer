@@ -45,7 +45,13 @@ if (SDL2_FOUND)
 
     add_library(SDL2-static INTERFACE)
     target_include_directories(SDL2-static INTERFACE ${SDL2_INCLUDE_DIR})
-    target_link_libraries(SDL2-static INTERFACE ${SDL2_LIBRARY})
+
+    if (DEFINED CMAKE_TOOLCHAIN_FILE)
+        message(INFO, "Using vcpkg for SDL2.")
+        target_link_libraries(SDL2-static INTERFACE SDL2::SDL2main SDL2::SDL2-static)
+    else()
+        target_link_libraries(SDL2-static INTERFACE ${SDL2_LIBRARY})
+    endif()
 else()
     message(WARNING, "SDL2 not found! It'll be compiled manually.")
     

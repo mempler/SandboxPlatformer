@@ -33,6 +33,8 @@ VertexBatcher::VertexBatcher() {
 
     // Initialize programs here
     // m_hDefaultProgramHandle = GetShaderManager()->Load(...)
+    uint32_t whiteTextureData = 0xffffffff;
+    m_pWhiteTexture = &Texture2D::LoadRaw("White Texture", 1, 1, bgfx::TextureFormat::RGB8, (uint8_t *)&whiteTextureData, 4);
 }
 
 VertexBatcher::~VertexBatcher() {
@@ -108,6 +110,22 @@ void VertexBatcher::Reset() {
  * Add new event into queue but set UVs manually.
  *****************************************************/
 void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
+    if (!pTexture)
+        pTexture = m_pWhiteTexture;
+
+    BatchEvent &event = GetVertexData(pTexture);
+    event.vertices.resize(event.vertices.size() + 4);
+
+    VertexInfo *info = &event.vertices[event.vertices.size() - 4];
+
+    for (size_t i = 0; i < 4; i++) {
+        info->pos = m4Transform * g_m4DefPos[i];
+        info->color = v4Color;
+        info->uv = g_m4DefCoords[i];
+        info++;
+    }
+
+    event.indexes += 6;
 }
 
 /*****************************************************
@@ -115,5 +133,6 @@ void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, co
  *
  * Quick function to not deal with UVs
  *****************************************************/
-void VertexBatcher::SubmitRectangle(Texture2D *pTexture, const glm::mat4 &transform, const glm::vec4 &v4Color) {
+void VertexBatcher::SubmitRectangle(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color) {
+    Submit(pTexture, m4Transform, v4Color);
 }

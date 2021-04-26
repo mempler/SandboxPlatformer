@@ -16,9 +16,12 @@
 #define DEBUG_LOG_WARN(x, ...)  Logger::Logf("DEBUG | WARN  | [%s:%d - '%s']: " x "\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
 #define DEBUG_LOG_ERROR(x, ...) Logger::Logf("DEBUG | ERROR | [%s:%d - '%s']: " x "\n", __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
 #else
-#define LOG_INFO(x, ...)        Logger::Logf(Xor("INFO  | " x "\n"), ##__VA_ARGS__)
-#define LOG_WARN(x, ...)        Logger::Logf(Xor("WARN  | " x "\n"), ##__VA_ARGS__)
-#define LOG_ERROR(x, ...)       Logger::Logf(Xor("ERROR | " x "\n"), ##__VA_ARGS__)
+// #define LOG_INFO(x, ...)        Logger::Logf(Xor("INFO  | " x "\n"), ##__VA_ARGS__)
+// #define LOG_WARN(x, ...)        Logger::Logf(Xor("WARN  | " x "\n"), ##__VA_ARGS__)
+// #define LOG_ERROR(x, ...)       Logger::Logf(Xor("ERROR | " x "\n"), ##__VA_ARGS__)
+#define LOG_INFO(x, ...)        Logger::Logf("INFO  | " x "\n", ##__VA_ARGS__)
+#define LOG_WARN(x, ...)        Logger::Logf("WARN  | " x "\n", ##__VA_ARGS__)
+#define LOG_ERROR(x, ...)       Logger::Logf("ERROR | " x "\n", ##__VA_ARGS__)
 #define DEBUG_LOG_INFO(x, ...)  (void *)0;
 #define DEBUG_LOG_WARN(x, ...)  (void *)0;
 #define DEBUG_LOG_ERROR(x, ...) (void *)0;

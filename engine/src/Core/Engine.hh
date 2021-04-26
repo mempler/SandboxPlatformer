@@ -3,6 +3,7 @@
 #include "pch.hh"
 
 #include "Graphics/Window.hh"
+#include "Graphics/VertexBatcher.hh"
 
 class Engine {
 public:
@@ -10,12 +11,14 @@ public:
     ~Engine();
 
     GameWindow &GetWindow();
+    VertexBatcher &GetBatcher();
 
     void BeginFrame();
     void EndFrame();
 
 private:
     GameWindow m_GameWindow;
+    VertexBatcher m_VertexBatcher;
     // Audio
 private:
 };
@@ -33,6 +36,6 @@ protected:
     virtual void Tick() = 0;
     virtual void Draw() = 0;
 
-private:
+protected:
     Engine *m_pEngine;
 };

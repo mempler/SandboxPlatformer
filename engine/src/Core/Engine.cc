@@ -3,17 +3,23 @@
 //////////////////
 //    Engine    //
 //////////////////
-Engine::Engine() : m_GameWindow() {
+Engine::Engine() : m_GameWindow(), m_VertexBatcher() {
 }
 
 Engine::~Engine() {
 }
 
+VertexBatcher &Engine::GetBatcher() {
+    return m_VertexBatcher;
+}
+
 void Engine::BeginFrame() {
     m_GameWindow.BeginFrame();
+    m_VertexBatcher.BeginFrame();
 }
 
 void Engine::EndFrame() {
+    m_VertexBatcher.EndFrame();
     m_GameWindow.EndFrame();
 }
 
