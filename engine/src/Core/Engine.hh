@@ -46,6 +46,11 @@ public:
 
     void Run();
 
+public:
+    Engine *GetEngine() const {
+        return m_pEngine;
+    }
+
 protected:
     virtual void Init() = 0;
 
@@ -55,3 +60,6 @@ protected:
 protected:
     Engine *m_pEngine;
 };
+
+extern BaseApp *GetApp();
+extern Engine *GetEngine();

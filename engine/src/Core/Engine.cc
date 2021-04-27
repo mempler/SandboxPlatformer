@@ -8,6 +8,10 @@
 //////////////////
 //    Engine    //
 //////////////////
+Engine *GetEngine() {
+    return GetApp()->GetEngine();
+}
+
 Engine::Engine() : m_GameWindow(), m_VertexBatcher() {
 }
 
@@ -36,7 +40,10 @@ AudioSystem &Engine::GetAudioSystem() {
 }
 
 void Engine::Init() {
+    m_ShaderManager.LoadDefaultShaders();
     m_AudioSystem.Init();
+
+    m_VertexBatcher.Init();
 }
 
 void Engine::BeginFrame() {

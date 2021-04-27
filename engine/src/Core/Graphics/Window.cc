@@ -69,7 +69,7 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
 
     // Setup our drawing surface
     bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x00000000, 1.0f, 0);
-    // alpha must be 0, we will apply framebuffers onto it ------------^^ 
+    // alpha must be 0, we will apply framebuffers onto it ------------^^
 
     bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
@@ -88,6 +88,7 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
     // Initial Projection
     m_m4View = glm::mat4(1.0f);
     m_m4Projection = glm::ortho(0.f, (float)m_iWidth, (float)m_iHeight, 0.f, 0.1f, 1000.f);
+    m_m4Projection[3].z = 1.f;
 
     bgfx::setViewTransform(0, glm::value_ptr(m_m4View), glm::value_ptr(m_m4Projection));
 }
@@ -131,6 +132,7 @@ double GameWindow::BeginFrame() {
 
                     // Update Projection Matrix
                     m_m4Projection = glm::ortho(0.f, (float)m_iWidth, (float)m_iHeight, 0.f, 0.1f, 1000.f);
+                    m_m4Projection[3].z = 1.f;
 
                     bgfx::reset(m_iWidth, m_iHeight, BGFX_RESET_NONE);
                     bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);

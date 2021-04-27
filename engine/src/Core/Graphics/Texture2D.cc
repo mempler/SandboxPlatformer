@@ -69,12 +69,13 @@ Texture2D Texture2D::Load(std::string_view svName, uint8_t *pMem, uint32_t uMemS
  * 
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-Texture2D Texture2D::LoadRaw(std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint8_t *pMem, uint32_t uMemSize) {
+Texture2D Texture2D::LoadRaw(
+    std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pMem, uint32_t uMemSize) {
     LOG_INFO("Loading Raw Texture2D <%s>(%d, %d)", svName.data(), iWidth, iHeight);
-    const auto *const pixelData = bgfx::makeRef(pMem, uMemSize);
+    const auto *const pixelData = bgfx::copy(pMem, uMemSize); // dont use makeRef dont use makeRef dont use makeRef dont use makeRef
 
     Texture2D texture;
-    texture.m_thHandle = bgfx::createTexture2D((uint16_t)iWidth, (uint16_t)iHeight, false, 1, eTextureFormat, eTextureFormat, pixelData);
+    texture.m_thHandle = bgfx::createTexture2D((uint16_t)iWidth, (uint16_t)iHeight, false, 1, eTextureFormat, u64Filters, pixelData);
 
     texture.m_iWidth = iWidth;
     texture.m_iHeight = iHeight;

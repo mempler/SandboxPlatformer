@@ -48,7 +48,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D LoadRaw(std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint8_t *pMem, uint32_t uMemSize);
+    static Texture2D LoadRaw(std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pMem, uint32_t uMemSize);
 
     /*****************************************************
      * Create

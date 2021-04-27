@@ -58,6 +58,14 @@ public:
     ~VertexBatcher();
 
     /*****************************************************
+     * Initialize
+     *
+     * Initialize what we need after Engine initialization
+     * for example shader manager.
+     *****************************************************/
+    void Init();
+
+    /*****************************************************
      * BeginFrame
      *
      * Use this to take pre-rendering actions.

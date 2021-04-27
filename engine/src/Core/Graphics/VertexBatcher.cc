@@ -1,5 +1,7 @@
 #include "VertexBatcher.hh"
 
+#include "Core/Engine.hh"
+
 static uint32_t g_uMaxQuads = 80000;
 
 VertexBatcher::VertexBatcher() {
@@ -27,17 +29,28 @@ VertexBatcher::VertexBatcher() {
 
     m_hIndexBufferHandle = bgfx::createIndexBuffer(bgfx::copy(quads, g_uMaxQuads * 6 * sizeof(uint32_t)), BGFX_BUFFER_INDEX32);
     delete[] quads;
+}
 
+VertexBatcher::~VertexBatcher() {
+}
+
+/*****************************************************
+ * Initialize
+ *
+ * Initialize what we need after Engine initialization
+ * for example shader manager.
+ *****************************************************/
+void VertexBatcher::Init() {
     // Initialize uniforms here
     m_hTextureUniform = bgfx::createUniform("u_texture", bgfx::UniformType::Sampler);
 
     // Initialize programs here
-    // m_hDefaultProgramHandle = GetShaderManager()->Load(...)
-    uint32_t whiteTextureData = 0xffffffff;
-    m_WhiteTexture = Texture2D::LoadRaw("White Texture", 1, 1, bgfx::TextureFormat::RGB8, (uint8_t *)&whiteTextureData, 3);
-}
+    m_hDefaultProgramHandle = GetEngine()->GetShaderManager().LoadProgram("Default");
 
-VertexBatcher::~VertexBatcher() {
+    // Initialize default textures here
+    uint32_t whiteTextureData = 0xffffffff;
+    m_WhiteTexture =
+        Texture2D::LoadRaw("White Texture", 1, 1, bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), (uint8_t *)&whiteTextureData, 4);
 }
 
 /*****************************************************
@@ -72,15 +85,13 @@ void VertexBatcher::Flush() {
         if (vertexes.size() > 0) {
             bgfx::TransientVertexBuffer tvb;
             bgfx::allocTransientVertexBuffer(&tvb, vertexes.size(), m_vlDefaultLayout);
-
-            // suggestion: use std::copy, somehow faster than this
             memcpy(tvb.data, &vertexes[0], vertexes.size() * sizeof(VertexInfo));
-
             bgfx::setVertexBuffer(0, &tvb, 0, vertexes.size());
 
             // This is wrong, nvm, not for now
             uint32_t count = indexes ? indexes : g_uMaxQuads * 6;
             bgfx::setIndexBuffer(m_hIndexBufferHandle, 0, count);
+
             bgfx::setTexture(0, m_hTextureUniform, texture->GetHandle());
             bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA | BGFX_STATE_MSAA);
             bgfx::submit(0, m_hDefaultProgramHandle);
@@ -98,10 +109,10 @@ void VertexBatcher::Reset() {
 
     // TODO: Add FreeSTL function
     // clear the map
-    // for (auto &&event : m_vBatchEvents) FreeSTL(event.second.verts);
+    for (auto &&event : m_vBatchEvents) std::vector<VertexInfo>().swap(event.second.vertices);
 
     m_vBatchEvents.clear();
-    // FreeSTL(m_vBatchEvents);
+    std::vector<std::pair<Texture2D *, BatchEvent>>().swap(m_vBatchEvents); // kill me fucking hell
 }
 
 /*****************************************************
