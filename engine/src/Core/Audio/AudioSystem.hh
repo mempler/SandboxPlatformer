@@ -3,8 +3,8 @@
 #include "AL/al.h"
 #include "AL/alc.h"
 #include "AL/alext.h"
-#include "AudioChannel.hh"
 
+#include "Core/Audio/AudioChannel.hh"
 #include "Core/Utils/Identifier.hh"
 
 class AudioSystem {

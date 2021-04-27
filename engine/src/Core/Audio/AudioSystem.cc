@@ -1,12 +1,11 @@
 #include "pch.hh"
 
-#include "Audio/AudioSystem.hh"
+#include "Core/Audio/AudioSystem.hh"
 
-#include "Audio/Audio.hh"
-#include "Audio/AudioChannel.hh"
-#include "Audio/Helper.hh"
-#include "Audio/Loaders/AudioLoader.hh"
-
+#include "Core/Audio/Audio.hh"
+#include "Core/Audio/AudioChannel.hh"
+#include "Core/Audio/Helper.hh"
+#include "Core/Audio/Loaders/AudioLoader.hh"
 #include "Core/Utils/FileSystem.hh"
 #include "Core/Utils/Logger.hh"
 

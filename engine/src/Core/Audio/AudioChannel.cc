@@ -1,6 +1,6 @@
 #include "pch.hh"
 
-#include "Audio/AudioChannel.hh"
+#include "Core/Audio/AudioChannel.hh"
 
 AudioChannel::AudioChannel(Identifier const &rIdent) : m_Identifier(rIdent) {
 }

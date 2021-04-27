@@ -4,8 +4,7 @@
 // basically you can adjust the volume, position etc etc for all sound files
 // that are linked to this Channel
 
-#include "Audio.hh"
-
+#include "Core/Audio/Audio.hh"
 #include "Core/Utils/Identifier.hh"
 
 #include "glm/fwd.hpp"
