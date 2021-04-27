@@ -4,6 +4,7 @@
 
 #include "AL/al.h"
 
+#define DR_WAV_IMPLEMENTATION
 #include "dr_wav.h"
 
 AudioDescriptor WavAudioLoader::LoadBinary(std::vector<uint8_t> const &vData) {
@@ -13,23 +14,20 @@ AudioDescriptor WavAudioLoader::LoadBinary(std::vector<uint8_t> const &vData) {
     CHECK(drwav_init_memory(&wav, vData.data(), vData.size(), NULL), "Failed to load WAV File!");
 
     std::vector<uint8_t> frames;
-    frames.resize(wav.totalPCMFrameCount * wav.channels * sizeof(uint32_t));
+    frames.resize(wav.totalPCMFrameCount * wav.channels * wav.bitsPerSample);
 
-    size_t numberOfSamplesActuallyDecoded = drwav_read_pcm_frames_s32(&wav, wav.totalPCMFrameCount, (int32_t *)frames.data());
-
-    drwav_uninit(&wav);
+    size_t numberOfSamplesActuallyDecoded = drwav_read_pcm_frames(&wav, wav.totalPCMFrameCount, (void *)frames.data());
 
     descriptor.m_vPCMFrames = std::move(frames);
     descriptor.m_vPCMFrequency = wav.sampleRate;
 
-    if (wav.channels == 1)
-        descriptor.m_vPCMFormat = AL_FORMAT_MONO16;
+    switch (wav.channels) {
+        case 1: descriptor.m_vPCMFormat = AL_FORMAT_MONO16; break;
+        case 2: descriptor.m_vPCMFormat = AL_FORMAT_STEREO16; break;
+        default: CHECK(false, "Unsupported Audio Channel count %i!", wav.channels); break;
+    }
 
-    else if (wav.channels == 2)
-        descriptor.m_vPCMFormat = AL_FORMAT_STEREO16;
-
-    else
-        CHECK(false, "Unsupported Audio Channel count %i!", wav.channels);
+    drwav_uninit(&wav);
 
     return descriptor;
 }

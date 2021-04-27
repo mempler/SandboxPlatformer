@@ -2,7 +2,17 @@
 
 #include "Audio/AudioSystem.hh"
 
+#include "Audio/Audio.hh"
+#include "Audio/AudioChannel.hh"
+#include "Audio/Helper.hh"
+#include "Audio/Loaders/AudioLoader.hh"
+
+#include "Core/Utils/FileSystem.hh"
 #include "Core/Utils/Logger.hh"
+
+#include "Kokoro/FileSystem.hh"
+
+#include <AL/al.h>
 
 AudioSystem::~AudioSystem() {
     if (m_alContext == nullptr)
@@ -41,9 +51,119 @@ void AudioSystem::Init() {
 }
 
 AudioChannel *AudioSystem::CreateChannel(Identifier const &rIdent) {
-    return nullptr;
+    return &m_vAudioChannels.emplace_back(rIdent);
 }
 
-Audio *LoadAudio(AudioChannel *pChannel, Identifier const &rIdent) {
-    return nullptr;
+Audio *AudioSystem::LoadStereoAudio(AudioChannel *pChannel, Identifier const &rIdent, Identifier const &rIdentLeft, Identifier const &rIdentRight) {
+    // TODO: stream the file instead of loading the whole thing into memory
+
+    AudioLoader::AudioLoaderType loaderTypeLeft;
+    AudioLoader::AudioLoaderType loaderTypeRight;
+
+    if (FileSystem::HasExtension(rIdentLeft.Path(), "wav")) {
+        loaderTypeLeft = AudioLoader::AudioLoaderType::WAV;
+    }
+
+    if (FileSystem::HasExtension(rIdentRight.Path(), "wav")) {
+        loaderTypeRight = AudioLoader::AudioLoaderType::WAV;
+    }
+
+    uint32_t audioSrcLeft;
+    uint32_t audioSrcRight;
+
+    uint32_t audioBuffLeft;
+    uint32_t audioBuffRight;
+
+    AudioDescriptor descLeft;
+    AudioDescriptor descRight;
+
+    if (rIdentLeft.Protocol() == "file") {
+        descLeft = AudioLoader::LoadAudio(loaderTypeLeft, FileSystem::ReadBinaryFile(rIdentLeft.Path()));
+    }
+
+    if (rIdentRight.Protocol() == "file") {
+        descRight = AudioLoader::LoadAudio(loaderTypeRight, FileSystem::ReadBinaryFile(rIdentRight.Path()));
+    }
+
+    {
+        alGenBuffers(1, &audioBuffLeft);
+        alBufferData(audioBuffLeft, descLeft.m_vPCMFormat, descLeft.m_vPCMFrames.data(), descLeft.m_vPCMFrames.size(), descLeft.m_vPCMFrequency);
+
+        AL_ERROR_CHECK();
+        if (AL_IS_ERROR()) {
+            if (audioBuffRight && alIsBuffer(audioBuffRight))
+                alDeleteBuffers(1, &audioBuffRight);
+
+            if (audioBuffLeft && alIsBuffer(audioBuffLeft))
+                alDeleteBuffers(1, &audioBuffLeft);
+
+            return nullptr;
+        }
+    }
+
+    {
+        alGenBuffers(1, &audioBuffRight);
+        alBufferData(audioBuffRight, descRight.m_vPCMFormat, descRight.m_vPCMFrames.data(), descRight.m_vPCMFrames.size(), descRight.m_vPCMFrequency);
+
+        AL_ERROR_CHECK();
+        if (AL_IS_ERROR()) {
+            if (audioBuffRight && alIsBuffer(audioBuffRight))
+                alDeleteBuffers(1, &audioBuffRight);
+
+            if (audioBuffLeft && alIsBuffer(audioBuffLeft))
+                alDeleteBuffers(1, &audioBuffLeft);
+
+            return nullptr;
+        }
+    }
+
+    {
+        alGenSources(1, &audioSrcLeft);
+        alSourcei(audioSrcLeft, AL_BUFFER, audioBuffLeft);
+
+        AL_ERROR_CHECK();
+        if (AL_IS_ERROR()) {
+            if (audioBuffRight && alIsBuffer(audioBuffRight))
+                alDeleteBuffers(1, &audioBuffRight);
+
+            if (audioBuffLeft && alIsBuffer(audioBuffLeft))
+                alDeleteBuffers(1, &audioBuffLeft);
+
+            if (audioSrcLeft && alIsSource(audioSrcLeft))
+                alDeleteSources(1, &audioSrcLeft);
+
+            if (audioSrcRight && alIsSource(audioSrcRight))
+                alDeleteSources(1, &audioSrcRight);
+
+            return nullptr;
+        }
+    }
+
+    {
+        alGenSources(1, &audioSrcRight);
+        alSourcei(audioSrcRight, AL_BUFFER, audioBuffRight);
+
+        AL_ERROR_CHECK();
+        if (AL_IS_ERROR()) {
+            if (audioBuffRight && alIsBuffer(audioBuffRight))
+                alDeleteBuffers(1, &audioBuffRight);
+
+            if (audioBuffLeft && alIsBuffer(audioBuffLeft))
+                alDeleteBuffers(1, &audioBuffLeft);
+
+            if (audioSrcLeft && alIsSource(audioSrcLeft))
+                alDeleteSources(1, &audioSrcLeft);
+
+            if (audioSrcRight && alIsSource(audioSrcRight))
+                alDeleteSources(1, &audioSrcRight);
+
+            return nullptr;
+        }
+    }
+
+    return pChannel->CreateAudio(rIdent, audioSrcLeft, audioSrcRight, audioBuffLeft, audioBuffRight);
+}
+
+Audio *AudioSystem::LoadMonoAudio(AudioChannel *pChannel, Identifier const &rIdent) {
+    return LoadStereoAudio(pChannel, rIdent, rIdent, rIdent); // *Emulate* Stereo
 }

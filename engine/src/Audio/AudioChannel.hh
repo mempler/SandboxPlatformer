@@ -6,12 +6,20 @@
 
 #include "Audio.hh"
 
+#include "Core/Utils/Identifier.hh"
+
+#include "glm/fwd.hpp"
+
 #include <vector>
 
 class AudioChannel {
 public:
-    void SetVolume(float fVolume);
+    AudioChannel(Identifier const &rIdent);
+
+    Audio *CreateAudio(Identifier const &rIdent, uint32_t hSrcLeft, uint32_t hSrcRight, uint32_t hBufferLeft, uint32_t hBufferRight);
 
 private:
+    Identifier m_Identifier;
+
     std::vector<Audio> m_vLinkedAudio;
 };

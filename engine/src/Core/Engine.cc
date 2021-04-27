@@ -4,6 +4,7 @@
 
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
+#include "Core/Utils/Timer.hh"
 
 //////////////////
 //    Engine    //
@@ -61,11 +62,15 @@ void BaseApp::Run() {
 
     Init();
 
+    Timer timer;
     while (!m_pEngine->GetWindow().ShouldExit()) {
+        auto elapsed = timer.elapsed();
+        timer.reset();
+
         m_pEngine->BeginFrame();
 
-        Tick();
-        Draw();
+        Tick(elapsed);
+        Draw(elapsed);
 
         m_pEngine->EndFrame();
     }

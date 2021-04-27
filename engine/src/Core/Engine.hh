@@ -50,8 +50,8 @@ public:
 protected:
     virtual void Init() = 0;
 
-    virtual void Tick() = 0;
-    virtual void Draw() = 0;
+    virtual void Tick(float fDelta) = 0;
+    virtual void Draw(float fDelta) = 0;
 
 protected:
     Engine *m_pEngine;
