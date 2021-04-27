@@ -9,6 +9,7 @@ set(ENGINE_LIBS
     lw
     SDL2-static
     zlib
+    OpenAL
 )
 
 file(GLOB_RECURSE ENGINE_SOURCES 

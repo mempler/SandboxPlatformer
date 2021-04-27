@@ -5,6 +5,8 @@
 
 #include "pch.hh"
 
+#include "Kokoro/Exception/BaseException.hh"
+
 #define LOG(x, ...) logger::Logf(x "\n", ##__VA_ARGS__)
 
 // clang-format off
@@ -26,6 +28,9 @@
 #define DEBUG_LOG_WARN(x, ...)  (void *)0;
 #define DEBUG_LOG_ERROR(x, ...) (void *)0;
 #endif
+
+#define CHECK(expr, fail_msg, ...) if (!(expr)) LOG_ERROR(fail_msg, ##__VA_ARGS__); if (!(expr)) exit(1)
+
 // clang-format on
 
 namespace Logger {

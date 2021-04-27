@@ -1,5 +1,7 @@
 #include "Engine.hh"
 
+#include "Audio/AudioSystem.hh"
+
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
 
@@ -26,6 +28,13 @@ TextureManager &Engine::GetTextureManager() {
 ShaderManager &Engine::GetShaderManager() {
     return m_ShaderManager;
 }
+AudioSystem &Engine::GetAudioSystem() {
+    return m_AudioSystem;
+}
+
+void Engine::Init() {
+    m_AudioSystem.Init();
+}
 
 void Engine::BeginFrame() {
     m_GameWindow.BeginFrame();
@@ -48,6 +57,8 @@ BaseApp::~BaseApp() {
 }
 
 void BaseApp::Run() {
+    m_pEngine->Init();
+
     Init();
 
     while (!m_pEngine->GetWindow().ShouldExit()) {
