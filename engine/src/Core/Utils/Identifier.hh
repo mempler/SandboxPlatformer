@@ -14,14 +14,14 @@ public:
     constexpr Identifier(std::string_view const &svUri) {
         constexpr std::string_view protoEnd("://");
 
-        auto proto_end = std::search(svUri.begin(), svUri.end(), protoEnd.begin(), protoEnd.end());
-        auto len = std::distance(proto_end, svUri.data()); // Caculate the length
-
-        m_sProtocol = std::string_view(svUri.begin(), len);
-        if (proto_end == svUri.end())
+        auto proto_end = svUri.find_first_of(protoEnd);
+        if (proto_end == std::string_view::npos) {
+            m_sProtocol = svUri;
             return;
+        }
 
-        m_sPath = std::string_view(proto_end);
+        m_sProtocol = std::string_view(svUri.begin(), proto_end);
+        m_sPath = std::string_view(svUri.begin() + proto_end + protoEnd.size());
     }
 
     constexpr Identifier(char *szUri) : Identifier(std::string_view(szUri)) {

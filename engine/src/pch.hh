@@ -44,4 +44,9 @@
 #undef DestroyAll
 #endif
 
+// Audio
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <AL/alext.h>
+
 #undef main

@@ -1,3 +1,4 @@
+#include "Core/Audio/AudioChannel.hh"
 #include "Core/Engine.hh"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -9,10 +10,10 @@ protected:
     void Init() override {
     }
 
-    void Tick() override {
+    void Tick(float fDelta) override {
     }
 
-    void Draw() override {
+    void Draw(float fDelta) override {
         m_pEngine->GetBatcher().SubmitRectangle(NULL, glm::translate(glm::mat4(1.f), { 100.f, 100.f, 1.f }) * glm::scale(glm::mat4(1.f), { 100.f, 100.f, 1.f }));
     }
 };

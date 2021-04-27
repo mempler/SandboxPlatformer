@@ -1,7 +1,9 @@
 #include "Engine.hh"
 
+#include "Core/Audio/AudioSystem.hh"
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
+#include "Core/Utils/Timer.hh"
 
 //////////////////
 //    Engine    //
@@ -26,6 +28,13 @@ TextureManager &Engine::GetTextureManager() {
 ShaderManager &Engine::GetShaderManager() {
     return m_ShaderManager;
 }
+AudioSystem &Engine::GetAudioSystem() {
+    return m_AudioSystem;
+}
+
+void Engine::Init() {
+    m_AudioSystem.Init();
+}
 
 void Engine::BeginFrame() {
     m_GameWindow.BeginFrame();
@@ -48,13 +57,19 @@ BaseApp::~BaseApp() {
 }
 
 void BaseApp::Run() {
+    m_pEngine->Init();
+
     Init();
 
+    Timer timer;
     while (!m_pEngine->GetWindow().ShouldExit()) {
+        auto elapsed = timer.elapsed();
+        timer.reset();
+
         m_pEngine->BeginFrame();
 
-        Tick();
-        Draw();
+        Tick(elapsed);
+        Draw(elapsed);
 
         m_pEngine->EndFrame();
     }
