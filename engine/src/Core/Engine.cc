@@ -7,6 +7,7 @@ Engine::Engine() : m_GameWindow(), m_VertexBatcher() {
 }
 
 Engine::~Engine() {
+    m_TextureManager.DestroyAll();
 }
 
 GameWindow &Engine::GetWindow() {
@@ -33,6 +34,7 @@ BaseApp::BaseApp() : m_pEngine(new Engine) {
 }
 
 BaseApp::~BaseApp() {
+    delete m_pEngine;
 }
 
 void BaseApp::Run() {
