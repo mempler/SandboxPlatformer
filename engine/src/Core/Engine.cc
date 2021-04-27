@@ -18,6 +18,7 @@ Engine::~Engine() {
 GameWindow &Engine::GetWindow() {
     return m_GameWindow;
 }
+
 VertexBatcher &Engine::GetBatcher() {
     return m_VertexBatcher;
 }
@@ -25,9 +26,11 @@ VertexBatcher &Engine::GetBatcher() {
 TextureManager &Engine::GetTextureManager() {
     return m_TextureManager;
 }
+
 ShaderManager &Engine::GetShaderManager() {
     return m_ShaderManager;
 }
+
 AudioSystem &Engine::GetAudioSystem() {
     return m_AudioSystem;
 }

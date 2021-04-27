@@ -68,10 +68,10 @@ Audio *AudioSystem::LoadStereoAudio(AudioChannel *pChannel, Identifier const &rI
     }
 
     uint32_t audioSrcLeft;
-    uint32_t audioSrcRight;
+    uint32_t audioSrcRight{}; // fix warns
 
     uint32_t audioBuffLeft;
-    uint32_t audioBuffRight;
+    uint32_t audioBuffRight{}; // fix warns
 
     AudioDescriptor descLeft;
     AudioDescriptor descRight;

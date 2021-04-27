@@ -20,8 +20,13 @@ public:
             return;
         }
 
+#if _MSC_FULL_VER // m$ft moment
+        m_sProtocol = std::string_view(&*svUri.begin(), proto_end);
+        m_sPath = std::string_view(&*svUri.begin() + proto_end + protoEnd.size());
+#else
         m_sProtocol = std::string_view(svUri.begin(), proto_end);
         m_sPath = std::string_view(svUri.begin() + proto_end + protoEnd.size());
+#endif
     }
 
     constexpr Identifier(char *szUri) : Identifier(std::string_view(szUri)) {
