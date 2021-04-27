@@ -1,5 +1,8 @@
 #include "Engine.hh"
 
+#include "Core/Managers/ShaderManager.hh"
+#include "Core/Managers/TextureManager.hh"
+
 //////////////////
 //    Engine    //
 //////////////////
@@ -15,6 +18,13 @@ GameWindow &Engine::GetWindow() {
 }
 VertexBatcher &Engine::GetBatcher() {
     return m_VertexBatcher;
+}
+
+TextureManager &Engine::GetTextureManager() {
+    return m_TextureManager;
+}
+ShaderManager &Engine::GetShaderManager() {
+    return m_ShaderManager;
 }
 
 void Engine::BeginFrame() {

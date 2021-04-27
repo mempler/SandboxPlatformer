@@ -2,6 +2,7 @@
 
 #include "pch.hh"
 
+#include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
 
 #include "Graphics/VertexBatcher.hh"
@@ -15,6 +16,7 @@ public:
     GameWindow &GetWindow();
     VertexBatcher &GetBatcher();
     TextureManager &GetTextureManager();
+    ShaderManager &GetShaderManager();
 
     void BeginFrame();
     void EndFrame();
@@ -25,6 +27,7 @@ private:
 
     // Managers
     TextureManager m_TextureManager;
+    ShaderManager m_ShaderManager;
     // Audio
 private:
 };
