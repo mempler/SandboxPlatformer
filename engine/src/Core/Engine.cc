@@ -9,6 +9,9 @@ Engine::Engine() : m_GameWindow(), m_VertexBatcher() {
 Engine::~Engine() {
 }
 
+GameWindow &Engine::GetWindow() {
+    return m_GameWindow;
+}
 VertexBatcher &Engine::GetBatcher() {
     return m_VertexBatcher;
 }
@@ -35,7 +38,7 @@ BaseApp::~BaseApp() {
 void BaseApp::Run() {
     Init();
 
-    while (true) {
+    while (!m_pEngine->GetWindow().ShouldExit()) {
         m_pEngine->BeginFrame();
 
         Tick();

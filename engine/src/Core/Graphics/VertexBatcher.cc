@@ -34,7 +34,7 @@ VertexBatcher::VertexBatcher() {
     // Initialize programs here
     // m_hDefaultProgramHandle = GetShaderManager()->Load(...)
     uint32_t whiteTextureData = 0xffffffff;
-    m_pWhiteTexture = &Texture2D::LoadRaw("White Texture", 1, 1, bgfx::TextureFormat::RGB8, (uint8_t *)&whiteTextureData, 4);
+    m_WhiteTexture = Texture2D::LoadRaw("White Texture", 1, 1, bgfx::TextureFormat::RGB8, (uint8_t *)&whiteTextureData, 3);
 }
 
 VertexBatcher::~VertexBatcher() {
@@ -111,7 +111,7 @@ void VertexBatcher::Reset() {
  *****************************************************/
 void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
     if (!pTexture)
-        pTexture = m_pWhiteTexture;
+        pTexture = &m_WhiteTexture;
 
     BatchEvent &event = GetVertexData(pTexture);
     event.vertices.resize(event.vertices.size() + 4);

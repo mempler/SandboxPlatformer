@@ -40,5 +40,8 @@
 #ifdef None
 #undef None
 #endif
+#ifdef DestroyAll
+#undef DestroyAll
+#endif
 
 #undef main

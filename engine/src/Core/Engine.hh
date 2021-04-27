@@ -2,8 +2,10 @@
 
 #include "pch.hh"
 
-#include "Graphics/Window.hh"
+#include "Core/Managers/TextureManager.hh"
+
 #include "Graphics/VertexBatcher.hh"
+#include "Graphics/Window.hh"
 
 class Engine {
 public:
@@ -12,6 +14,7 @@ public:
 
     GameWindow &GetWindow();
     VertexBatcher &GetBatcher();
+    TextureManager &GetTextureManager();
 
     void BeginFrame();
     void EndFrame();
@@ -19,6 +22,9 @@ public:
 private:
     GameWindow m_GameWindow;
     VertexBatcher m_VertexBatcher;
+
+    // Managers
+    TextureManager m_TextureManager;
     // Audio
 private:
 };
