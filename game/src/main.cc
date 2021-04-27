@@ -7,20 +7,8 @@
 #include <iostream>
 
 class SandboxGame : public BaseApp {
-private:
-    AudioChannel *m_pSoundEffectChannel;
-    Audio *m_pAudio;
-
-    glm::vec3 m_v3AudioPosition;
-
 protected:
     void Init() override {
-        m_pSoundEffectChannel = m_pEngine->GetAudioSystem().CreateChannel("audio://sound_effects");
-        m_pAudio = m_pEngine->GetAudioSystem().LoadMonoAudio(m_pSoundEffectChannel, "file://audio.wav");
-
-        m_pAudio->SetPitch(1.25f);
-        m_pAudio->SetVolume(0.5f);
-        m_pAudio->Play();
     }
 
     void Tick(float fDelta) override {

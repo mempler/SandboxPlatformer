@@ -1,14 +1,15 @@
 #include "pch.hh"
 
-#include "Audio.hh"
+#include "Audio/Audio.hh"
 
 #include "AL/al.h"
+#include "Audio/AudioChannel.hh"
 
 #include "Helper.hh"
 #include "glm/gtc/type_ptr.hpp"
 
-Audio::Audio(Identifier const &rIdent, uint32_t hSrcLeft, uint32_t hSrcRight, uint32_t hBufferLeft, uint32_t hBufferRight)
-                                                                                                    : m_Identifier(rIdent), m_hSourceLeft(hSrcLeft),
+Audio::Audio(AudioChannel *pChannel, Identifier const &rIdent, uint32_t hSrcLeft, uint32_t hSrcRight, uint32_t hBufferLeft, uint32_t hBufferRight)
+                                                                                                    : m_pChannel(pChannel), m_Identifier(rIdent), m_hSourceLeft(hSrcLeft),
                                                                                                       m_hBufferLeft(hBufferLeft), m_hSourceRight(hSrcRight),
                                                                                                       m_hBufferRight(hBufferRight) {
 }
@@ -30,6 +31,19 @@ void Audio::Play() {
     AL_ERROR_CHECK();
 }
 
+void Audio::Stop() {
+    alSourceStop(m_hSourceLeft);
+    alSourceStop(m_hSourceRight);
+}
+
+void Audio::Pause() {
+    alSourcePause(m_hSourceLeft);
+    alSourcePause(m_hSourceRight);
+}
+
+float Audio::GetPitch() {
+    return m_fPitch;
+}
 void Audio::SetPitch(float fPitch) {
     m_fPitch = fPitch;
 
@@ -37,11 +51,14 @@ void Audio::SetPitch(float fPitch) {
     alSourcef(m_hSourceRight, AL_PITCH, m_fPitch);
 }
 
+float Audio::GetVolume() {
+    return m_fVolume;
+}
 void Audio::SetVolume(float fVolume) {
     m_fVolume = fVolume;
 
-    alSourcef(m_hSourceLeft, AL_GAIN, m_fVolume);
-    alSourcef(m_hSourceRight, AL_GAIN, m_fVolume);
+    alSourcef(m_hSourceLeft, AL_GAIN, m_fVolume * m_pChannel->GetVolume());
+    alSourcef(m_hSourceRight, AL_GAIN, m_fVolume * m_pChannel->GetVolume());
 }
 
 void Audio::SetPosition(glm::vec3 v3Position) {

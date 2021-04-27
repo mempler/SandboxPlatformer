@@ -6,23 +6,26 @@
 
 #include <cinttypes>
 
+class AudioChannel;
 class Audio {
 public:
-    Audio(Identifier const &rIdent, uint32_t hSrcLeft, uint32_t hSrcRight, uint32_t hBufferLeft, uint32_t hBufferRight);
+    Audio(AudioChannel *pChannel, Identifier const &rIdent, uint32_t hSrcLeft, uint32_t hSrcRight, uint32_t hBufferLeft, uint32_t hBufferRight);
 
     void Play();
     void Stop();
     void Pause();
     void Destroy();
 
+    float GetPitch();
     void SetPitch(float fPitch);
+
+    float GetVolume();
     void SetVolume(float fVolume);
 
     void SetPosition(glm::vec3 v3Position);
 
-    bool IsMono();
-
 private:
+    AudioChannel *m_pChannel;
     Identifier m_Identifier;
 
     float m_fVolume = 1.0f;
@@ -33,4 +36,6 @@ private:
 
     uint32_t m_hSourceLeft;
     uint32_t m_hSourceRight;
+
+    void __SetVolume(float fVolume);
 };

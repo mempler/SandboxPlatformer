@@ -18,8 +18,13 @@ public:
 
     Audio *CreateAudio(Identifier const &rIdent, uint32_t hSrcLeft, uint32_t hSrcRight, uint32_t hBufferLeft, uint32_t hBufferRight);
 
+    float GetVolume();
+    void SetVolume(float fVolume);
+
 private:
     Identifier m_Identifier;
+
+    float m_fVolume = 1.0f;
 
     std::vector<Audio> m_vLinkedAudio;
 };
