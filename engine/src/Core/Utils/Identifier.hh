@@ -39,6 +39,14 @@ public:
         return m_sPath;
     }
 
+    std::string Raw() const {
+        return std::string(m_sProtocol) + "://" + m_sPath.data();
+    }
+
+    operator std::string() const {
+        return Raw();
+    }
+
     constexpr bool operator==(const Identifier &other) const {
         return (m_sPath == other.m_sPath && m_sProtocol == other.m_sProtocol);
     }
