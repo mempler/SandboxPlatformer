@@ -44,13 +44,13 @@ if (SDL2_FOUND)
     # it's just a wrapper
 
     add_library(SDL2-static INTERFACE)
-    target_include_directories(SDL2-static INTERFACE ${SDL2_INCLUDE_DIR})
+        target_include_directories(SDL2-static INTERFACE ${SDL2_INCLUDE_DIR})
 
     if (DEFINED CMAKE_TOOLCHAIN_FILE)
         message(INFO, "Using vcpkg for SDL2.")
         target_link_libraries(SDL2-static INTERFACE SDL2::SDL2main SDL2::SDL2-static)
     else()
-        target_link_libraries(SDL2-static INTERFACE ${SDL2_LIBRARY})
+        target_link_libraries(SDL2-static INTERFACE SDL2::SDL2main SDL2::SDL2)
     endif()
 else()
     message(WARNING, "SDL2 not found! It'll be compiled manually.")
@@ -71,5 +71,9 @@ else()
     add_definitions(-DZLIB_DLL)
     add_subdirectory(zlib)
 endif()
+
+###############################################################################################
+
+add_subdirectory(openal-soft)
 
 ###############################################################################################
