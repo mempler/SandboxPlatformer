@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string_view>
-
 #include "Core/Graphics/Texture2D.hh"
 #include "Core/Utils/Identifier.hh"
 

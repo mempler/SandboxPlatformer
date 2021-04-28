@@ -4,9 +4,9 @@
 
 #include "Core/Graphics/Texture2D.hh"
 
+#include <EASTL/vector.h>
 #include <glm/glm.hpp>
 
-#include <vector>
 
 // The idea behind using glm functions:
 //
@@ -125,12 +125,12 @@ private: // Interestingly, we cannot define this bellow the function bellow, GCC
     };
 
     struct BatchEvent {
-        std::vector<VertexInfo> vertices{};
+        eastl::vector<VertexInfo> vertices{};
         uint32_t indexes = 0;
     };
 
 private: // same goes for variables, it'll simply not compile.
-    std::vector<std::pair<Texture2D *, BatchEvent>> m_vBatchEvents{};
+    eastl::vector<eastl::pair<Texture2D *, BatchEvent>> m_vBatchEvents{};
 
     bgfx::VertexLayout m_vlDefaultLayout;
     bgfx::IndexBufferHandle m_hIndexBufferHandle;
@@ -151,7 +151,7 @@ private:
             if (t.first == pTexture)
                 return t.second;
 
-        m_vBatchEvents.push_back(std::make_pair(pTexture, BatchEvent{}));
+        m_vBatchEvents.push_back(eastl::make_pair(pTexture, BatchEvent{}));
 
         return m_vBatchEvents.back().second;
     }

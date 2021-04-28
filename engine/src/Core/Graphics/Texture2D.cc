@@ -1,3 +1,5 @@
+#include "pch.hh"
+
 #include "Texture2D.hh"
 
 #include "Core/Utils/FileSystem.hh"
@@ -8,7 +10,7 @@ namespace bgfx {
 } // namespace bgfx
 
 static void DeleteImageContainer(void *vpPtr, void *vpUserData) {
-    BX_UNUSED(vpPtr)
+    EA_UNUSED(vpPtr);
     bimg::ImageContainer *const imageContainer = (bimg::ImageContainer *)vpUserData;
     bimg::imageFree(imageContainer);
 }
@@ -28,9 +30,10 @@ Texture2D ::~Texture2D() {
  *
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-Texture2D Texture2D::Load(std::string_view svPath) {
-    std::vector<uint8_t> data = FileSystem::ReadBinaryFile(svPath); // what the hell
-    return Texture2D::Load(FileSystem::GetFileName(svPath), data.data(), data.size());
+Texture2D Texture2D::Load(eastl::string_view svPath) {
+    std::vector<uint8_t> data = FileSystem::ReadBinaryFile(svPath.data()); // what the hell
+
+    return Texture2D::Load(FileSystem::GetFileName(svPath.data()).data(), data.data(), data.size());
 }
 
 /*****************************************************
@@ -40,7 +43,7 @@ Texture2D Texture2D::Load(std::string_view svPath) {
  *
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-Texture2D Texture2D::Load(std::string_view svName, uint8_t *pMem, uint32_t uMemSize) {
+Texture2D Texture2D::Load(eastl::string_view svName, uint8_t *pMem, uint32_t uMemSize) {
     LOG_INFO("Loading Texture2D <%s>", svName.data());
 
     // Parse the input image
@@ -78,7 +81,7 @@ Texture2D Texture2D::Load(std::string_view svName, uint8_t *pMem, uint32_t uMemS
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
 Texture2D Texture2D::LoadRaw(
-    std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pMem, uint32_t uMemSize) {
+    eastl::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pMem, uint32_t uMemSize) {
     LOG_INFO("Loading Raw Texture2D <%s>(%d, %d)", svName.data(), iWidth, iHeight);
     const auto *const pixelData = bgfx::copy(pMem, uMemSize); // dont use makeRef dont use makeRef dont use makeRef dont use makeRef
 
@@ -103,7 +106,7 @@ Texture2D Texture2D::LoadRaw(
  *
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-Texture2D Texture2D::Create(std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat) {
+Texture2D Texture2D::Create(eastl::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat) {
     Texture2D texture;
     texture.m_thHandle = bgfx::createTexture2D(iWidth, iHeight, false, 1, eTextureFormat, eTextureFormat);
 

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <string_view>
-#include <unordered_map>
-
 #include "Core/Graphics/Texture2D.hh"
 #include "Core/Utils/Identifier.hh"
+
+#include <EASTL/unordered_map.h>
+#include <EASTL/vector.h>
 
 enum class ShaderType : uint8_t { Fragment = 0, Vertex = 1 };
 
@@ -30,7 +30,6 @@ private:
         uint32_t m_uCodeLen;
     };
 
-    std::unordered_map<Identifier, bgfx::ProgramHandle> m_umPrograms;
-
-    std::vector<Shader> m_vShaders;
+    eastl::unordered_map<Identifier, bgfx::ProgramHandle> m_umPrograms;
+    eastl::vector<Shader> m_vShaders;
 };

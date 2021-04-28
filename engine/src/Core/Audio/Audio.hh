@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-#include <cinttypes>
+#include <cstdint>
 
 class AudioChannel;
 class Audio {

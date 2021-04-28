@@ -12,9 +12,7 @@ Texture2D const *TextureManager::Load(Identifier const &rIdent) {
 
     // file://
     if (rIdent.Protocol() == "file") {
-        std::string path = FileSystem::JoinPath("./", rIdent.Path());
-
-        Texture2D texture = Texture2D::Load(path);
+        Texture2D texture = Texture2D::Load(rIdent.Path());
 
         this->m_umTextures.insert_or_assign(rIdent, texture);
     }

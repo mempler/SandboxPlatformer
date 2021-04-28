@@ -109,10 +109,10 @@ void VertexBatcher::Reset() {
 
     // TODO: Add FreeSTL function
     // clear the map
-    for (auto &&event : m_vBatchEvents) std::vector<VertexInfo>().swap(event.second.vertices);
+    for (auto &&event : m_vBatchEvents) eastl::vector<VertexInfo>().swap(event.second.vertices);
 
     m_vBatchEvents.clear();
-    std::vector<std::pair<Texture2D *, BatchEvent>>().swap(m_vBatchEvents); // kill me fucking hell
+    eastl::vector<eastl::pair<Texture2D *, BatchEvent>>().swap(m_vBatchEvents); // kill me fucking hell
 }
 
 /*****************************************************

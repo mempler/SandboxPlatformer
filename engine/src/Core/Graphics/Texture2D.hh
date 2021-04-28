@@ -1,9 +1,9 @@
 #pragma once
 
-#include "pch.hh"
-#include <string_view>
+#include "Platform.hh"
 
-#include <string>
+#include <EASTL/string_view.h>
+#include <bgfx/bgfx.h>
 
 // Low level texture wrapper
 class ENGINE_EXPORT Texture2D {
@@ -19,7 +19,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Load(std::string_view svPath);
+    static Texture2D Load(eastl::string_view svPath);
 
     /*****************************************************
      * Load
@@ -33,7 +33,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Load(std::string_view svName, uint8_t *pMem, uint32_t uMemSize);
+    static Texture2D Load(eastl::string_view svName, uint8_t *pMem, uint32_t uMemSize);
 
     /*****************************************************
      * LoadRaw
@@ -50,7 +50,7 @@ public:
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
     static Texture2D LoadRaw(
-        std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pMem, uint32_t uMemSize);
+        eastl::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pMem, uint32_t uMemSize);
 
     /*****************************************************
      * Create
@@ -65,7 +65,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Create(std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat);
+    static Texture2D Create(eastl::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat);
 
     /*****************************************************
      * Modify
