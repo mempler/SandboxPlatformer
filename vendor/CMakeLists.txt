@@ -94,3 +94,8 @@ option(ALSOFT_UPDATE_BUILD_VERSION "Update git build version info" ON)
 add_subdirectory(openal-soft)
 
 ###############################################################################################
+
+add_subdirectory(EABase)
+add_subdirectory(EASTL)
+
+###############################################################################################

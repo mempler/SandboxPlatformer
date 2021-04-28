@@ -30,9 +30,5 @@ Texture2D const *TextureManager::Load(Identifier const &rIdent) {
 }
 
 void TextureManager::DestroyAll() {
-    for (auto &texture : m_umTextures) {
-        texture.second.Destroy();
-    }
-
     m_umTextures.clear();
 }

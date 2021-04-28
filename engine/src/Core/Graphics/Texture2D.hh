@@ -4,11 +4,12 @@
 #include <string_view>
 
 #include <string>
-#include <vector>
 
 // Low level texture wrapper
 class ENGINE_EXPORT Texture2D {
 public:
+    ~Texture2D();
+
     /*****************************************************
      * Load
      *
@@ -48,7 +49,8 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D LoadRaw(std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pMem, uint32_t uMemSize);
+    static Texture2D LoadRaw(
+        std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pMem, uint32_t uMemSize);
 
     /*****************************************************
      * Create
@@ -81,19 +83,6 @@ public:
     void Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint8_t *pMem, uint32_t uMemSize);
 
 public:
-    /*****************************************************
-     * Destroy
-     *
-     * Destroys a Texture (unloads from memory)
-     *****************************************************/
-    void Destroy() {
-        LOG_INFO("Destroying Texture");
-
-        // Destroy GPU Texture Handle
-        if (bgfx::isValid(this->m_thHandle))
-            bgfx::destroy(this->m_thHandle);
-    }
-
     /*****************************************************
      * GetWidth
      *

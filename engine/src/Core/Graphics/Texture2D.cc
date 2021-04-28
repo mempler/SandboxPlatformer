@@ -13,6 +13,14 @@ static void DeleteImageContainer(void *vpPtr, void *vpUserData) {
     bimg::imageFree(imageContainer);
 }
 
+Texture2D ::~Texture2D() {
+    LOG_INFO("Destroying Texture");
+
+    // Destroy GPU Texture Handle
+    if (bgfx::isValid(this->m_thHandle))
+        bgfx::destroy(this->m_thHandle);
+}
+
 /*****************************************************
  * Load
  *

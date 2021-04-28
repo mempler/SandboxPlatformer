@@ -10,6 +10,7 @@ set(ENGINE_LIBS
     SDL2-static
     zlib
     OpenAL
+    EASTL
 )
 
 file(GLOB_RECURSE ENGINE_SOURCES 

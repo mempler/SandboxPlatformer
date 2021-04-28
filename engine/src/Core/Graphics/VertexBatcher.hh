@@ -143,7 +143,7 @@ private: // same goes for variables, it'll simply not compile.
     bgfx::FrameBufferHandle m_hScreenFrameBuffer;
 
     // Empty 1x1 white texture, useful for many things
-    Texture2D m_WhiteTexture;
+    Texture2D *m_pWhiteTexture;
 
 private:
     BatchEvent &GetVertexData(Texture2D *pTexture) {

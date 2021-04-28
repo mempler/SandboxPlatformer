@@ -49,8 +49,8 @@ void VertexBatcher::Init() {
 
     // Initialize default textures here
     uint32_t whiteTextureData = 0xffffffff;
-    m_WhiteTexture =
-        Texture2D::LoadRaw("White Texture", 1, 1, bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), (uint8_t *)&whiteTextureData, 4);
+    m_pWhiteTexture = new Texture2D( // Texture on Heap
+        Texture2D::LoadRaw("White Texture", 1, 1, bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), (uint8_t *)&whiteTextureData, 4));
 }
 
 /*****************************************************
@@ -122,7 +122,7 @@ void VertexBatcher::Reset() {
  *****************************************************/
 void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
     if (!pTexture)
-        pTexture = &m_WhiteTexture;
+        pTexture = m_pWhiteTexture;
 
     BatchEvent &event = GetVertexData(pTexture);
     event.vertices.resize(event.vertices.size() + 4);

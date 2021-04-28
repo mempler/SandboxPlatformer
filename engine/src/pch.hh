@@ -7,6 +7,8 @@
 #include <vector>
 #include <algorithm>
 
+#include <EASTL/chrono.h>
+
 #include "Platform.hh"
 // clang-format on
 

@@ -2,6 +2,9 @@
 
 #include <string_view>
 
+#include <EASTL/algorithm.h>
+#include <EASTL/string_view.h>
+
 #include <algorithm>
 #include <iterator>
 #include <string>
@@ -66,6 +69,17 @@ struct std::hash<Identifier> {
     std::size_t operator()(const Identifier &s) const noexcept {
         std::size_t h1 = std::hash<std::string_view>{}(s.Protocol());
         std::size_t h2 = std::hash<std::string_view>{}(s.Path());
+
+        return h1 ^ (h2 << 1);
+    }
+};
+
+// eastl::unordered_map support
+template <>
+struct eastl::hash<Identifier> {
+    size_t operator()(const Identifier &s) const noexcept {
+        size_t h1 = eastl::hash<eastl::string_view>{}(s.Protocol().data());
+        size_t h2 = eastl::hash<eastl::string_view>{}(s.Path().data());
 
         return h1 ^ (h2 << 1);
     }
