@@ -10,6 +10,8 @@ set(ENGINE_LIBS
     SDL2-static
     zlib
     OpenAL
+    bgfx-imgui
+    imgui
 )
 
 file(GLOB_RECURSE ENGINE_SOURCES 
