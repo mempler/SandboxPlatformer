@@ -1,5 +1,8 @@
 #include "Window.hh"
 
+#include "imgui_impl_bgfx.h"
+#include "imgui_impl_sdl.h"
+
 GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *szTitle, const Flags eFlags) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
         LOG_ERROR("Failed to initialize SDL2!");
@@ -91,6 +94,32 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
     m_m4Projection[3].z = 1.f;
 
     bgfx::setViewTransform(0, glm::value_ptr(m_m4View), glm::value_ptr(m_m4Projection));
+
+#if ENGINE_DEBUG
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;   // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
+
+    ImGui::StyleColorsDark();
+
+    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+    ImGuiStyle &style = ImGui::GetStyle();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+
+    ImGui_Implbgfx_Init(999);
+#if PLATFORM_WIN32
+    ImGui_ImplSDL2_InitForD3D(m_SDLWindow);
+#elif PLATFORM_LINUX
+    ImGui_ImplSDL2_InitForOpenGL(m_SDLWindow, nullptr);
+#endif
+#endif
 }
 
 /*****************************************************
@@ -99,6 +128,11 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
  * Destroys the Window && Shutsdown BGFX
  *****************************************************/
 GameWindow::~GameWindow() {
+#if ENGINE_DEBUG
+    ImGui_ImplSDL2_Shutdown();
+    ImGui_Implbgfx_Shutdown();
+#endif
+
     // Shutdown BGFX
     bgfx::shutdown();
 
@@ -117,6 +151,11 @@ GameWindow::~GameWindow() {
 double GameWindow::BeginFrame() {
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0) { // TODO: Event Pipeline
+#if ENGINE_DEBUG
+        if (ImGui_ImplSDL2_ProcessEvent(&e))
+            continue;
+#endif
+
         switch (e.type) {
             // Tell our window that we shall exit now
             case SDL_QUIT: m_bExit = true; break;
@@ -155,6 +194,12 @@ double GameWindow::BeginFrame() {
     // other draw calls are submitted to view 0.
     bgfx::touch(0);
 
+#if ENGINE_DEBUG
+    ImGui_Implbgfx_NewFrame();
+    ImGui_ImplSDL2_NewFrame(m_SDLWindow);
+    ImGui::NewFrame();
+#endif
+
     return delta;
 }
 
@@ -166,6 +211,11 @@ double GameWindow::BeginFrame() {
  * NOTE: This must be called on the Render thread.
  *****************************************************/
 void GameWindow::EndFrame() {
+#if ENGINE_DEBUG
+    ImGui::Render();
+    ImGui_Implbgfx_RenderDrawLists(ImGui::GetDrawData());
+#endif
+
     bgfx::frame();
 }
 

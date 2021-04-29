@@ -5,6 +5,9 @@
 #include "Core/Managers/TextureManager.hh"
 #include "Core/Utils/Timer.hh"
 
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
+
 //////////////////
 //    Engine    //
 //////////////////
@@ -49,6 +52,22 @@ void Engine::Init() {
 void Engine::BeginFrame() {
     m_GameWindow.BeginFrame();
     m_VertexBatcher.BeginFrame();
+
+    if (ImGui::BeginMainMenuBar()) {
+        if (ImGui::BeginMenu("Engine")) {
+            if (ImGui::MenuItem("Resource Monitor")) {
+            }
+            if (ImGui::MenuItem("Texture Manager Monitor")) {
+            }
+            if (ImGui::MenuItem("Shader Manager Monitor")) {
+            }
+            if (ImGui::MenuItem("Audio Engine Monitor")) {
+            }
+
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
 }
 
 void Engine::EndFrame() {
