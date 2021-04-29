@@ -15,6 +15,8 @@ Texture2D const *TextureManager::Load(Identifier const &rIdent) {
         Texture2D texture = Texture2D::Load(rIdent.Path());
 
         this->m_umTextures.insert_or_assign(rIdent, texture);
+
+        return &m_umTextures.at(rIdent);
     }
     // TODO:
     //   http://
@@ -25,6 +27,21 @@ Texture2D const *TextureManager::Load(Identifier const &rIdent) {
     }
 
     return nullptr;
+}
+
+Texture2D const *TextureManager::HandOff(Texture2D &&tex) {
+    auto identifier = tex.GetIdentifier();
+
+    // Duplicate texture, lets remove the new one.
+    if (m_umTextures.find(identifier) != m_umTextures.end())
+        return &m_umTextures.at(identifier);
+
+    // Otherwise we just add it
+    this->m_umTextures[identifier] = tex;
+
+    LOG_INFO("Not yet destroyed");
+
+    return &m_umTextures.at(identifier);
 }
 
 void TextureManager::DestroyAll() {

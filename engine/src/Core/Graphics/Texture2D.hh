@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Core/Utils/Identifier.hh"
+
 #include "Platform.hh"
 
+#include <EASTL/span.h>
 #include <EASTL/string_view.h>
 #include <bgfx/bgfx.h>
 
@@ -15,25 +18,23 @@ public:
      *
      * Loads a texture from FS into GPU Memory
      *
-     * @param svPath Path to the Texture
+     * @param identifier Identifier of the texture (E.G file://image.png)
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Load(eastl::string_view svPath);
+    static Texture2D Load(Identifier const &identifier);
 
     /*****************************************************
      * Load
      *
      * Loads a texture from Memory into GPU Memory
      *
-     * @param svName Name of the texture
-     *               (Used for debugging)
-     * @param pMem Pixel Data
-     * @param uMemSize Memory size
+     * @param identifier Identifier of the texture (E.G engine://image.png)
+     * @param vData Readonly chunk of pixel data.
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Load(eastl::string_view svName, uint8_t *pMem, uint32_t uMemSize);
+    static Texture2D Load(Identifier const &identifier, eastl::span<uint8_t> const &vData);
 
     /*****************************************************
      * LoadRaw
@@ -45,12 +46,12 @@ public:
      * @param iWidth Texture Width
      * @param iHeight Texture Height
      * @param eTextureFormat Texture Format
-     * @param cvData Pixel Data
+     * @param vData Readonly chunk of pixel data.
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
     static Texture2D LoadRaw(
-        eastl::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pMem, uint32_t uMemSize);
+        Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, eastl::span<uint8_t> const &vData);
 
     /*****************************************************
      * Create
@@ -65,7 +66,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Create(eastl::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat);
+    static Texture2D Create(Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat);
 
     /*****************************************************
      * Modify
@@ -77,10 +78,9 @@ public:
      * @param iWidth Texture Width
      * @param iHeight Texture Height
      * @param eTextureFormat Texture Format
-     * @param pMem Pixel Data
-     * @param uMemSize Memory size
+     * @param vData Readonly chunk of pixel data that will be copied onto this texture.
      *****************************************************/
-    void Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint8_t *pMem, uint32_t uMemSize);
+    void Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, eastl::span<uint8_t> const &vData);
 
 public:
     /*****************************************************
@@ -117,6 +117,17 @@ public:
     }
 
     /*****************************************************
+     * GetHandle
+     *
+     * Gets the Identifier of this texture
+     *
+     * @return Texture Handle
+     *****************************************************/
+    Identifier GetIdentifier() const {
+        return m_Identifier;
+    }
+
+    /*****************************************************
      * IsValid
      *
      * Checks if the current texture is valid
@@ -128,6 +139,8 @@ public:
     }
 
 private:
+    Identifier m_Identifier = "engine://invalid_texture";
+
     int32_t m_iWidth = 0;
     int32_t m_iHeight = 0;
 

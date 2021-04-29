@@ -3,6 +3,7 @@
 #include "Texture2D.hh"
 
 #include "Core/Utils/FileSystem.hh"
+#include "Core/Utils/Identifier.hh"
 
 namespace bgfx {
     // Hack for getting BGFX Allocator
@@ -30,10 +31,13 @@ Texture2D ::~Texture2D() {
  *
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-Texture2D Texture2D::Load(eastl::string_view svPath) {
-    std::vector<uint8_t> data = FileSystem::ReadBinaryFile(svPath.data()); // what the hell
+Texture2D Texture2D::Load(Identifier const &identifier) {
+    std::vector<uint8_t> data;
+    if (identifier.Protocol() == "file") {
+        data = FileSystem::ReadBinaryFile(identifier.Path().data()); // what the hell
+    }
 
-    return Texture2D::Load(FileSystem::GetFileName(svPath.data()).data(), data.data(), data.size());
+    return Texture2D::Load(identifier, data);
 }
 
 /*****************************************************
@@ -43,11 +47,11 @@ Texture2D Texture2D::Load(eastl::string_view svPath) {
  *
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-Texture2D Texture2D::Load(eastl::string_view svName, uint8_t *pMem, uint32_t uMemSize) {
-    LOG_INFO("Loading Texture2D <%s>", svName.data());
+Texture2D Texture2D::Load(Identifier const &identifier, eastl::span<uint8_t> const &vData) {
+    LOG_INFO("Loading Texture2D <%s>", identifier.Raw().data());
 
     // Parse the input image
-    auto *imageContainer = bimg::imageParse(bgfx::g_allocator, pMem, uMemSize);
+    auto *imageContainer = bimg::imageParse(bgfx::g_allocator, vData.data(), vData.size());
 
     if (imageContainer == nullptr)
         return {}; // Return invalid texture
@@ -59,6 +63,7 @@ Texture2D Texture2D::Load(eastl::string_view svName, uint8_t *pMem, uint32_t uMe
         return {};
 
     Texture2D texture;
+    texture.m_Identifier = identifier;
     texture.m_thHandle = bgfx::createTexture2D((uint16_t)imageContainer->m_width, (uint16_t)imageContainer->m_height, 1 < imageContainer->m_numMips,
         imageContainer->m_numLayers, (bgfx::TextureFormat::Enum)imageContainer->m_format, bgfx::TextureFormat::RGBA4, pixelData);
 
@@ -68,7 +73,8 @@ Texture2D Texture2D::Load(eastl::string_view svName, uint8_t *pMem, uint32_t uMe
     if (!texture.IsValid())
         return texture; // This wont really matter tbh
 
-    bgfx::setName(texture.m_thHandle, svName.data(), svName.length());
+    eastl::string bgfxName = identifier.Raw();
+    bgfx::setName(texture.m_thHandle, bgfxName.data(), bgfxName.length());
 
     return texture;
 }
@@ -81,22 +87,24 @@ Texture2D Texture2D::Load(eastl::string_view svName, uint8_t *pMem, uint32_t uMe
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
 Texture2D Texture2D::LoadRaw(
-    eastl::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pMem, uint32_t uMemSize) {
-    LOG_INFO("Loading Raw Texture2D <%s>(%d, %d)", svName.data(), iWidth, iHeight);
-    const auto *const pixelData = bgfx::copy(pMem, uMemSize); // dont use makeRef dont use makeRef dont use makeRef dont use makeRef
+    Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, eastl::span<uint8_t> const &vData) {
+    LOG_INFO("Loading Raw Texture2D <%s>(%d, %d)", identifier.Raw().data(), iWidth, iHeight);
+    const auto *const pixelData = bgfx::copy(vData.data(), vData.size()); // dont use makeRef dont use makeRef dont use makeRef dont use makeRef
 
     Texture2D texture;
+    texture.m_Identifier = identifier;
     texture.m_thHandle = bgfx::createTexture2D((uint16_t)iWidth, (uint16_t)iHeight, false, 1, eTextureFormat, u64Filters, pixelData);
 
     texture.m_iWidth = iWidth;
     texture.m_iHeight = iHeight;
 
     if (!texture.IsValid())
-        return texture; // Doesn't really matter
+        return std::move(texture); // Doesn't really matter
 
-    bgfx::setName(texture.m_thHandle, svName.data(), (int32_t)svName.length());
+    eastl::string bgfxName = identifier.Raw();
+    bgfx::setName(texture.m_thHandle, bgfxName.data(), bgfxName.length());
 
-    return texture;
+    return std::move(texture);
 }
 
 /*****************************************************
@@ -106,8 +114,9 @@ Texture2D Texture2D::LoadRaw(
  *
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-Texture2D Texture2D::Create(eastl::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat) {
+Texture2D Texture2D::Create(Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat) {
     Texture2D texture;
+    texture.m_Identifier = identifier;
     texture.m_thHandle = bgfx::createTexture2D(iWidth, iHeight, false, 1, eTextureFormat, eTextureFormat);
 
     if (!texture.IsValid())
@@ -116,7 +125,8 @@ Texture2D Texture2D::Create(eastl::string_view svName, int32_t iWidth, int32_t i
     texture.m_iWidth = iWidth;
     texture.m_iHeight = iHeight;
 
-    bgfx::setName(texture.m_thHandle, svName.data(), (uint32_t)svName.length());
+    eastl::string bgfxName = identifier.Raw();
+    bgfx::setName(texture.m_thHandle, bgfxName.data(), (uint32_t)bgfxName.length());
 
     return texture;
 }
@@ -127,11 +137,11 @@ Texture2D Texture2D::Create(eastl::string_view svName, int32_t iWidth, int32_t i
  * Modifies a texture at Position
  *
  *****************************************************/
-void Texture2D::Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint8_t *pMem, uint32_t uMemSize) {
-    if (pMem || iWidth == 0 || iHeight == 0)
+void Texture2D::Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, eastl::span<uint8_t> const &vData) {
+    if (iWidth == 0 || iHeight == 0 || vData.size() == 0)
         return;
 
-    auto pixelData = bgfx::copy(pMem, uMemSize);
+    auto pixelData = bgfx::copy(vData.data(), vData.size());
 
     // Hack for figuring out our _pitch
     size_t pitch = 0;

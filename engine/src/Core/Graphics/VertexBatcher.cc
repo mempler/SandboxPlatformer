@@ -1,6 +1,9 @@
 #include "VertexBatcher.hh"
 
+#include "EASTL/span.h"
+
 #include "Core/Engine.hh"
+#include "Core/Utils/Logger.hh"
 
 static uint32_t g_uMaxQuads = 80000;
 
@@ -40,7 +43,7 @@ VertexBatcher::~VertexBatcher() {
  * Initialize what we need after Engine initialization
  * for example shader manager.
  *****************************************************/
-void VertexBatcher::Init() {
+void VertexBatcher::Init(TextureManager &rTexManager) {
     // Initialize uniforms here
     m_hTextureUniform = bgfx::createUniform("u_texture", bgfx::UniformType::Sampler);
 
@@ -49,8 +52,10 @@ void VertexBatcher::Init() {
 
     // Initialize default textures here
     uint32_t whiteTextureData = 0xffffffff;
-    m_pWhiteTexture = new Texture2D( // Texture on Heap
-        Texture2D::LoadRaw("White Texture", 1, 1, bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), (uint8_t *)&whiteTextureData, 4));
+    eastl::span<uint8_t> whiteTextureDataPtr = eastl::span((uint8_t *)&whiteTextureData, 4);
+
+    m_pWhiteTexture = rTexManager.HandOff(
+        Texture2D::LoadRaw("engine://white", 1, 1, bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), whiteTextureDataPtr));
 }
 
 /*****************************************************
@@ -78,7 +83,7 @@ void VertexBatcher::EndFrame() {
  *****************************************************/
 void VertexBatcher::Flush() {
     for (auto &&event : m_vBatchEvents) {
-        Texture2D *texture = event.first;
+        const Texture2D *texture = event.first;
         auto &vertexes = event.second.vertices;
         auto &indexes = event.second.indexes;
 
@@ -112,7 +117,7 @@ void VertexBatcher::Reset() {
     for (auto &&event : m_vBatchEvents) eastl::vector<VertexInfo>().swap(event.second.vertices);
 
     m_vBatchEvents.clear();
-    eastl::vector<eastl::pair<Texture2D *, BatchEvent>>().swap(m_vBatchEvents); // kill me fucking hell
+    eastl::vector<eastl::pair<const Texture2D *, BatchEvent>>().swap(m_vBatchEvents); // kill me fucking hell
 }
 
 /*****************************************************
@@ -120,7 +125,7 @@ void VertexBatcher::Reset() {
  *
  * Add new event into queue but set UVs manually.
  *****************************************************/
-void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
+void VertexBatcher::Submit(const Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
     if (!pTexture)
         pTexture = m_pWhiteTexture;
 
@@ -144,6 +149,6 @@ void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, co
  *
  * Quick function to not deal with UVs
  *****************************************************/
-void VertexBatcher::SubmitRectangle(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color) {
+void VertexBatcher::SubmitRectangle(const Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color) {
     Submit(pTexture, m4Transform, v4Color);
 }

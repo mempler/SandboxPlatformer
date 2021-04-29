@@ -10,6 +10,8 @@ public:
     // file://Path/To/File -> ./Path/To/File
     Texture2D const *Load(Identifier const &identifier);
 
+    Texture2D const *HandOff(Texture2D &&tex);
+
     void DestroyAll();
 
 private:
