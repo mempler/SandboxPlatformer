@@ -13,9 +13,6 @@
 [submodule "vendor/openal-soft"]
 	path = vendor/openal-soft
 	url = https://github.com/kcat/openal-soft.git
-[submodule "vendor/EABase"]
-	path = vendor/EABase
-	url = https://github.com/electronicarts/EABase.git
 [submodule "vendor/imgui"]
 	path = vendor/imgui
 	url = https://github.com/ocornut/imgui.git
