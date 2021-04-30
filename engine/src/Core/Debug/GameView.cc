@@ -13,7 +13,7 @@ void GameView::Draw() {
     if (!bgfx::isValid(m_hFrameBuffer)) {
         GameWindow &window = m_pEngine->GetWindow();
 
-        m_hFrameBuffer = bgfx::createFrameBuffer(window.Width(), window.Height(), bgfx::TextureFormat::RGB8);
+        m_hFrameBuffer = bgfx::createFrameBuffer(window.Width(), window.Height(), bgfx::TextureFormat::RGBA8);
     }
 
     ImGui::Begin("Game View", &m_bIsShowing);
