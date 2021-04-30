@@ -19,7 +19,6 @@ Engine::Engine() : m_GameWindow(), m_VertexBatcher() {
 }
 
 Engine::~Engine() {
-    m_TextureManager.DestroyAll();
 }
 
 GameWindow &Engine::GetWindow() {
@@ -46,7 +45,7 @@ void Engine::Init() {
     m_ShaderManager.LoadDefaultShaders();
     m_AudioSystem.Init();
 
-    m_VertexBatcher.Init();
+    m_VertexBatcher.Init(m_TextureManager);
 }
 
 void Engine::BeginFrame() {

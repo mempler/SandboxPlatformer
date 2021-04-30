@@ -1,6 +1,7 @@
 #include "VertexBatcher.hh"
 
 #include "Core/Engine.hh"
+#include "Core/Managers/TextureManager.hh"
 
 static uint32_t g_uMaxQuads = 80000;
 
@@ -40,7 +41,7 @@ VertexBatcher::~VertexBatcher() {
  * Initialize what we need after Engine initialization
  * for example shader manager.
  *****************************************************/
-void VertexBatcher::Init() {
+void VertexBatcher::Init(TextureManager &textureManager) {
     // Initialize uniforms here
     m_hTextureUniform = bgfx::createUniform("u_texture", bgfx::UniformType::Sampler);
 
@@ -48,9 +49,8 @@ void VertexBatcher::Init() {
     m_hDefaultProgramHandle = GetEngine()->GetShaderManager().LoadProgram("Default");
 
     // Initialize default textures here
-    uint32_t whiteTextureData = 0xffffffff;
-    m_WhiteTexture =
-        Texture2D::LoadRaw("White Texture", 1, 1, bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), (uint8_t *)&whiteTextureData, 4);
+    m_pWhiteTexture =
+        textureManager.CreateTextureWithColor("engine://white", 1, 1, bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), 0xFFFFFFFF);
 }
 
 /*****************************************************
@@ -122,7 +122,7 @@ void VertexBatcher::Reset() {
  *****************************************************/
 void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
     if (!pTexture)
-        pTexture = &m_WhiteTexture;
+        pTexture = m_pWhiteTexture;
 
     BatchEvent &event = GetVertexData(pTexture);
     event.vertices.resize(event.vertices.size() + 4);

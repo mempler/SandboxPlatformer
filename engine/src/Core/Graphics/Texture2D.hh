@@ -1,38 +1,40 @@
 #pragma once
 
-#include "pch.hh"
-#include <string_view>
+#include "Core/Utils/Identifier.hh"
 
-#include <string>
-#include <vector>
+#include "Platform.hh"
+
+#include <bgfx/bgfx.h>
+
+#include <span.hpp>
 
 // Low level texture wrapper
 class ENGINE_EXPORT Texture2D {
 public:
+    ~Texture2D();
+
     /*****************************************************
      * Load
      *
      * Loads a texture from FS into GPU Memory
      *
-     * @param svPath Path to the Texture
+     * @param identifier Identifier of the texture (E.G file://image.png)
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Load(std::string_view svPath);
+    static void Load(Texture2D *pDest, Identifier const &identifier);
 
     /*****************************************************
      * Load
      *
      * Loads a texture from Memory into GPU Memory
      *
-     * @param svName Name of the texture
-     *               (Used for debugging)
-     * @param pMem Pixel Data
-     * @param uMemSize Memory size
+     * @param identifier Identifier of the texture (E.G engine://image.png)
+     * @param vData Readonly chunk of pixel data.
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Load(std::string_view svName, uint8_t *pMem, uint32_t uMemSize);
+    static void Load(Texture2D *pDest, Identifier const &identifier, tcb::span<uint8_t> const &vData);
 
     /*****************************************************
      * LoadRaw
@@ -44,11 +46,12 @@ public:
      * @param iWidth Texture Width
      * @param iHeight Texture Height
      * @param eTextureFormat Texture Format
-     * @param cvData Pixel Data
+     * @param vData Readonly chunk of pixel data.
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D LoadRaw(std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pMem, uint32_t uMemSize);
+    static void LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters,
+        tcb::span<uint8_t> const &vData);
 
     /*****************************************************
      * Create
@@ -63,7 +66,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Create(std::string_view svName, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat);
+    static void Create(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat);
 
     /*****************************************************
      * Modify
@@ -75,25 +78,11 @@ public:
      * @param iWidth Texture Width
      * @param iHeight Texture Height
      * @param eTextureFormat Texture Format
-     * @param pMem Pixel Data
-     * @param uMemSize Memory size
+     * @param vData Readonly chunk of pixel data that will be copied onto this texture.
      *****************************************************/
-    void Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint8_t *pMem, uint32_t uMemSize);
+    void Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, tcb::span<uint8_t> const &vData);
 
 public:
-    /*****************************************************
-     * Destroy
-     *
-     * Destroys a Texture (unloads from memory)
-     *****************************************************/
-    void Destroy() {
-        LOG_INFO("Destroying Texture");
-
-        // Destroy GPU Texture Handle
-        if (bgfx::isValid(this->m_thHandle))
-            bgfx::destroy(this->m_thHandle);
-    }
-
     /*****************************************************
      * GetWidth
      *
@@ -128,6 +117,17 @@ public:
     }
 
     /*****************************************************
+     * GetHandle
+     *
+     * Gets the Identifier of this texture
+     *
+     * @return Texture Handle
+     *****************************************************/
+    Identifier GetIdentifier() const {
+        return m_Identifier;
+    }
+
+    /*****************************************************
      * IsValid
      *
      * Checks if the current texture is valid
@@ -139,6 +139,8 @@ public:
     }
 
 private:
+    Identifier m_Identifier = "engine://invalid_texture";
+
     int32_t m_iWidth = 0;
     int32_t m_iHeight = 0;
 
