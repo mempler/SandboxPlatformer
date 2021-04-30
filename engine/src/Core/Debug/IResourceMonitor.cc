@@ -6,7 +6,7 @@
 
 void IResourceMonitor::Draw() {
 #if ENGINE_DEBUG
-    ImGui::Begin("IResource Viewer", &m_bIsShowing);
+    ImGui::Begin("IResource Monitor", &m_bIsShowing);
 
     // Currently we only support TextureManager as that one uses the newer IResource class
 

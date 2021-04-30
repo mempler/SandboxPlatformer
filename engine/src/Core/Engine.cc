@@ -1,12 +1,15 @@
 #include "Engine.hh"
 
 #include "Core/Audio/AudioSystem.hh"
+#include "Core/Debug/DefaultLayout.hh"
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
 #include "Core/Utils/Timer.hh"
 
+#include "bgfx/bgfx.h"
+
+#include <SDL_keycode.h>
 #include <imgui.h>
-#include <imgui_impl_sdl.h>
 
 //////////////////
 //    Engine    //
@@ -15,7 +18,7 @@ Engine *GetEngine() {
     return GetApp()->GetEngine();
 }
 
-Engine::Engine() : m_GameWindow(), m_VertexBatcher(), m_IResourceMonitor(this) {
+Engine::Engine() : m_GameWindow(), m_VertexBatcher(), m_IResourceMonitor(this), m_GameView(this) {
 }
 
 Engine::~Engine() {
@@ -46,6 +49,10 @@ void Engine::Init() {
     m_AudioSystem.Init();
 
     m_VertexBatcher.Init(m_TextureManager);
+
+    // Show by default
+    m_IResourceMonitor.SetShowing(true);
+    m_GameView.SetShowing(true);
 }
 
 void Engine::BeginFrame() {
@@ -53,21 +60,63 @@ void Engine::BeginFrame() {
     m_VertexBatcher.BeginFrame();
 
 #if ENGINE_DEBUG
-    if (ImGui::BeginMainMenuBar()) {
-        if (ImGui::BeginMenu("Engine")) {
-            if (ImGui::MenuItem("IResource Monitor")) { // Toggle
-                m_IResourceMonitor.SetShowing(!m_IResourceMonitor.IsShowing());
-            }
+    if (ImGui::IsKeyPressed(SDL_SCANCODE_F8, false)) {
+        m_bShowDebugUtils = !m_bShowDebugUtils;
 
-            ImGui::EndMenu();
+        if (!m_bShowDebugUtils && m_GameView.IsShowing())
+            bgfx::setViewFrameBuffer(0, BGFX_INVALID_HANDLE); // Reset framebuffer
+    }
+
+    if (m_bShowDebugUtils) {
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+
+        const ImGuiViewport *viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+
+        ImGui::Begin("EngineDebug", nullptr, window_flags);
+
+        ImGuiID dockspace_id = ImGui::GetID("EngineDockSpace");
+        if (ImGui::DockBuilderGetNode(dockspace_id) == NULL)
+            DefaultImGuiLayout(this, dockspace_id);
+
+        ImGui::DockSpace(dockspace_id, ImVec2(0, 0));
+
+        if (ImGui::BeginMenuBar()) {
+            if (ImGui::BeginMenu("Engine")) {
+                if (ImGui::MenuItem("IResource Monitor")) { // Toggle
+                    m_IResourceMonitor.SetShowing(!m_IResourceMonitor.IsShowing());
+                }
+
+                if (ImGui::MenuItem("Game View")) { // Toggle
+                    m_GameView.SetShowing(!m_GameView.IsShowing());
+
+                    m_GameView.Draw(); // Draw one more time
+                }
+
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenuBar();
         }
-        ImGui::EndMainMenuBar();
+
+        if (m_IResourceMonitor.IsShowing()) {
+            ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
+
+            m_IResourceMonitor.Draw();
+        }
+
+        if (m_GameView.IsShowing()) {
+            ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
+
+            m_GameView.Draw();
+        }
+
+        ImGui::End();
     }
 #endif
-
-    if (m_IResourceMonitor.IsShowing()) {
-        m_IResourceMonitor.Draw();
-    }
 }
 
 void Engine::EndFrame() {

@@ -3,6 +3,7 @@
 #include "pch.hh"
 
 #include "Core/Audio/AudioSystem.hh"
+#include "Core/Debug/GameView.hh"
 #include "Core/Debug/IResourceMonitor.hh"
 #include "Core/Graphics/VertexBatcher.hh"
 #include "Core/Graphics/Window.hh"
@@ -37,6 +38,9 @@ private:
     AudioSystem m_AudioSystem;
 
     // Debug Utils
+    bool m_bShowDebugUtils = false;
+
+    GameView m_GameView;
     IResourceMonitor m_IResourceMonitor;
 
 private:
