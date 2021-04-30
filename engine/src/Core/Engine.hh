@@ -3,11 +3,11 @@
 #include "pch.hh"
 
 #include "Core/Audio/AudioSystem.hh"
+#include "Core/Debug/IResourceMonitor.hh"
+#include "Core/Graphics/VertexBatcher.hh"
+#include "Core/Graphics/Window.hh"
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
-
-#include "Graphics/VertexBatcher.hh"
-#include "Graphics/Window.hh"
 
 class Engine {
 public:
@@ -35,6 +35,9 @@ private:
 
     // Audio
     AudioSystem m_AudioSystem;
+
+    // Debug Utils
+    IResourceMonitor m_IResourceMonitor;
 
 private:
 };

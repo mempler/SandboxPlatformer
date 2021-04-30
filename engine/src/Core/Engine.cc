@@ -15,7 +15,7 @@ Engine *GetEngine() {
     return GetApp()->GetEngine();
 }
 
-Engine::Engine() : m_GameWindow(), m_VertexBatcher() {
+Engine::Engine() : m_GameWindow(), m_VertexBatcher(), m_IResourceMonitor(this) {
 }
 
 Engine::~Engine() {
@@ -52,20 +52,21 @@ void Engine::BeginFrame() {
     m_GameWindow.BeginFrame();
     m_VertexBatcher.BeginFrame();
 
+#if ENGINE_DEBUG
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Engine")) {
-            if (ImGui::MenuItem("Resource Monitor")) {
-            }
-            if (ImGui::MenuItem("Texture Manager Monitor")) {
-            }
-            if (ImGui::MenuItem("Shader Manager Monitor")) {
-            }
-            if (ImGui::MenuItem("Audio Engine Monitor")) {
+            if (ImGui::MenuItem("IResource Monitor")) { // Toggle
+                m_IResourceMonitor.SetShowing(!m_IResourceMonitor.IsShowing());
             }
 
             ImGui::EndMenu();
         }
         ImGui::EndMainMenuBar();
+    }
+#endif
+
+    if (m_IResourceMonitor.IsShowing()) {
+        m_IResourceMonitor.Draw();
     }
 }
 

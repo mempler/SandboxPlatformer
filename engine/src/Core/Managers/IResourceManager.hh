@@ -5,6 +5,9 @@
 #include "Core/Utils/Identifier.hh"
 #include "Core/Utils/Logger.hh"
 
+#include <cstddef>
+#include <iterator>
+
 template <typename TResource>
 class IResourceLoader {
 public:
@@ -44,6 +47,13 @@ public:
 
     bool Has(Identifier const &identifier) {
         return m_umResources.find(identifier) != m_umResources.end();
+    }
+
+    typename std::unordered_map<Identifier, TResource>::iterator begin() {
+        return m_umResources.begin();
+    }
+    typename std::unordered_map<Identifier, TResource>::iterator end() {
+        return m_umResources.end();
     }
 
 protected:
