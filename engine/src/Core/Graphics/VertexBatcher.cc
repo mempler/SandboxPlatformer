@@ -3,7 +3,7 @@
 #include "EASTL/span.h"
 
 #include "Core/Engine.hh"
-#include "Core/Utils/Logger.hh"
+#include "Core/Managers/TextureManager.hh"
 
 static uint32_t g_uMaxQuads = 80000;
 
@@ -43,19 +43,16 @@ VertexBatcher::~VertexBatcher() {
  * Initialize what we need after Engine initialization
  * for example shader manager.
  *****************************************************/
-void VertexBatcher::Init(TextureManager &rTexManager) {
+void VertexBatcher::Init(TextureManager &textureManager) {
     // Initialize uniforms here
     m_hTextureUniform = bgfx::createUniform("u_texture", bgfx::UniformType::Sampler);
 
     // Initialize programs here
-    m_hDefaultProgramHandle = GetEngine()->GetShaderManager().LoadProgram("Default");
+    m_hDefaultProgramHandle = GetEngine()->GetShaderManager().LoadProgram("engine://default");
 
     // Initialize default textures here
-    uint32_t whiteTextureData = 0xffffffff;
-    eastl::span<uint8_t> whiteTextureDataPtr = eastl::span((uint8_t *)&whiteTextureData, 4);
-
-    m_pWhiteTexture = rTexManager.HandOff(
-        Texture2D::LoadRaw("engine://white", 1, 1, bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), whiteTextureDataPtr));
+    m_pWhiteTexture =
+        textureManager.CreateTextureWithColor("engine://white", 1, 1, bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), 0xFFFFFFFF);
 }
 
 /*****************************************************

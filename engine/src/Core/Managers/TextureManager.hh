@@ -1,19 +1,31 @@
 #pragma once
 
+#include "IResourceManager.hh"
+
 #include "Core/Graphics/Texture2D.hh"
 #include "Core/Utils/Identifier.hh"
 
-#include <EASTL/unordered_map.h>
-
-class TextureManager {
+class TextureLoader : public IResourceLoader<Texture2D> {
 public:
-    // file://Path/To/File -> ./Path/To/File
-    Texture2D const *Load(Identifier const &identifier);
+    void Load(Texture2D *pDest, const Identifier &identifier) override {
+        Texture2D::Load(pDest, identifier);
+    }
+};
 
-    Texture2D const *HandOff(Texture2D &&tex);
+class TextureManager : public IResourceManager<Texture2D, TextureLoader> {
+public:
+    Texture2D *CreateTextureWithColor(
+        Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint32_t uColor) {
+        // Return cached texture
+        if (Has(identifier))
+            return Load(identifier);
 
-    void DestroyAll();
+        // Otherwise we create it
+        eastl::span<uint8_t> whiteTextureDataPtr = eastl::span((uint8_t *)&uColor, 4);
 
-private:
-    eastl::unordered_map<Identifier, Texture2D> m_umTextures;
+        Texture2D *resource = CreateEmpty(identifier);
+        Texture2D::LoadRaw(resource, identifier, iWidth, iHeight, eTextureFormat, u64Filters, whiteTextureDataPtr);
+
+        return resource;
+    }
 };

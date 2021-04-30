@@ -63,7 +63,7 @@ public:
      * Initialize what we need after Engine initialization
      * for example shader manager.
      *****************************************************/
-    void Init(TextureManager &rTexManager);
+    void Init(TextureManager &textureManager);
 
     /*****************************************************
      * BeginFrame
@@ -143,7 +143,7 @@ private: // same goes for variables, it'll simply not compile.
     bgfx::FrameBufferHandle m_hScreenFrameBuffer;
 
     // Empty 1x1 white texture, useful for many things
-    const Texture2D *m_pWhiteTexture;
+    Texture2D *m_pWhiteTexture;
 
 private:
     BatchEvent &GetVertexData(const Texture2D *pTexture) {

@@ -11,6 +11,8 @@ set(ENGINE_LIBS
     zlib
     OpenAL
     EASTL
+    bgfx-imgui
+    imgui
 )
 
 file(GLOB_RECURSE ENGINE_SOURCES 

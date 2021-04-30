@@ -23,7 +23,7 @@ public:
      * @param eFlags Window Flags
      *****************************************************/
     explicit GameWindow(
-        const int32_t iWidth = 800, const int32_t iHeight = 600, const char *szTitle = "Sandbox Platformer: Game Window", const Flags eFlags = Flags::None);
+        const int32_t iWidth = 1280, const int32_t iHeight = 720, const char *szTitle = "Sandbox Platformer: Game Window", const Flags eFlags = Flags::None);
 
     /*****************************************************
      * ~GameWindow

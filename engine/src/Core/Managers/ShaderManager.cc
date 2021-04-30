@@ -57,16 +57,16 @@ bgfx::ProgramHandle ShaderManager::LoadProgram(Identifier const &rIdent) {
 #include "Core/Graphics/tempsh/vs_default.vulkan.h"
 
 void ShaderManager::LoadDefaultShaders() {
-    AppendShader("Default", bgfx::RendererType::Direct3D9,   ShaderType::Fragment,  (uint8_t *)fs_default_d3d9,      sizeof(fs_default_d3d9));
-    AppendShader("Default", bgfx::RendererType::Direct3D11,  ShaderType::Fragment,  (uint8_t *)fs_default_d3d11,     sizeof(fs_default_d3d11));
-    AppendShader("Default", bgfx::RendererType::Direct3D12,  ShaderType::Fragment,  (uint8_t *)fs_default_d3d12,     sizeof(fs_default_d3d12));
-    AppendShader("Default", bgfx::RendererType::OpenGL,      ShaderType::Fragment,  (uint8_t *)fs_default_glsl,      sizeof(fs_default_glsl));
-    AppendShader("Default", bgfx::RendererType::Metal,       ShaderType::Fragment,  (uint8_t *)fs_default_metal,     sizeof(fs_default_metal));
-    AppendShader("Default", bgfx::RendererType::Vulkan,      ShaderType::Fragment,  (uint8_t *)fs_default_vulkan,    sizeof(fs_default_vulkan));
-    AppendShader("Default", bgfx::RendererType::Direct3D9,   ShaderType::Vertex,    (uint8_t *)vs_default_d3d9,      sizeof(vs_default_d3d9));
-    AppendShader("Default", bgfx::RendererType::Direct3D11,  ShaderType::Vertex,    (uint8_t *)vs_default_d3d11,     sizeof(vs_default_d3d11));
-    AppendShader("Default", bgfx::RendererType::Direct3D12,  ShaderType::Vertex,    (uint8_t *)vs_default_d3d12,     sizeof(vs_default_d3d12));
-    AppendShader("Default", bgfx::RendererType::OpenGL,      ShaderType::Vertex,    (uint8_t *)vs_default_glsl,      sizeof(vs_default_glsl));
-    AppendShader("Default", bgfx::RendererType::Metal,       ShaderType::Vertex,    (uint8_t *)vs_default_metal,     sizeof(vs_default_metal));
-    AppendShader("Default", bgfx::RendererType::Vulkan,      ShaderType::Vertex,    (uint8_t *)vs_default_vulkan,    sizeof(vs_default_vulkan));
+    AppendShader("engine://default", bgfx::RendererType::Direct3D9, ShaderType::Fragment, (uint8_t *)fs_default_d3d9, sizeof(fs_default_d3d9));
+    AppendShader("engine://default", bgfx::RendererType::Direct3D11, ShaderType::Fragment, (uint8_t *)fs_default_d3d11, sizeof(fs_default_d3d11));
+    AppendShader("engine://default", bgfx::RendererType::Direct3D12, ShaderType::Fragment, (uint8_t *)fs_default_d3d12, sizeof(fs_default_d3d12));
+    AppendShader("engine://default", bgfx::RendererType::OpenGL, ShaderType::Fragment, (uint8_t *)fs_default_glsl, sizeof(fs_default_glsl));
+    AppendShader("engine://default", bgfx::RendererType::Metal, ShaderType::Fragment, (uint8_t *)fs_default_metal, sizeof(fs_default_metal));
+    AppendShader("engine://default", bgfx::RendererType::Vulkan, ShaderType::Fragment, (uint8_t *)fs_default_vulkan, sizeof(fs_default_vulkan));
+    AppendShader("engine://default", bgfx::RendererType::Direct3D9, ShaderType::Vertex, (uint8_t *)vs_default_d3d9, sizeof(vs_default_d3d9));
+    AppendShader("engine://default", bgfx::RendererType::Direct3D11, ShaderType::Vertex, (uint8_t *)vs_default_d3d11, sizeof(vs_default_d3d11));
+    AppendShader("engine://default", bgfx::RendererType::Direct3D12, ShaderType::Vertex, (uint8_t *)vs_default_d3d12, sizeof(vs_default_d3d12));
+    AppendShader("engine://default", bgfx::RendererType::OpenGL, ShaderType::Vertex, (uint8_t *)vs_default_glsl, sizeof(vs_default_glsl));
+    AppendShader("engine://default", bgfx::RendererType::Metal, ShaderType::Vertex, (uint8_t *)vs_default_metal, sizeof(vs_default_metal));
+    AppendShader("engine://default", bgfx::RendererType::Vulkan, ShaderType::Vertex, (uint8_t *)vs_default_vulkan, sizeof(vs_default_vulkan));
 }

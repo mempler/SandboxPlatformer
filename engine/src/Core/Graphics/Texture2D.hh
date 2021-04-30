@@ -22,7 +22,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Load(Identifier const &identifier);
+    static void Load(Texture2D *pDest, Identifier const &identifier);
 
     /*****************************************************
      * Load
@@ -34,7 +34,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Load(Identifier const &identifier, eastl::span<uint8_t> const &vData);
+    static void Load(Texture2D *pDest, Identifier const &identifier, eastl::span<uint8_t> const &vData);
 
     /*****************************************************
      * LoadRaw
@@ -50,8 +50,8 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D LoadRaw(
-        Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, eastl::span<uint8_t> const &vData);
+    static void LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters,
+        eastl::span<uint8_t> const &vData);
 
     /*****************************************************
      * Create
@@ -66,7 +66,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static Texture2D Create(Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat);
+    static void Create(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat);
 
     /*****************************************************
      * Modify

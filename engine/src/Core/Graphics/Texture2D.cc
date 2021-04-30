@@ -17,8 +17,6 @@ static void DeleteImageContainer(void *vpPtr, void *vpUserData) {
 }
 
 Texture2D ::~Texture2D() {
-    LOG_INFO("Destroying Texture");
-
     // Destroy GPU Texture Handle
     if (bgfx::isValid(this->m_thHandle))
         bgfx::destroy(this->m_thHandle);
@@ -31,13 +29,16 @@ Texture2D ::~Texture2D() {
  *
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-Texture2D Texture2D::Load(Identifier const &identifier) {
+void Texture2D::Load(Texture2D *pDest, Identifier const &identifier) {
+    if (pDest == nullptr)
+        return;
+
     std::vector<uint8_t> data;
     if (identifier.Protocol() == "file") {
         data = FileSystem::ReadBinaryFile(identifier.Path().data()); // what the hell
     }
 
-    return Texture2D::Load(identifier, data);
+    Texture2D::Load(pDest, identifier, data);
 }
 
 /*****************************************************
@@ -47,36 +48,36 @@ Texture2D Texture2D::Load(Identifier const &identifier) {
  *
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-Texture2D Texture2D::Load(Identifier const &identifier, eastl::span<uint8_t> const &vData) {
+void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, tcb::span<uint8_t> const &vData) {
+    if (pDest == nullptr)
+        return;
+
     LOG_INFO("Loading Texture2D <%s>", identifier.Raw().data());
 
     // Parse the input image
     auto *imageContainer = bimg::imageParse(bgfx::g_allocator, vData.data(), vData.size());
 
     if (imageContainer == nullptr)
-        return {}; // Return invalid texture
+        return;
 
     const auto *const pixelData = bgfx::makeRef(imageContainer->m_data, imageContainer->m_size, DeleteImageContainer, imageContainer);
 
     // Make sure we have a valid texture
     if (!bgfx::isTextureValid(0, false, imageContainer->m_numLayers, (bgfx::TextureFormat::Enum)imageContainer->m_format, bgfx::TextureFormat::RGBA4))
-        return {};
+        return;
 
-    Texture2D texture;
-    texture.m_Identifier = identifier;
-    texture.m_thHandle = bgfx::createTexture2D((uint16_t)imageContainer->m_width, (uint16_t)imageContainer->m_height, 1 < imageContainer->m_numMips,
+    pDest->m_Identifier = identifier;
+    pDest->m_thHandle = bgfx::createTexture2D((uint16_t)imageContainer->m_width, (uint16_t)imageContainer->m_height, 1 < imageContainer->m_numMips,
         imageContainer->m_numLayers, (bgfx::TextureFormat::Enum)imageContainer->m_format, bgfx::TextureFormat::RGBA4, pixelData);
 
-    texture.m_iWidth = imageContainer->m_width;
-    texture.m_iHeight = imageContainer->m_height;
+    pDest->m_iWidth = imageContainer->m_width;
+    pDest->m_iHeight = imageContainer->m_height;
 
-    if (!texture.IsValid())
-        return texture; // This wont really matter tbh
+    if (!pDest->IsValid())
+        return;
 
-    eastl::string bgfxName = identifier.Raw();
-    bgfx::setName(texture.m_thHandle, bgfxName.data(), bgfxName.length());
-
-    return texture;
+    std::string bgfxName = identifier.Raw();
+    bgfx::setName(pDest->m_thHandle, bgfxName.data(), bgfxName.length());
 }
 
 /*****************************************************
@@ -86,25 +87,22 @@ Texture2D Texture2D::Load(Identifier const &identifier, eastl::span<uint8_t> con
  * 
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-Texture2D Texture2D::LoadRaw(
-    Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, eastl::span<uint8_t> const &vData) {
+void Texture2D::LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters,
+    tcb::span<uint8_t> const &vData) {
     LOG_INFO("Loading Raw Texture2D <%s>(%d, %d)", identifier.Raw().data(), iWidth, iHeight);
     const auto *const pixelData = bgfx::copy(vData.data(), vData.size()); // dont use makeRef dont use makeRef dont use makeRef dont use makeRef
 
-    Texture2D texture;
-    texture.m_Identifier = identifier;
-    texture.m_thHandle = bgfx::createTexture2D((uint16_t)iWidth, (uint16_t)iHeight, false, 1, eTextureFormat, u64Filters, pixelData);
+    pDest->m_Identifier = identifier;
+    pDest->m_thHandle = bgfx::createTexture2D((uint16_t)iWidth, (uint16_t)iHeight, false, 1, eTextureFormat, u64Filters, pixelData);
 
-    texture.m_iWidth = iWidth;
-    texture.m_iHeight = iHeight;
+    pDest->m_iWidth = iWidth;
+    pDest->m_iHeight = iHeight;
 
-    if (!texture.IsValid())
-        return std::move(texture); // Doesn't really matter
+    if (!pDest->IsValid())
+        return;
 
-    eastl::string bgfxName = identifier.Raw();
-    bgfx::setName(texture.m_thHandle, bgfxName.data(), bgfxName.length());
-
-    return std::move(texture);
+    std::string bgfxName = identifier.Raw();
+    bgfx::setName(pDest->m_thHandle, bgfxName.data(), bgfxName.length());
 }
 
 /*****************************************************
@@ -114,21 +112,18 @@ Texture2D Texture2D::LoadRaw(
  *
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-Texture2D Texture2D::Create(Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat) {
-    Texture2D texture;
-    texture.m_Identifier = identifier;
-    texture.m_thHandle = bgfx::createTexture2D(iWidth, iHeight, false, 1, eTextureFormat, eTextureFormat);
+void Texture2D::Create(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat) {
+    pDest->m_Identifier = identifier;
+    pDest->m_thHandle = bgfx::createTexture2D(iWidth, iHeight, false, 1, eTextureFormat, eTextureFormat);
 
-    if (!texture.IsValid())
-        return texture; // Doesn't really matter lol
+    if (!pDest->IsValid())
+        return;
 
-    texture.m_iWidth = iWidth;
-    texture.m_iHeight = iHeight;
+    pDest->m_iWidth = iWidth;
+    pDest->m_iHeight = iHeight;
 
-    eastl::string bgfxName = identifier.Raw();
-    bgfx::setName(texture.m_thHandle, bgfxName.data(), (uint32_t)bgfxName.length());
-
-    return texture;
+    std::string bgfxName = identifier.Raw();
+    bgfx::setName(pDest->m_thHandle, bgfxName.data(), (uint32_t)bgfxName.length());
 }
 
 /*****************************************************
@@ -137,7 +132,7 @@ Texture2D Texture2D::Create(Identifier const &identifier, int32_t iWidth, int32_
  * Modifies a texture at Position
  *
  *****************************************************/
-void Texture2D::Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, eastl::span<uint8_t> const &vData) {
+void Texture2D::Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, tcb::span<uint8_t> const &vData) {
     if (iWidth == 0 || iHeight == 0 || vData.size() == 0)
         return;
 
