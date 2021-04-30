@@ -46,7 +46,7 @@ void VertexBatcher::Init(TextureManager &textureManager) {
     m_hTextureUniform = bgfx::createUniform("u_texture", bgfx::UniformType::Sampler);
 
     // Initialize programs here
-    m_hDefaultProgramHandle = GetEngine()->GetShaderManager().LoadProgram("Default");
+    m_hDefaultProgramHandle = GetEngine()->GetShaderManager().LoadProgram("engine://default");
 
     // Initialize default textures here
     m_pWhiteTexture =

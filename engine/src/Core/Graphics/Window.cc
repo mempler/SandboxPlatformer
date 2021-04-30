@@ -84,7 +84,7 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
     m_iWidth = static_cast<uint32_t>(displayMode.w);
     m_iHeight = static_cast<uint32_t>(displayMode.h);
 
-    bgfx::reset(m_iWidth, m_iHeight, BGFX_RESET_NONE);
+    bgfx::reset(m_iWidth, m_iHeight, BGFX_RESET_MSAA_X16);
     bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 #endif
 
