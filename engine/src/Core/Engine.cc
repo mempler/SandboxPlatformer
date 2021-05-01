@@ -41,7 +41,7 @@ Engine *GetEngine() {
     return GetApp()->GetEngine();
 }
 
-Engine::Engine() : m_GameWindow(), m_VertexBatcher(), m_IResourceMonitor(this), m_GameView(this) {
+Engine::Engine() : m_GameWindow(), m_VertexBatcher(), m_IResourceMonitor(this), m_GameView(this), m_Profiler(this) {
 }
 
 Engine::~Engine() {
@@ -76,6 +76,7 @@ void Engine::Init() {
     // Show by default
     m_IResourceMonitor.SetShowing(true);
     m_GameView.SetShowing(true);
+    m_Profiler.SetShowing(true);
 }
 
 void Engine::BeginFrame() {
@@ -120,21 +121,25 @@ void Engine::BeginFrame() {
                     m_GameView.Draw(); // Draw one more time
                 }
 
+                if (ImGui::MenuItem("Profiler")) { // Toggle
+                    m_Profiler.SetShowing(!m_Profiler.IsShowing());
+                }
+
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
         }
 
         if (m_IResourceMonitor.IsShowing()) {
-            ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
-
             m_IResourceMonitor.Draw();
         }
 
         if (m_GameView.IsShowing()) {
-            ImGui::SetNextWindowDockID(dockspace_id, ImGuiCond_FirstUseEver);
-
             m_GameView.Draw();
+        }
+
+        if (m_Profiler.IsShowing()) {
+            m_Profiler.Draw();
         }
 
         ImGui::End();

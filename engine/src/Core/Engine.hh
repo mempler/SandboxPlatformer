@@ -5,6 +5,7 @@
 #include "Core/Audio/AudioSystem.hh"
 #include "Core/Debug/GameView.hh"
 #include "Core/Debug/IResourceMonitor.hh"
+#include "Core/Debug/Profiler.hh"
 #include "Core/Graphics/VertexBatcher.hh"
 #include "Core/Graphics/Window.hh"
 #include "Core/Managers/ShaderManager.hh"
@@ -38,10 +39,11 @@ private:
     AudioSystem m_AudioSystem;
 
     // Debug Utils
-    bool m_bShowDebugUtils = false;
+    bool m_bShowDebugUtils = true;
 
     GameView m_GameView;
     IResourceMonitor m_IResourceMonitor;
+    Profiler m_Profiler;
 
 private:
 };

@@ -107,5 +107,6 @@ add_library(imgui STATIC imgui/imgui_demo.cpp imgui/imgui_draw.cpp
     target_link_libraries(imgui PRIVATE SDL2-static)
 
 add_subdirectory(bgfx-imgui)
+add_subdirectory(implot)
 
 ###############################################################################################
