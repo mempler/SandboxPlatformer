@@ -18,14 +18,30 @@ Engine *GetEngine() {
     return GetApp()->GetEngine();
 }
 
-Engine::Engine() : m_GameWindow(), m_VertexBatcher(), m_IResourceMonitor(this), m_GameView(this), m_Profiler(this) {
+// Turn off formatting, there is some weird shit going on
+// clang-format off
+Engine::Engine() 
+  : m_GameWindow(), 
+    m_Camera({ 0.f, 0.f }, { (float)m_GameWindow.Width(), (float)m_GameWindow.Height() }),
+    m_VertexBatcher(), 
+    m_IResourceMonitor(this), 
+    m_GameView(this),
+    m_Profiler(this) {
+
+        m_Camera.SetUniformTransform(0);
+
 }
+// clang-format on
 
 Engine::~Engine() {
 }
 
 GameWindow &Engine::GetWindow() {
     return m_GameWindow;
+}
+
+Camera2D &Engine::GetCamera() {
+    return m_Camera;
 }
 
 VertexBatcher &Engine::GetBatcher() {

@@ -4,6 +4,8 @@
 #include "imgui_impl_sdl.h"
 #include "implot.h"
 
+#include "Core/Engine.hh"
+
 GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *szTitle, const Flags eFlags) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
         LOG_ERROR("Failed to initialize SDL2!");
@@ -72,8 +74,7 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
     LOG_INFO("BGFX Initialized...");
 
     // Setup our drawing surface
-    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x00000000, 1.0f, 0);
-    // alpha must be 0, we will apply framebuffers onto it ------------^^
+    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x000000FF, 1.0f, 0);
 
     bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
@@ -88,13 +89,6 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
     bgfx::reset(m_iWidth, m_iHeight, BGFX_RESET_MSAA_X16);
     bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 #endif
-
-    // Initial Projection
-    m_m4View = glm::mat4(1.0f);
-    m_m4Projection = glm::ortho(0.f, (float)m_iWidth, (float)m_iHeight, 0.f, 0.1f, 1000.f);
-    m_m4Projection[3].z = 1.f;
-
-    bgfx::setViewTransform(0, glm::value_ptr(m_m4View), glm::value_ptr(m_m4Projection));
 
 #if ENGINE_DEBUG
     ImGui::CreateContext();
@@ -172,14 +166,14 @@ double GameWindow::BeginFrame() {
                     m_iWidth = displayMode.w;
                     m_iHeight = displayMode.h;
 
+                    // TODO!!! Seriously will we do this here? An event system would be cool idea
                     // Update Projection Matrix
-                    m_m4Projection = glm::ortho(0.f, (float)m_iWidth, (float)m_iHeight, 0.f, 0.1f, 1000.f);
-                    m_m4Projection[3].z = 1.f;
+                    GetEngine()->GetCamera().SetScale({ (float)m_iWidth, (float)m_iHeight });
 
                     bgfx::reset(m_iWidth, m_iHeight, BGFX_RESET_NONE);
                     bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
-                    bgfx::setViewTransform(0, glm::value_ptr(m_m4View), glm::value_ptr(m_m4Projection));
+                    GetEngine()->GetCamera().SetUniformTransform(0);
                 }
                 break;
             default: break;
