@@ -2,6 +2,7 @@
 
 #include "imgui_impl_bgfx.h"
 #include "imgui_impl_sdl.h"
+#include "implot.h"
 
 GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *szTitle, const Flags eFlags) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
@@ -97,6 +98,8 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
 
 #if ENGINE_DEBUG
     ImGui::CreateContext();
+    ImPlot::CreateContext();
+
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls

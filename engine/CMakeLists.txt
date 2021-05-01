@@ -12,6 +12,7 @@ set(ENGINE_LIBS
     OpenAL
     bgfx-imgui
     imgui
+    implot
 )
 
 file(GLOB_RECURSE ENGINE_SOURCES 
