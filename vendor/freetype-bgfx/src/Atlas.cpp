@@ -1,6 +1,6 @@
-#include "texture-atlas.h"
+#include "Atlas.h"
 
-#include "ftbgfx-utils.h"
+#include "Utils.h"
 
 #include <assert.h>
 #include <limits.h>
