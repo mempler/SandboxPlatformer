@@ -26,10 +26,9 @@ Engine::Engine()
     m_VertexBatcher(), 
     m_IResourceMonitor(this), 
     m_GameView(this),
-    m_Profiler(this) {
-
-        m_Camera.SetUniformTransform(0);
-
+    m_Profiler(this)
+{
+    m_Camera.SetUniformTransform(0);
 }
 // clang-format on
 
@@ -63,13 +62,15 @@ AudioSystem &Engine::GetAudioSystem() {
 void Engine::Init() {
     m_ShaderManager.LoadDefaultShaders();
     m_AudioSystem.Init();
+    m_Camera.Init();
+    m_InputManager.Init();
 
     m_VertexBatcher.Init(m_TextureManager);
 
     // Show by default
     m_IResourceMonitor.SetShowing(true);
     m_GameView.SetShowing(true);
-    m_Profiler.SetShowing(true);
+    m_Profiler.SetShowing(false);
 }
 
 void Engine::BeginFrame() {

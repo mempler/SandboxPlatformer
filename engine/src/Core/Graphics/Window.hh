@@ -2,8 +2,12 @@
 
 #include "pch.hh"
 
+#include "signals.hpp"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <SDL_events.h>
 
 class ENGINE_EXPORT GameWindow {
 public:
@@ -81,6 +85,10 @@ public:
     const glm::mat4 &ProjectionMatrix() const {
         return m_m4Projection;
     }
+
+    // Yes, signals are public
+    signals::signal<void(GameWindow *, SDL_Event &)> OnSDL2Event;
+    signals::signal<void(GameWindow *, uint32_t, uint32_t)> OnResize;
 
 private:
     SDL_Window *m_SDLWindow = nullptr;

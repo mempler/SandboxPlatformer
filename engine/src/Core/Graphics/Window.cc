@@ -152,6 +152,7 @@ double GameWindow::BeginFrame() {
         if (ImGui_ImplSDL2_ProcessEvent(&e))
             continue;
 #endif
+        OnSDL2Event(this, e);
 
         switch (e.type) {
             // Tell our window that we shall exit now
@@ -166,9 +167,7 @@ double GameWindow::BeginFrame() {
                     m_iWidth = displayMode.w;
                     m_iHeight = displayMode.h;
 
-                    // TODO!!! Seriously will we do this here? An event system would be cool idea
-                    // Update Projection Matrix
-                    GetEngine()->GetCamera().SetScale({ (float)m_iWidth, (float)m_iHeight });
+                    OnResize(this, m_iWidth, m_iHeight);
 
                     bgfx::reset(m_iWidth, m_iHeight, BGFX_RESET_NONE);
                     bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);

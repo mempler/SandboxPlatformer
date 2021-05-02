@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Graphics/Window.hh"
+
 #include <bgfx/bgfx.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -7,6 +9,8 @@
 class Camera2D {
 public:
     Camera2D(const glm::vec2 &v2Pos, const glm::vec2 &v2Scale);
+
+    void Init();
 
     // Calculate camera projection and view.
     // Should not be spammed for each frame. Eats CPU a lot.
@@ -63,4 +67,7 @@ private:
 
     float m_fRotation{};
     float m_fZoom{};
+
+private:
+    void OnResize(GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight);
 };

@@ -2,7 +2,20 @@
 
 #include "Camera2D.hh"
 
+#include "Core/Engine.hh"
+
 #include <glm/gtc/matrix_transform.hpp>
+
+#include <functional>
+
+Camera2D::Camera2D(const glm::vec2 &v2Pos, const glm::vec2 &v2Scale) : m_v2Pos(v2Pos), m_v2Scale(v2Scale) {
+    CalculateMetrices();
+}
+
+void Camera2D::Init() {
+    // I wonder what would happen if this Camera gets destroyed...
+    GetEngine()->GetWindow().OnResize.connect<&Camera2D::OnResize>(this);
+}
 
 static glm::mat4 CalculateView(const glm::vec2 &v2Pos, float fRotation) {
     return glm::inverse(
@@ -13,10 +26,6 @@ static glm::mat4 CalculateProjection(const glm::vec2 &v2Scale) {
     glm::mat4 proj = glm::ortho(0.0f, v2Scale.x, v2Scale.y, .0f, .1f, 1000.f);
     proj[3].z = 1.f;
     return proj;
-}
-
-Camera2D::Camera2D(const glm::vec2 &v2Pos, const glm::vec2 &v2Scale) : m_v2Pos(v2Pos), m_v2Scale(v2Scale) {
-    CalculateMetrices();
 }
 
 void Camera2D::CalculateMetrices() {
@@ -40,4 +49,9 @@ void Camera2D::SetZoom(float fPower) {
 
 void Camera2D::SetUniformTransform(bgfx::ViewId vViewID) {
     bgfx::setViewTransform(vViewID, glm::value_ptr(m_m4View), glm::value_ptr(m_m4Projection));
+}
+
+void Camera2D::OnResize(GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight) {
+    // Update Projection Matrix
+    SetScale({ iWidth, iHeight });
 }

@@ -39,7 +39,7 @@ private:
     glm::vec3 m_v3AudioPosition;
 };
 
-BaseApp *app = 0;
+static BaseApp *app = nullptr;
 
 int main() {
     app = new SandboxGame;

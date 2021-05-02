@@ -2,6 +2,8 @@
 
 #include <unordered_map>
 
+#include "Core/Graphics/Window.hh"
+
 #include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
@@ -163,6 +165,8 @@ enum class MouseButton {
 
 class InputManager {
 public:
+    void Init();
+
     bool IsKeyDown(Key eKey) {
         return m_umKeyState.at(eKey) == ButtonState::Pressed;
     }
@@ -191,8 +195,6 @@ public:
         return m_v4MouseMoveDelta;
     }
 
-    void PumpSDL2Event(SDL_Event &pEvent);
-
 private:
     std::unordered_map<MouseButton, ButtonState> m_umMouseButtonState;
     std::unordered_map<Key, ButtonState> m_umKeyState;
@@ -201,4 +203,7 @@ private:
     glm::vec2 m_v4MouseMoveDelta;
 
     uint8_t m_iKeyMods;
+
+private:
+    void PumpSDL2Event(GameWindow *pWindow, SDL_Event &event);
 };

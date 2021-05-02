@@ -1,8 +1,14 @@
 #include "InputManager.hh"
 
-void InputManager::PumpSDL2Event(SDL_Event &pEvent) {
-    if (pEvent.type == SDL_KEYDOWN || pEvent.type == SDL_KEYUP) {
-        auto keyEvent = pEvent.key.keysym;
+#include "Core/Engine.hh"
+
+void InputManager::Init() {
+    GetEngine()->GetWindow().OnSDL2Event.connect<&InputManager::PumpSDL2Event>(this);
+}
+
+void InputManager::PumpSDL2Event(GameWindow *pWindow, SDL_Event &event) {
+    if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
+        auto keyEvent = event.key.keysym;
 
         uint8_t keyMod = KeyMod::None;
 
@@ -49,40 +55,40 @@ void InputManager::PumpSDL2Event(SDL_Event &pEvent) {
         m_iKeyMods = (KeyMod)keyMod;
     }
 
-    if (pEvent.type == SDL_KEYDOWN) {
-        auto keyEvent = pEvent.key.keysym;
+    if (event.type == SDL_KEYDOWN) {
+        auto keyEvent = event.key.keysym;
 
         m_umKeyState.insert_or_assign((Key)SDL_SCANCODE_TO_KEYCODE(keyEvent.scancode), ButtonState::Pressed);
     }
 
-    if (pEvent.type == SDL_KEYUP) {
-        auto keyEvent = pEvent.key.keysym;
+    if (event.type == SDL_KEYUP) {
+        auto keyEvent = event.key.keysym;
 
         m_umKeyState.insert_or_assign((Key)SDL_SCANCODE_TO_KEYCODE(keyEvent.scancode), ButtonState::Released);
     }
 
-    if (pEvent.type == SDL_MOUSEMOTION) {
-        auto motionEvent = pEvent.motion;
+    if (event.type == SDL_MOUSEMOTION) {
+        auto motionEvent = event.motion;
 
         m_v4MouseMoveDelta.x = motionEvent.x;
         m_v4MouseMoveDelta.y = motionEvent.y;
     }
 
-    if (pEvent.type == SDL_MOUSEWHEEL) {
-        auto scrollEvent = pEvent.wheel;
+    if (event.type == SDL_MOUSEWHEEL) {
+        auto scrollEvent = event.wheel;
 
         m_v4MouseScrollAxis.x = scrollEvent.x;
         m_v4MouseScrollAxis.y = scrollEvent.y;
     }
 
-    if (pEvent.type == SDL_MOUSEBUTTONDOWN) {
-        auto mouseButtonEvent = pEvent.button;
+    if (event.type == SDL_MOUSEBUTTONDOWN) {
+        auto mouseButtonEvent = event.button;
 
         m_umMouseButtonState.insert_or_assign((MouseButton)(mouseButtonEvent.button + 1), ButtonState::Pressed);
     }
 
-    if (pEvent.type == SDL_MOUSEBUTTONUP) {
-        auto mouseButtonEvent = pEvent.button;
+    if (event.type == SDL_MOUSEBUTTONUP) {
+        auto mouseButtonEvent = event.button;
 
         m_umMouseButtonState.insert_or_assign((MouseButton)(mouseButtonEvent.button + 1), ButtonState::Released);
     }
