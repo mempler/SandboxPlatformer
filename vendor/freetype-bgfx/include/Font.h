@@ -10,6 +10,7 @@
 
 namespace ftbgfx {
     enum RenderMode { RENDER_NORMAL, RENDER_OUTLINE_EDGE, RENDER_OUTLINE_POSITIVE, RENDER_OUTLINE_NEGATIVE, RENDER_SIGNED_DISTANCE_FIELD };
+    enum { TEXTURE_FONT_FILE, TEXTURE_FONT_MEMORY };
 
     struct Kerning {
         /**
@@ -27,22 +28,22 @@ namespace ftbgfx {
         /**
          * Unicode codepoint this glyph represents in UTF-32 LE encoding.
          */
-        uint32_t codepoint;
+        uint32_t codepoint = -1;
 
         /**
          * Glyph's width in pixels.
          */
-        size_t width;
+        size_t width = 0;
 
         /**
          * Glyph's height in pixels.
          */
-        size_t height;
+        size_t height = 0;
 
         /**
          * Glyph's left bearing expressed in integer pixels.
          */
-        int offset_x;
+        int offset_x = 0;
 
         /**
          * Glyphs's top bearing expressed in integer pixels.
@@ -50,41 +51,41 @@ namespace ftbgfx {
          * Remember that this is the distance from the baseline to the top-most
          * glyph scanline, upwards y coordinates being positive.
          */
-        int offset_y;
+        int offset_y = 0;
 
         /**
          * For horizontal text layouts, this is the horizontal distance (in
          * fractional pixels) used to increment the pen position when the glyph is
          * drawn as part of a string of text.
          */
-        float advance_x;
+        float advance_x = 0;
 
         /**
          * For vertical text layouts, this is the vertical distance (in fractional
          * pixels) used to increment the pen position when the glyph is drawn as
          * part of a string of text.
          */
-        float advance_y;
+        float advance_y = 0.f;
 
         /**
          * First normalized texture coordinate (x) of top-left corner
          */
-        float s0;
+        float s0 = 0.f;
 
         /**
          * Second normalized texture coordinate (y) of top-left corner
          */
-        float t0;
+        float t0 = 0.f;
 
         /**
          * First normalized texture coordinate (x) of bottom-right corner
          */
-        float s1;
+        float s1 = 0.f;
 
         /**
          * Second normalized texture coordinate (y) of bottom-right corner
          */
-        float t1;
+        float t1 = 0.f;
 
         /**
          * A vector of kerning pairs relative to this glyph.
@@ -94,12 +95,12 @@ namespace ftbgfx {
         /**
          * Mode this glyph was rendered
          */
-        RenderMode rendermode;
+        RenderMode rendermode = RenderMode::RENDER_NORMAL;
 
         /**
          * Glyph outline thickness
          */
-        float outline_thickness;
+        float outline_thickness = 0.f;
     };
 
     class Font {
@@ -110,7 +111,7 @@ namespace ftbgfx {
 
         Glyph *GetGlyph(const char *codepoint);
         Glyph *FindGlyph(const char *codepoint);
-        int LoadGlyph(const char *codepoint);
+        bool LoadGlyph(const char *codepoint);
         size_t LoadGlyphs(const char *codepoints);
 
         void EnlargeAtlas(size_t newWidth, size_t newHeight);
@@ -124,10 +125,7 @@ namespace ftbgfx {
         /**
          * font location
          */
-        enum {
-            TEXTURE_FONT_FILE = 0,
-            TEXTURE_FONT_MEMORY,
-        } m_location;
+        int m_location = TEXTURE_FONT_FILE;
 
         union {
             /**

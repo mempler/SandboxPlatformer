@@ -54,10 +54,9 @@ namespace ftbgfx {
          */
         void Clear();
 
-    private:
         int Fits(size_t idx, size_t width, size_t height);
         void Merge();
-    private:
+        
         /**
         * Allocated nodes
         */
