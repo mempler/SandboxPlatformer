@@ -5,9 +5,8 @@
 #include "Core/Graphics/Texture2D.hh"
 #include "Core/Managers/TextureManager.hh"
 
+#include <EASTL/vector.h>
 #include <glm/glm.hpp>
-
-#include <vector>
 
 // The idea behind using glm functions:
 //
@@ -105,7 +104,7 @@ public:
      * @param v4UV Texture coordinates(x, y, w, h).
      * @param v4Color Color, use [0, 1].
      *****************************************************/
-    void Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
+    void Submit(const Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
 
     /*****************************************************
      * Submit
@@ -116,7 +115,7 @@ public:
      * @param m4Transform Matrix transformation of rectangle to be drawn.
      * @param v4Color Color, use [0, 1].
      *****************************************************/
-    void SubmitRectangle(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
+    void SubmitRectangle(const Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
 
 private: // Interestingly, we cannot define this bellow the function bellow, GCC/CLANG doesn't like that on linux.
     struct VertexInfo {
@@ -126,12 +125,12 @@ private: // Interestingly, we cannot define this bellow the function bellow, GCC
     };
 
     struct BatchEvent {
-        std::vector<VertexInfo> vertices{};
+        eastl::vector<VertexInfo> vertices{};
         uint32_t indexes = 0;
     };
 
 private: // same goes for variables, it'll simply not compile.
-    std::vector<std::pair<Texture2D *, BatchEvent>> m_vBatchEvents{};
+    eastl::vector<eastl::pair<const Texture2D *, BatchEvent>> m_vBatchEvents{};
 
     bgfx::VertexLayout m_vlDefaultLayout;
     bgfx::IndexBufferHandle m_hIndexBufferHandle;
@@ -147,12 +146,12 @@ private: // same goes for variables, it'll simply not compile.
     Texture2D *m_pWhiteTexture;
 
 private:
-    BatchEvent &GetVertexData(Texture2D *pTexture) {
+    BatchEvent &GetVertexData(const Texture2D *pTexture) {
         for (auto &&t : m_vBatchEvents)
             if (t.first == pTexture)
                 return t.second;
 
-        m_vBatchEvents.push_back(std::make_pair(pTexture, BatchEvent{}));
+        m_vBatchEvents.push_back(eastl::make_pair(pTexture, BatchEvent{}));
 
         return m_vBatchEvents.back().second;
     }

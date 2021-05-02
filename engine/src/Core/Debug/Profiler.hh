@@ -6,7 +6,7 @@
 
 #include "bgfx/bgfx.h"
 
-#include <array>
+#include <EASTL/array.h>
 
 class Profiler : public IDebugUtil {
 public:
@@ -19,7 +19,7 @@ private:
     Timer timer;
 
     float m_fHighestFPS = 0;
-    std::array<float, 60> m_vFrames{}; // Keep track of 300 draw calls
+    eastl::array<float, 60> m_vFrames{}; // Keep track of 300 draw calls
 
     bgfx::FrameBufferHandle m_hFrameBuffer = BGFX_INVALID_HANDLE;
 };

@@ -9,7 +9,7 @@
 
 #include "glm/fwd.hpp"
 
-#include <vector>
+#include <EASTL/vector.h>
 
 class AudioChannel {
 public:
@@ -25,5 +25,5 @@ private:
 
     float m_fVolume = 1.0f;
 
-    std::vector<Audio> m_vLinkedAudio;
+    eastl::vector<Audio> m_vLinkedAudio;
 };

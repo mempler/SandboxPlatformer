@@ -4,10 +4,8 @@
 
 #include "WavAudioLoader.hh"
 
-#include <memory>
-
 namespace AudioLoader {
-    AudioDescriptor LoadAudio(AudioLoaderType eType, std::vector<uint8_t> const &vData) {
+    AudioDescriptor LoadAudio(AudioLoaderType eType, eastl::span<uint8_t> const &vData) {
         switch (eType) {
             case AudioLoaderType::WAV: {
                 WavAudioLoader loader;

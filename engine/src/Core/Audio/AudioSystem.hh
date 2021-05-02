@@ -7,6 +7,8 @@
 #include "Core/Audio/AudioChannel.hh"
 #include "Core/Utils/Identifier.hh"
 
+#include <EASTL/vector.h>
+
 class AudioSystem {
 public:
     ~AudioSystem();
@@ -19,7 +21,7 @@ public:
     void Init();
 
 private:
-    std::vector<AudioChannel> m_vAudioChannels;
+    eastl::vector<AudioChannel> m_vAudioChannels;
 
     ALCdevice *m_alDevice;   // Active Audio Device
     ALCcontext *m_alContext; // Active OpenAL Context (once per thread)

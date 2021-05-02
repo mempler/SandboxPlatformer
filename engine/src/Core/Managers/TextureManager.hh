@@ -21,7 +21,7 @@ public:
             return Load(identifier);
 
         // Otherwise we create it
-        tcb::span<uint8_t> whiteTextureDataPtr = tcb::span((uint8_t *)&uColor, 4);
+        eastl::span<uint8_t> whiteTextureDataPtr = eastl::span((uint8_t *)&uColor, 4);
 
         Texture2D *resource = CreateEmpty(identifier);
         Texture2D::LoadRaw(resource, identifier, iWidth, iHeight, eTextureFormat, u64Filters, whiteTextureDataPtr);

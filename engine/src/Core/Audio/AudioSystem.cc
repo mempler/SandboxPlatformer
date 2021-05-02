@@ -59,11 +59,11 @@ Audio *AudioSystem::LoadStereoAudio(AudioChannel *pChannel, Identifier const &rI
     AudioLoader::AudioLoaderType loaderTypeLeft;
     AudioLoader::AudioLoaderType loaderTypeRight;
 
-    if (FileSystem::HasExtension(rIdentLeft.Path(), "wav")) {
+    if (rIdentLeft.Path().ends_with(".wav")) {
         loaderTypeLeft = AudioLoader::AudioLoaderType::WAV;
     }
 
-    if (FileSystem::HasExtension(rIdentRight.Path(), "wav")) {
+    if (rIdentRight.Path().ends_with(".wav")) {
         loaderTypeRight = AudioLoader::AudioLoaderType::WAV;
     }
 
@@ -77,11 +77,17 @@ Audio *AudioSystem::LoadStereoAudio(AudioChannel *pChannel, Identifier const &rI
     AudioDescriptor descRight;
 
     if (rIdentLeft.Protocol() == "file") {
-        descLeft = AudioLoader::LoadAudio(loaderTypeLeft, FileSystem::ReadBinaryFile(rIdentLeft.Path()));
+        auto data = FileSystem::ReadBinaryFile(rIdentLeft.Path().data());
+        auto eastl_data = eastl::span(data.data(), data.size());
+
+        descLeft = AudioLoader::LoadAudio(loaderTypeLeft, eastl_data);
     }
 
     if (rIdentRight.Protocol() == "file") {
-        descRight = AudioLoader::LoadAudio(loaderTypeRight, FileSystem::ReadBinaryFile(rIdentRight.Path()));
+        auto data = FileSystem::ReadBinaryFile(rIdentRight.Path().data());
+        auto eastl_data = eastl::span(data.data(), data.size());
+
+        descRight = AudioLoader::LoadAudio(loaderTypeRight, eastl_data);
     }
 
     {

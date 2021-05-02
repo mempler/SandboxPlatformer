@@ -4,9 +4,9 @@
 
 #include "Platform.hh"
 
+#include <EASTL/span.h>
+#include <EASTL/string_view.h>
 #include <bgfx/bgfx.h>
-
-#include <span.hpp>
 
 // Low level texture wrapper
 class ENGINE_EXPORT Texture2D {
@@ -34,7 +34,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static void Load(Texture2D *pDest, Identifier const &identifier, tcb::span<uint8_t> const &vData);
+    static void Load(Texture2D *pDest, Identifier const &identifier, eastl::span<uint8_t> const &vData);
 
     /*****************************************************
      * LoadRaw
@@ -51,7 +51,7 @@ public:
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
     static void LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters,
-        tcb::span<uint8_t> const &vData);
+        eastl::span<uint8_t> const &vData);
 
     /*****************************************************
      * Create
@@ -80,7 +80,7 @@ public:
      * @param eTextureFormat Texture Format
      * @param vData Readonly chunk of pixel data that will be copied onto this texture.
      *****************************************************/
-    void Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, tcb::span<uint8_t> const &vData);
+    void Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, eastl::span<uint8_t> const &vData);
 
 public:
     /*****************************************************

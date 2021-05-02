@@ -4,5 +4,5 @@
 
 class WavAudioLoader : public AudioLoader::BaseAudioLoader {
 public:
-    AudioDescriptor LoadBinary(std::vector<uint8_t> const &vData) override;
+    AudioDescriptor LoadBinary(eastl::span<uint8_t> const &vData) override;
 };

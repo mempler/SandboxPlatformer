@@ -1,5 +1,7 @@
 #include "VertexBatcher.hh"
 
+#include "EASTL/span.h"
+
 #include "Core/Engine.hh"
 #include "Core/Managers/TextureManager.hh"
 
@@ -78,7 +80,7 @@ void VertexBatcher::EndFrame() {
  *****************************************************/
 void VertexBatcher::Flush() {
     for (auto &&event : m_vBatchEvents) {
-        Texture2D *texture = event.first;
+        const Texture2D *texture = event.first;
         auto &vertexes = event.second.vertices;
         auto &indexes = event.second.indexes;
 
@@ -109,10 +111,10 @@ void VertexBatcher::Reset() {
 
     // TODO: Add FreeSTL function
     // clear the map
-    for (auto &&event : m_vBatchEvents) std::vector<VertexInfo>().swap(event.second.vertices);
+    for (auto &&event : m_vBatchEvents) eastl::vector<VertexInfo>().swap(event.second.vertices);
 
     m_vBatchEvents.clear();
-    std::vector<std::pair<Texture2D *, BatchEvent>>().swap(m_vBatchEvents); // kill me fucking hell
+    eastl::vector<eastl::pair<const Texture2D *, BatchEvent>>().swap(m_vBatchEvents); // kill me fucking hell
 }
 
 /*****************************************************
@@ -120,7 +122,7 @@ void VertexBatcher::Reset() {
  *
  * Add new event into queue but set UVs manually.
  *****************************************************/
-void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
+void VertexBatcher::Submit(const Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
     if (!pTexture)
         pTexture = m_pWhiteTexture;
 
@@ -144,6 +146,6 @@ void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, co
  *
  * Quick function to not deal with UVs
  *****************************************************/
-void VertexBatcher::SubmitRectangle(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color) {
+void VertexBatcher::SubmitRectangle(const Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color) {
     Submit(pTexture, m4Transform, v4Color);
 }

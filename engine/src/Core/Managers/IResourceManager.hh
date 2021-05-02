@@ -1,12 +1,9 @@
 #pragma once
 
-#include <unordered_map>
-
 #include "Core/Utils/Identifier.hh"
 #include "Core/Utils/Logger.hh"
 
-#include <cstddef>
-#include <iterator>
+#include <EASTL/unordered_map.h>
 
 template <typename TResource>
 class IResourceLoader {
@@ -49,10 +46,10 @@ public:
         return m_umResources.find(identifier) != m_umResources.end();
     }
 
-    typename std::unordered_map<Identifier, TResource>::iterator begin() {
+    typename eastl::unordered_map<Identifier, TResource>::iterator begin() {
         return m_umResources.begin();
     }
-    typename std::unordered_map<Identifier, TResource>::iterator end() {
+    typename eastl::unordered_map<Identifier, TResource>::iterator end() {
         return m_umResources.end();
     }
 
@@ -65,5 +62,5 @@ protected:
 
 private:
     ILoader m_Loader;
-    std::unordered_map<Identifier, TResource> m_umResources;
+    eastl::unordered_map<Identifier, TResource> m_umResources;
 };

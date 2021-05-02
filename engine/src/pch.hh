@@ -7,6 +7,14 @@
 #include <vector>
 #include <algorithm>
 
+#include <EASTL/chrono.h>
+#include <EASTL/algorithm.h>
+#include <EASTL/string.h>
+#include <EASTL/string_view.h>
+#include <EASTL/unordered_map.h>
+#include <EASTL/vector.h>
+#include <EASTL/span.h>
+
 #include "Platform.hh"
 // clang-format on
 
