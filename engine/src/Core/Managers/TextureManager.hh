@@ -28,4 +28,19 @@ public:
 
         return resource;
     }
+
+    Texture2D *CreateTextureFromMemory(
+        Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pData, uint32_t uDataSize) {
+        // Return cached texture
+        if (Has(identifier))
+            return Load(identifier);
+
+        // Otherwise we create it
+        tcb::span<uint8_t> textureDataPtr = tcb::span(pData, uDataSize);
+
+        Texture2D *resource = CreateEmpty(identifier);
+        Texture2D::LoadRaw(resource, identifier, iWidth, iHeight, eTextureFormat, u64Filters, textureDataPtr);
+
+        return resource;
+    }
 };
