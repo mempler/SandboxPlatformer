@@ -6,6 +6,7 @@
 #include "Core/Debug/GameView.hh"
 #include "Core/Debug/IResourceMonitor.hh"
 #include "Core/Debug/Profiler.hh"
+#include "Core/Graphics/Camera2D.hh"
 #include "Core/Graphics/VertexBatcher.hh"
 #include "Core/Graphics/Window.hh"
 #include "Core/Managers/ShaderManager.hh"
@@ -16,6 +17,7 @@ public:
     Engine();
     ~Engine();
 
+    Camera2D &GetCamera();
     GameWindow &GetWindow();
     VertexBatcher &GetBatcher();
     TextureManager &GetTextureManager();
@@ -28,7 +30,9 @@ public:
     void Init();
 
 private:
+    // Graphics
     GameWindow m_GameWindow;
+    Camera2D m_Camera;
     VertexBatcher m_VertexBatcher;
 
     // Managers
