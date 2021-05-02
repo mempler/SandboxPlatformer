@@ -9,6 +9,7 @@
 #include "Core/Graphics/Camera2D.hh"
 #include "Core/Graphics/VertexBatcher.hh"
 #include "Core/Graphics/Window.hh"
+#include "Core/Managers/InputManager.hh"
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
 
@@ -38,6 +39,7 @@ private:
     // Managers
     TextureManager m_TextureManager;
     ShaderManager m_ShaderManager;
+    InputManager m_InputManager;
 
     // Audio
     AudioSystem m_AudioSystem;
