@@ -4,7 +4,7 @@
 
 #include "Core/Graphics/Window.hh"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <glm/glm.hpp>
 
 #include <SDL_keycode.h>
