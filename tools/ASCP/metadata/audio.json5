@@ -1,0 +1,32 @@
+// Asset schema
+{
+    unique_id: "pxwv",
+    struct: "Asset_Audio",
+    ext: ".pxwv",
+    parser: "audio", // We need the audio parser for this
+    version: 0,
+
+    // This file should be encrypted + lossless compressed
+    flags: [
+        "encryption:aes256",
+        "compression:zlib",
+    ],
+
+    // File extensions
+    extensions: [
+        "wav",
+        "ogg",
+        "mp3",
+    ],
+
+    // Structure
+    schema: [
+        {
+            frequency: "uint32",
+            isMono: "bool",
+
+            channelLeftData: "[..]byte",
+            channelRightData: "[..]byte",
+        }
+    ],
+}

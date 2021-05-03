@@ -1,0 +1,30 @@
+// Asset schema
+{
+    unique_id: "px2d",
+    struct: "Asset_Texture2D",
+    ext: ".px2d",
+    parser: "image", // We need an image parser for this
+    version: 0,
+
+    // This file should be encrypted + lossless compressed
+    flags: [
+        "encryption:aes256",
+        "compression:zlib",
+    ],
+
+    // File extensions
+    extensions: [
+        "png",
+        "jpg",
+    ],
+
+    // Structure
+    schema: [
+        {
+            width: "uint32",
+            height: "uint32",
+            format: "uint8",
+            data: "[..]byte"
+        }
+    ],
+}
