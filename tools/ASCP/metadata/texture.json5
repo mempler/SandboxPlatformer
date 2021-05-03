@@ -1,8 +1,8 @@
 // Asset schema
 {
-    unique_id: "px2d",
+    unique_id: "ic2d",
     struct: "Asset_Texture2D",
-    ext: ".px2d",
+    ext: ".ic2d",
     parser: "image", // We need an image parser for this
     version: 0,
 
@@ -16,6 +16,7 @@
     extensions: [
         "png",
         "jpg",
+        "bmp",
     ],
 
     // Structure

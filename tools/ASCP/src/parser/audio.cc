@@ -31,13 +31,13 @@ void AudioParser::performParse(const std::string_view &svFileName, Kokoro::Memor
 
         for (auto i = 0; i < pcmFrames.size(); i += (bytesPerSample * 2)) {
             // Left
-            for (auto x = 0; x < pcmFrames.size(); x += bytesPerSample) {
+            for (auto x = 0; x < bytesPerSample; x += 1) {
                 pcmFramesLeft.push_back(pcmFrames.at(i + x));
             }
 
             // Right
-            for (auto x = bytesPerSample; x < pcmFrames.size(); x += (bytesPerSample * 2)) {
-                pcmFramesRight.push_back(pcmFrames.at(i + x));
+            for (auto x = bytesPerSample; x < (bytesPerSample * 2); x += 1) {
+                pcmFramesLeft.push_back(pcmFrames.at(i + x));
             }
         }
 

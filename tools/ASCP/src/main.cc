@@ -2,6 +2,7 @@
 #include <unordered_map>
 
 #include "parser/audio.hh"
+#include "parser/file.hh"
 #include "parser/image.hh"
 #include "parser/parser.hh"
 
@@ -18,7 +19,7 @@
 #include <utility>
 #include <vector>
 
-#define LOG_WARN std::cout << "WARN: "
+#define LOG_WARN std::cout << "WARN> "
 
 struct MetadataInfo {
     std::string m_sStructName;
@@ -44,13 +45,13 @@ void registerParser(const std::string_view &svName) {
 }
 
 static std::string generateCodeForMeta(MetadataInfo metaData) {
-    std::stringstream code;
+    std::stringstream code{};
     std::stringstream parser_code;
 
     // Generate header
     code << "// !!! This code is generated and might be changed DO NOT EDIT !!!" << std::endl << std::endl;
 
-    code << "#include \"Protocol/Buffer.hh\"" << std::endl << std::endl;
+    code << "#include \"Kokoro/Memory.hh\"" << std::endl << std::endl;
     code << "struct " << metaData.m_sStructName << std::endl << "{" << std::endl;
 
     parser_code << "    void unpack(Kokoro::Memory::Buffer& buff)" << std::endl << "    {" << std::endl;
@@ -137,7 +138,7 @@ static std::string generateCodeForMeta(MetadataInfo metaData) {
                             << "sBufferData_" << si << ".end()));" << std::endl;
                 si++;
             } else {
-                LOG_WARN << "Unimplemented data type:" << s.second;
+                LOG_WARN << "Unimplemented data type: " << s.second << std::endl;
             }
 
             code << c << ";" << std::endl;
@@ -149,7 +150,6 @@ static std::string generateCodeForMeta(MetadataInfo metaData) {
     code << std::endl << parser_code.str();
 
     code << "};" << std::endl;
-
     return code.str();
 }
 
@@ -302,6 +302,7 @@ int main(int argc, const char **argv) {
     //-----------------------------------
     registerParser<ImageParser>("image");
     registerParser<AudioParser>("audio");
+    registerParser<FileParser>("file");
     //-----------------------------------
 
     // Process metadata
@@ -377,6 +378,8 @@ int main(int argc, const char **argv) {
             auto code = generateCodeForMeta(metaInfo);
 
             std::string outputPath = Kokoro::FileSystem::JoinPath(output_path, metaInfo.m_sStructName + ".hh");
+
+            std::cout << outputPath << std::endl;
 
             Kokoro::FileSystem::WriteBinaryFile(outputPath, std::vector<uint8_t>(code.begin(), code.end()));
         }

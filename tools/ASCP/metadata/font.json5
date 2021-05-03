@@ -1,0 +1,26 @@
+// Asset schema
+{
+    unique_id: "icft",
+    struct: "Asset_Font",
+    ext: ".icft",
+    parser: "file", // We need the file parser for this
+    version: 0,
+
+    // This file should be encrypted + lossless compressed
+    flags: [
+        "encryption:aes256",
+        "compression:zlib",
+    ],
+
+    // File extensions
+    extensions: [
+        "ttf",
+    ],
+
+    // Structure
+    schema: [
+        {
+            data: "[..]byte",
+        }
+    ],
+}
