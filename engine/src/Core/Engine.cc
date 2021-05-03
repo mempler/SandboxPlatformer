@@ -61,6 +61,10 @@ AudioSystem &Engine::GetAudioSystem() {
     return m_AudioSystem;
 }
 
+FontManager &Engine::GetFontManager() {
+    return m_FontManager;
+}
+
 void Engine::Init() {
     m_ShaderManager.LoadDefaultShaders();
     m_AudioSystem.Init();
