@@ -2,10 +2,8 @@
 
 #include "WavAudioLoader.hh"
 
-#include "AL/al.h"
-
 #define DR_WAV_IMPLEMENTATION
-#include "dr_wav.h"
+#include <dr_wav.h>
 
 AudioDescriptor WavAudioLoader::LoadBinary(std::vector<uint8_t> const &vData) {
     AudioDescriptor descriptor{};

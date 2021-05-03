@@ -7,8 +7,6 @@
 #include "Core/Audio/Audio.hh"
 #include "Core/Utils/Identifier.hh"
 
-#include "glm/fwd.hpp"
-
 #include <vector>
 
 class AudioChannel {

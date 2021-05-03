@@ -4,10 +4,6 @@
 
 #include "Core/Engine.hh"
 
-#include <glm/gtc/matrix_transform.hpp>
-
-#include <functional>
-
 Camera2D::Camera2D(const glm::vec2 &v2Pos, const glm::vec2 &v2Scale) : m_v2Pos(v2Pos), m_v2Scale(v2Scale) {
     CalculateMetrices();
 }

@@ -1,7 +1,9 @@
+#include "pch.hh"
+
 #include "Logger.hh"
 
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 
 void Logger::Clear() {
     FILE *f = fopen("log.txt", "w");

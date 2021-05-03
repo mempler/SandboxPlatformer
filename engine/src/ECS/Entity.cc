@@ -1,3 +1,5 @@
+#include "pch.hh"
+
 #include "Entity.hh"
 
 #include "Components/BaseComponent.hh"

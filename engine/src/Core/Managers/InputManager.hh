@@ -4,9 +4,9 @@
 
 #include "Core/Graphics/Window.hh"
 
-#include <SDL2/SDL.h>
 #include <glm/glm.hpp>
 
+#include <SDL.h>
 #include <SDL_keycode.h>
 
 enum class ButtonState { Pressed, Released };

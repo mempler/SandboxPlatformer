@@ -2,12 +2,8 @@
 
 #include "Core/Audio/Audio.hh"
 
-#include "AL/al.h"
-
 #include "Core/Audio/AudioChannel.hh"
 #include "Core/Audio/Helper.hh"
-
-#include "glm/gtc/type_ptr.hpp"
 
 Audio::Audio(AudioChannel *pChannel, Identifier const &rIdent, uint32_t hSrcLeft, uint32_t hSrcRight, uint32_t hBufferLeft, uint32_t hBufferRight)
                                                                                                     : m_pChannel(pChannel), m_Identifier(rIdent), m_hSourceLeft(hSrcLeft),

@@ -1,3 +1,5 @@
+#include "pch.hh"
+
 #include "VertexBatcher.hh"
 
 #include "Core/Engine.hh"

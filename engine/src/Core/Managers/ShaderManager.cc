@@ -2,7 +2,7 @@
 
 #include "ShaderManager.hh"
 
-#include "bgfx/bgfx.h"
+#include <bgfx/bgfx.h>
 
 void ShaderManager::AppendShader(Identifier const &rIdent, const bgfx::RendererType::Enum eRenderer, const ShaderType eType, uint8_t *pSrc, uint32_t uCodeLen) {
     m_vShaders.push_back(Shader{ rIdent, eRenderer, eType, pSrc, uCodeLen });

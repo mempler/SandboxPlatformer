@@ -4,7 +4,7 @@
 
 #include "Core/Utils/Timer.hh"
 
-#include "bgfx/bgfx.h"
+#include <bgfx/bgfx.h>
 
 #include <array>
 
