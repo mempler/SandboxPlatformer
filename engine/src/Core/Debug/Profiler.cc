@@ -1,7 +1,6 @@
-#include "Profiler.hh"
+#include "pch.hh"
 
-#include "imgui.h"
-#include "implot.h"
+#include "Profiler.hh"
 
 #include "Core/Engine.hh"
 

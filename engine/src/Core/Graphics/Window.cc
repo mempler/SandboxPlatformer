@@ -1,8 +1,6 @@
-#include "Window.hh"
+#include "pch.hh"
 
-#include "imgui_impl_bgfx.h"
-#include "imgui_impl_sdl.h"
-#include "implot.h"
+#include "Window.hh"
 
 #include "Core/Engine.hh"
 
