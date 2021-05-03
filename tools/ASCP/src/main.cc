@@ -381,7 +381,9 @@ int main(int argc, const char **argv) {
 
             std::cout << outputPath << std::endl;
 
-            Kokoro::FileSystem::WriteBinaryFile(outputPath, std::vector<uint8_t>(code.begin(), code.end()));
+            auto data = std::vector<uint8_t>(code.begin(), code.end());
+
+            Kokoro::FileSystem::WriteBinaryFile(outputPath, data);
         }
 
         return 0;

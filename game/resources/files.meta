@@ -1,0 +1,6 @@
+# files.meta metadata for compiling assets
+#            all assets have to be declared in this file!
+#            This is for security reasons, so we dont ship
+#            files that we dont want to be shipped.
+#            to E.G prevent leaks.
+./Audio/audio.wav -> assets/audio/
