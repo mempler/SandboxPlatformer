@@ -1,0 +1,32 @@
+// Asset schema
+{
+    unique_id: "icwv",
+    struct: "Asset_Audio",
+    ext: ".icwv",
+    parser: "audio", // We need the audio parser for this
+    version: 0,
+
+    // This file should be encrypted + lossless compressed
+    flags: [
+        "encryption:aes256",
+        "compression:zlib",
+    ],
+
+    // File extensions
+    extensions: [
+        "wav",
+        //"ogg",
+        //"mp3",
+    ],
+
+    // Structure
+    schema: [
+        {
+            frequency: "uint32",
+            isMono: "uint8",
+
+            channelLeftData: "[..]byte",
+            channelRightData: "[..]byte",
+        }
+    ],
+}
