@@ -4,7 +4,7 @@
 #include "Core/GUI/GUIComponent.hh"
 #include "Core/Utils/Identifier.hh"
 
-Box::Box() : GUIComponent() {
+Box::Box() {
     OnDraw.connect<&Box::Draw>(this);
 }
 

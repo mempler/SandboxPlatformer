@@ -2,6 +2,32 @@
 
 #include "Core/Engine.hh"
 
+void GUIComponent::Init() {
+    OnTick.connect<&GUIComponent::Tick>(this);
+    OnDraw.connect<&GUIComponent::Draw>(this);
+
+    GetEngine()->GetInputManager().OnMouseMove.connect<&GUIComponent::OnMouseMove>(this);
+}
+
+void GUIComponent::OnMouseMove(const glm::vec2 &v2Pos) {
+    glm::vec2 areaTopLeft = m_v2Position;
+    glm::vec2 areaBottomRight = (m_v2Scale * m_v2Size) + m_v2Position;
+
+    auto isHovering = v2Pos.x > areaTopLeft.x && v2Pos.x < areaBottomRight.x && v2Pos.y > areaTopLeft.y && v2Pos.y < areaBottomRight.y;
+
+    if (m_bIsHovering == isHovering) {
+        OnHover(v2Pos);
+    } else {
+        if (!isHovering) {
+            OnHoverLost(v2Pos);
+        } else {
+            OnHover(v2Pos);
+        }
+
+        m_bIsHovering = isHovering;
+    }
+}
+
 glm::vec2 GUIComponent::CalculateOffset() {
     glm::vec2 origin{};
 

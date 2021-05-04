@@ -61,37 +61,49 @@ void InputManager::PumpSDL2Event(GameWindow *pWindow, SDL_Event &event) {
         auto keyEvent = event.key.keysym;
 
         m_umKeyState.insert_or_assign((Key)SDL_SCANCODE_TO_KEYCODE(keyEvent.scancode), ButtonState::Pressed);
+
+        OnKeyDown((Key)SDL_SCANCODE_TO_KEYCODE(keyEvent.scancode), (KeyMod)m_iKeyMods);
     }
 
     if (event.type == SDL_KEYUP) {
         auto keyEvent = event.key.keysym;
 
         m_umKeyState.insert_or_assign((Key)SDL_SCANCODE_TO_KEYCODE(keyEvent.scancode), ButtonState::Released);
+
+        OnKeyRelease((Key)SDL_SCANCODE_TO_KEYCODE(keyEvent.scancode), (KeyMod)m_iKeyMods);
     }
 
     if (event.type == SDL_MOUSEMOTION) {
         auto motionEvent = event.motion;
 
-        m_v4MouseMoveDelta.x = motionEvent.x;
-        m_v4MouseMoveDelta.y = motionEvent.y;
+        m_v2MouseMoveDelta.x = motionEvent.x;
+        m_v2MouseMoveDelta.y = motionEvent.y;
+
+        OnMouseMove(m_v2MouseMoveDelta);
     }
 
     if (event.type == SDL_MOUSEWHEEL) {
         auto scrollEvent = event.wheel;
 
-        m_v4MouseScrollAxis.x = scrollEvent.x;
-        m_v4MouseScrollAxis.y = scrollEvent.y;
+        m_v2MouseScrollAxis.x = scrollEvent.x;
+        m_v2MouseScrollAxis.y = scrollEvent.y;
+
+        OnMouseScroll(m_v2MouseScrollAxis);
     }
 
     if (event.type == SDL_MOUSEBUTTONDOWN) {
         auto mouseButtonEvent = event.button;
 
         m_umMouseButtonState.insert_or_assign((MouseButton)(mouseButtonEvent.button + 1), ButtonState::Pressed);
+
+        OnMouseDown((MouseButton)(mouseButtonEvent.button + 1), m_v2MouseMoveDelta);
     }
 
     if (event.type == SDL_MOUSEBUTTONUP) {
         auto mouseButtonEvent = event.button;
 
         m_umMouseButtonState.insert_or_assign((MouseButton)(mouseButtonEvent.button + 1), ButtonState::Released);
+
+        OnMouseDown((MouseButton)(mouseButtonEvent.button + 1), m_v2MouseMoveDelta);
     }
 }

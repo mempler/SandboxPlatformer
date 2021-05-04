@@ -188,19 +188,26 @@ public:
     }
 
     const glm::vec2 GetMouseScrollAxis() {
-        return m_v4MouseScrollAxis;
+        return m_v2MouseScrollAxis;
     }
 
     const glm::vec2 GetMouseMoveDelta() {
-        return m_v4MouseMoveDelta;
+        return m_v2MouseMoveDelta;
     }
+
+    signals::signal<void(MouseButton eButton, const glm::vec2 &v2Pos)> OnMouseDown;
+    signals::signal<void(MouseButton eButton, const glm::vec2 &v2Pos)> OnMouseRelease;
+    signals::signal<void(const glm::vec2 &v2Pos)> OnMouseMove;
+    signals::signal<void(const glm::vec2 &v2Pos)> OnMouseScroll;
+    signals::signal<void(Key eKey, KeyMod eMod)> OnKeyDown;
+    signals::signal<void(Key eKey, KeyMod eMod)> OnKeyRelease;
 
 private:
     std::unordered_map<MouseButton, ButtonState> m_umMouseButtonState;
     std::unordered_map<Key, ButtonState> m_umKeyState;
 
-    glm::vec2 m_v4MouseScrollAxis;
-    glm::vec2 m_v4MouseMoveDelta;
+    glm::vec2 m_v2MouseScrollAxis;
+    glm::vec2 m_v2MouseMoveDelta;
 
     uint8_t m_iKeyMods;
 

@@ -24,16 +24,14 @@ inline int operator&(Origin a, Origin b) {
 
 class GUIComponent {
 public:
-    GUIComponent() {
-        OnTick.connect<&GUIComponent::Tick>(this);
-        OnDraw.connect<&GUIComponent::Draw>(this);
-    }
+    void Init();
 
     template <class T = GUIComponent>
     T *Add(Identifier const &identifier) {
         T *component = new T;
         component->m_Identifier = identifier;
         component->m_pParent = this;
+        component->Init();
 
         m_pChildren.push_back(component);
 
@@ -58,12 +56,8 @@ public:
         return m_pChildren.end();
     }
 
-    signals::signal<void(const glm::vec2 &v2Pos)> OnMouseDown;
-    signals::signal<void(const glm::vec2 &v2Pos)> OnMouseRelease;
     signals::signal<void(const glm::vec2 &v2Pos)> OnHover;
     signals::signal<void(const glm::vec2 &v2Pos)> OnHoverLost;
-    signals::signal<void(Key eKey, KeyMod eMod)> OnKeyDown;
-    signals::signal<void(Key eKey, KeyMod eMod)> OnKeyRelease;
 
     signals::signal<void(float fDelta)> OnTick;
     signals::signal<void(float fDelta)> OnDraw;
@@ -111,12 +105,16 @@ public:
     }
 
 private:
+    bool m_bIsHovering = false;
+
     glm::mat4 m_m4Transformation;
 
     glm::vec2 CalculateOffset();
 
     void Tick(float fDelta);
     void Draw(float fDelta);
+
+    void OnMouseMove(const glm::vec2 &v2Pos);
 
     Identifier m_Identifier = "gui://empty";
 

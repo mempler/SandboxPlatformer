@@ -12,8 +12,6 @@
 
 class SandboxGame : public BaseApp {
 protected:
-    Tweener<glm::vec2> tweener;
-
     void Init() override {
         Box *box = GetEngine()->GetGUI()->Add<Box>("gui://random_box");
         box->m_v2Position = { 100.0f, 100.0f };

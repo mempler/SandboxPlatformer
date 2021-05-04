@@ -3,6 +3,7 @@
 #include "Engine.hh"
 
 #include "Core/Debug/DefaultLayout.hh"
+#include "Core/Managers/InputManager.hh"
 #include "Core/Utils/Timer.hh"
 
 #include "bgfx/bgfx.h"
@@ -60,6 +61,10 @@ AudioSystem &Engine::GetAudioSystem() {
     return m_AudioSystem;
 }
 
+InputManager &Engine::GetInputManager() {
+    return m_InputManager;
+}
+
 GUI *Engine::GetGUI() {
     return m_GUI;
 }
@@ -69,8 +74,8 @@ void Engine::Init() {
     m_AudioSystem.Init();
     m_Camera.Init();
     m_InputManager.Init();
-
     m_VertexBatcher.Init(m_TextureManager);
+    m_GUI->Init();
 
     // Show by default
     m_IResourceMonitor.SetShowing(true);

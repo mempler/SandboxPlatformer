@@ -26,6 +26,7 @@ public:
     TextureManager &GetTextureManager();
     ShaderManager &GetShaderManager();
     AudioSystem &GetAudioSystem();
+    InputManager &GetInputManager();
     GUI *GetGUI();
 
     void BeginFrame();
