@@ -70,6 +70,8 @@ private:
     std::string_view m_sProtocol = "", m_sPath = "";
 };
 
+static constexpr Identifier EmptyIdentifier = Identifier("engine://empty");
+
 // std::unordered_map support
 template <>
 struct std::hash<Identifier> {

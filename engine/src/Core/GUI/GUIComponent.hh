@@ -14,8 +14,13 @@
 #include <functional>
 #include <vector>
 
-enum class Anchor { None = 0, Left = 1 << 1, Top = 1 << 2, Right = 1 << 3, Bottom = 1 << 4, Center = 1 << 5 };
 enum class Origin { None = 0, Left = 1 << 1, Top = 1 << 2, Right = 1 << 3, Bottom = 1 << 4, Center = 1 << 5 };
+inline Origin operator|(Origin a, Origin b) {
+    return static_cast<Origin>(static_cast<int>(a) | static_cast<int>(b));
+}
+inline int operator&(Origin a, Origin b) {
+    return static_cast<int>(a) & static_cast<int>(b);
+}
 
 class GUIComponent {
 public:
@@ -65,8 +70,7 @@ public:
 
     glm::vec2 m_v2Position{ 0.0f, 0.0f };
 
-    //Anchor m_eAnchor = Anchor::Top | Anchor::Left;
-    //Origin m_eOrigin = Origin::Top | Origin::Left;
+    Origin m_eOrigin = Origin::Top | Origin::Left;
 
     glm::vec2 m_v2Size{ 0.0f, 0.0f };
     glm::vec2 m_v2Scale{ 1.0f, 1.0f };
@@ -75,8 +79,14 @@ public:
     glm::vec4 m_v4Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 
     void CalculateTransformation() {
-        m_m4Transformation = glm::translate(glm::mat4(1.f), { m_v2Position.x, m_v2Position.y, 1.0f });
-        m_m4Transformation *= glm::rotate(glm::mat4(1.f), glm::radians(m_fRotation), { 0.5f, 0.5f, 1.0f });
+        auto offset = CalculateOffset();
+
+        m_m4Transformation = glm::translate(glm::mat4(1.f), { m_v2Position, 1.0f });
+
+        m_m4Transformation *= glm::translate(glm::mat4(1.f), { offset, 1.0f });
+        m_m4Transformation *= glm::rotate(glm::mat4(1.f), glm::radians(m_fRotation), { 0.0f, 0.0f, 1.0f });
+        m_m4Transformation *= glm::translate(glm::mat4(1.f), { -offset, 1.0f });
+
         m_m4Transformation *= glm::scale(glm::mat4(1.f), { m_v2Size * m_v2Scale, 1.0f });
     }
 
@@ -102,6 +112,8 @@ public:
 
 private:
     glm::mat4 m_m4Transformation;
+
+    glm::vec2 CalculateOffset();
 
     void Tick(float fDelta);
     void Draw(float fDelta);
