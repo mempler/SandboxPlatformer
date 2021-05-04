@@ -2,7 +2,9 @@
 
 #include "Core/Managers/InputManager.hh"
 #include "Core/Utils/Identifier.hh"
+#include "Core/Utils/Tweener.hh"
 
+#include "glm/ext/vector_float2.hpp"
 #include "glm/fwd.hpp"
 
 #include <glm/glm.hpp>
@@ -78,6 +80,26 @@ public:
         m_m4Transformation *= glm::scale(glm::mat4(1.f), { m_v2Size * m_v2Scale, 1.0f });
     }
 
+    Tweener<glm::vec2> *MoveTo(glm::vec2 const &v2Target) {
+        return m_MoveTweener.From(m_v2Position)->To(v2Target);
+    }
+
+    Tweener<glm::vec2> *SizeTo(glm::vec2 const &v2Target) {
+        return m_SizeTweener.From(m_v2Size)->To(v2Target);
+    }
+
+    Tweener<glm::vec2> *ScaleTo(glm::vec2 const &v2Target) {
+        return m_ScaleTweener.From(m_v2Scale)->To(v2Target);
+    }
+
+    Tweener<float> *RotateTo(float fTarget) {
+        return m_RotateTweener.From(m_fRotation)->To(fTarget);
+    }
+
+    Tweener<glm::vec4> *FadeTo(glm::vec4 const &v4Target) {
+        return m_ColorTweener.From(m_v4Color)->To(v4Target);
+    }
+
 private:
     glm::mat4 m_m4Transformation;
 
@@ -88,4 +110,10 @@ private:
 
     GUIComponent *m_pParent = nullptr;
     std::vector<GUIComponent *> m_pChildren{};
+
+    Tweener<glm::vec2> m_MoveTweener{};
+    Tweener<glm::vec2> m_SizeTweener{};
+    Tweener<glm::vec2> m_ScaleTweener{};
+    Tweener<float> m_RotateTweener{};
+    Tweener<glm::vec4> m_ColorTweener{};
 };

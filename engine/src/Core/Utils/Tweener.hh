@@ -32,12 +32,14 @@ public:
         return this;
     }
 
-    Tweener *Repeat(uint32_t iAmount) {
-        for (size_t i = 0; i < iAmount - 1; i++) {
-            m_vTweenEvents.push_back(m_vTweenEvents.at(m_vTweenEvents.size() - 1));
-        }
+    Tweener *Repeat() {
+        m_vTweenEvents.push_back(m_vTweenEvents.at(m_vTweenEvents.size() - 1));
 
         return this;
+    }
+
+    bool HasNext() {
+        return m_vTweenEvents.size() > 0;
     }
 
     T Current() {
@@ -50,7 +52,7 @@ public:
             }
         }
 
-        if (m_vTweenEvents.size() <= 0)
+        if (!HasNext())
             return m_LastValue;
 
         return m_LastValue = m_vTweenEvents.at(m_vTweenEvents.size() - 1).m_To;
@@ -74,5 +76,5 @@ private:
         F m_End;
     };
 
-    std::vector<TweenEvent> m_vTweenEvents;
+    std::vector<TweenEvent> m_vTweenEvents{};
 };

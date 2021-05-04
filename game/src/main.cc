@@ -16,22 +16,17 @@ protected:
 
     void Init() override {
         Box *box = GetEngine()->GetGUI()->Add<Box>("gui://random_box");
+        box->m_v2Position = { 100.0f, 100.0f };
         box->m_v4Color = { 1.0f, 0.0f, 0.0f, 1.0f };
         box->m_v2Size = { 100.f, 100.f };
 
         box->CalculateTransformation();
 
-        tweener.From(CurrentValue)->To(TargetValue)->Easing(EasingType::Linear)->Within(1000)->Repeat(3);
+        box->ScaleTo({ 1.5, 1.5 })->Easing(EasingType::elasticOut)->Within(1000);
+        box->FadeTo({ 0.0, 0.0, 1.0, 1.0 })->Easing(EasingType::elasticOut)->Within(1000);
     }
 
-    glm::vec2 TargetValue = { -250, 250 };
-    glm::vec2 CurrentValue = { 0, 0 };
-
     void Tick(float fDelta) override {
-        tweener.Tick(fDelta);
-
-        glm::vec2 eased = tweener.Current();
-        std::cout << "Value: X" << eased.x << " Y" << eased.y << std::endl;
     }
 
     void Draw(float fDelta) override {
