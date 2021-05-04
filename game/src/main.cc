@@ -1,41 +1,43 @@
 #include "Core/Audio/AudioChannel.hh"
 #include "Core/Engine.hh"
+#include "Core/GUI/Components/Box.hh"
+#include "Core/GUI/GUI.hh"
 
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/ext/quaternion_common.hpp"
+#include "glm/gtx/easing.hpp"
+
+#include <Core/Utils/Tweener.hh>
 
 #include <iostream>
 
 class SandboxGame : public BaseApp {
 protected:
-    void Init() override {
-        // m_pSoundEffectChannel = m_pEngine->GetAudioSystem().CreateChannel("audio://sound_effects");
-        // m_pAudio = m_pEngine->GetAudioSystem().LoadMonoAudio(m_pSoundEffectChannel, "file://audio.wav");
+    Tweener<glm::vec2> tweener;
 
-        // m_pAudio->SetPitch(1.25f);
-        // m_pAudio->SetVolume(0.5f);
-        // m_pAudio->Play();
+    void Init() override {
+        Box *box = GetEngine()->GetGUI()->Add<Box>("gui://random_box");
+        box->m_v4Color = { 1.0f, 0.0f, 0.0f, 1.0f };
+        box->m_v2Size = { 100.f, 100.f };
+
+        box->CalculateTransformation();
+
+        tweener.From(CurrentValue)->To(TargetValue)->Easing(EasingType::Linear)->Within(1000)->Repeat(3);
     }
 
+    glm::vec2 TargetValue = { -250, 250 };
+    glm::vec2 CurrentValue = { 0, 0 };
+
     void Tick(float fDelta) override {
+        tweener.Tick(fDelta);
+
+        glm::vec2 eased = tweener.Current();
+        std::cout << "Value: X" << eased.x << " Y" << eased.y << std::endl;
     }
 
     void Draw(float fDelta) override {
-        // TESTS
-
-        // draw normal 100x100 rect
-        m_pEngine->GetBatcher().SubmitRectangle(NULL, glm::translate(glm::mat4(1.f), { 100.f, 100.f, 1.f }) * glm::scale(glm::mat4(1.f), { 100.f, 100.f, 1.f }));
-        // reset the batcher to see if it works
-        m_pEngine->GetBatcher().Reset();
-        // draw rotated 100x100 rect
-        m_pEngine->GetBatcher().SubmitRectangle(NULL, glm::translate(glm::mat4(1.f), { 300.f, 50.f, 1.f }) *
-                                                          glm::rotate(glm::mat4(1.f), glm::radians(50.f), { .5f, .5f, 1.f }) *
-                                                          glm::scale(glm::mat4(1.f), { 100.f, 100.f, 1.f }));
     }
 
 private:
-    // AudioChannel *m_pSoundEffectChannel;
-    // Audio *m_pAudio;
-
     glm::vec3 m_v3AudioPosition;
 };
 

@@ -3,29 +3,41 @@
 #include <string_view>
 
 #include <algorithm>
+#include <array>
+#include <cassert>
 #include <iterator>
 #include <string>
 
+// Please note that this file does NOT own the string!
 class Identifier {
 public:
     // E.G file://Texture.png
     // E.G pkg://Texture.png
     // E.G http://Texture.png
     constexpr Identifier(std::string_view const &svUri) {
+        assert(svUri.size() < 64 && "An identifier must be under 64 bytes!");
+
+        // No constexpr std::copy :c
+        for (size_t i = 0; i < svUri.size(); i++) {
+            m_vString[i] = svUri[i];
+        }
+
+        auto uri = std::string_view(m_vString.data());
+
         constexpr std::string_view protoEnd("://");
 
-        auto proto_end = svUri.find_first_of(protoEnd);
+        auto proto_end = uri.find_first_of(protoEnd);
         if (proto_end == std::string_view::npos) {
-            m_sProtocol = svUri;
+            m_sProtocol = uri;
             return;
         }
 
 #if _MSC_FULL_VER // m$ft moment
-        m_sProtocol = std::string_view(&*svUri.begin(), proto_end);
-        m_sPath = std::string_view(&*svUri.begin() + proto_end + protoEnd.size());
+        m_sProtocol = std::string_view(&*uri.begin(), proto_end);
+        m_sPath = std::string_view(&*uri.begin() + proto_end + protoEnd.size());
 #else
-        m_sProtocol = std::string_view(svUri.begin(), proto_end);
-        m_sPath = std::string_view(svUri.begin() + proto_end + protoEnd.size());
+        m_sProtocol = std::string_view(uri.begin(), proto_end);
+        m_sPath = std::string_view(uri.begin() + proto_end + protoEnd.size());
 #endif
     }
 
@@ -44,19 +56,17 @@ public:
         return m_sPath;
     }
 
-    std::string Raw() const {
-        return std::string(m_sProtocol) + "://" + m_sPath.data();
-    }
-
-    operator std::string() const {
-        return Raw();
+    constexpr std::string_view Raw() const {
+        return std::string_view(m_vString.data());
     }
 
     constexpr bool operator==(const Identifier &other) const {
-        return (m_sPath == other.m_sPath && m_sProtocol == other.m_sProtocol);
+        return m_vString == other.m_vString;
     }
 
 private:
+    std::array<char, 64> m_vString{};
+
     std::string_view m_sProtocol = "", m_sPath = "";
 };
 
@@ -64,9 +74,8 @@ private:
 template <>
 struct std::hash<Identifier> {
     std::size_t operator()(const Identifier &s) const noexcept {
-        std::size_t h1 = std::hash<std::string_view>{}(s.Protocol());
-        std::size_t h2 = std::hash<std::string_view>{}(s.Path());
+        std::size_t h1 = std::hash<std::string_view>{}(s.Raw());
 
-        return h1 ^ (h2 << 1);
+        return h1;
     }
 };
