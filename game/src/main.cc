@@ -10,7 +10,8 @@
 class SandboxGame : public BaseApp {
 protected:
     void Init() override {
-        m_pFont = m_pEngine->GetFontManager().LoadFromFile("file://arial.ttf", 512, 512, 16.f);
+        m_pFont = m_pEngine->GetFontManager().LoadFromFile("file://arial.ttf", 128, 128, 64.f);
+
         // m_pSoundEffectChannel = m_pEngine->GetAudioSystem().CreateChannel("audio://sound_effects");
         // m_pAudio = m_pEngine->GetAudioSystem().LoadMonoAudio(m_pSoundEffectChannel, "file://audio.wav");
 
@@ -26,7 +27,8 @@ protected:
         // TESTS
 
         // draw normal 100x100 rect
-        m_pEngine->GetBatcher().SubmitRectangle(m_pFont->GetTexture(), glm::translate(glm::mat4(1.f), { 0.f, 0.f, 1.f }) * glm::scale(glm::mat4(1.f), { 512.f, 512.f, 1.f }));
+        glm::mat4 trans = glm::translate(glm::mat4(1.f), { 20, 20, 1.f }) * glm::scale(glm::mat4(1.f), { 128.f, 128.f, 1.f });
+        m_pEngine->GetBatcher().SubmitRectangle(0, trans);
     }
 
 private:

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Texture2D.hh"
+#include "Core/Graphics/Texture2D.hh"
 
 #include "Core/Utils/Identifier.hh"
 

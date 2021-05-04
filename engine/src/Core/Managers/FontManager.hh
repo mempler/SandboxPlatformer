@@ -2,7 +2,7 @@
 
 #include "IResourceManager.hh"
 
-#include "Core/Graphics/Font.hh"
+#include "Core/Graphics/Font/Font.hh"
 #include "Core/Utils/Identifier.hh"
 
 class FontLoader : public IResourceLoader<Font> {
