@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/Graphics/Texture2D.hh"
-
 #include "Core/Utils/Identifier.hh"
 
 #include "Platform.hh"
@@ -39,6 +38,9 @@ public:
      *****************************************************/
     static void Load(Font *pDest, Identifier const &identifier, size_t sAtlasWidth, size_t sAtlasHeight, float fSizePX, tcb::span<uint8_t> const &vData,
         const char *szChars = g_szASCII);
+
+    ftgl::texture_glyph_t *GetGlyph(char cChar);
+    float GetKerning(char cBefore, char cCurrent);
 
 public:
     Texture2D *GetTexture() const {

@@ -18,9 +18,9 @@ void Font::Load(Font *pDest, Identifier const &identifier, size_t sAtlasWidth, s
     pDest->m_pAtlas = ftgl::texture_atlas_new(sAtlasWidth, sAtlasHeight, 4);
     pDest->m_pHandle = ftgl::texture_font_new_from_file(pDest->m_pAtlas, fSizePX, identifier.Path().data());
     ftgl::texture_font_load_glyphs(pDest->m_pHandle, szChars);
-    
+
     pDest->m_pTexture = GetEngine()->GetTextureManager().CreateTextureFromMemory(identifier.Raw() + "-ch-tx-" + std::to_string((int)fSizePX), sAtlasWidth, sAtlasHeight,
-        bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), pDest->m_pAtlas->data,
+        bgfx::TextureFormat::RGBA8, BGFX_SAMPLER_NONE, pDest->m_pAtlas->data,
         pDest->m_pAtlas->width * pDest->m_pAtlas->height * pDest->m_pAtlas->depth);
 }
 
@@ -33,6 +33,14 @@ void Font::Load(Font *pDest, Identifier const &identifier, size_t sAtlasWidth, s
     ftgl::texture_font_load_glyphs(pDest->m_pHandle, szChars);
 
     pDest->m_pTexture = GetEngine()->GetTextureManager().CreateTextureFromMemory(identifier.Raw() + "-ch-tx-" + std::to_string((int)fSizePX), sAtlasWidth, sAtlasHeight,
-        bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), pDest->m_pAtlas->data,
+        bgfx::TextureFormat::RGBA8, BGFX_SAMPLER_NONE, pDest->m_pAtlas->data,
         pDest->m_pAtlas->width * pDest->m_pAtlas->height * pDest->m_pAtlas->depth);
+}
+
+ftgl::texture_glyph_t *Font::GetGlyph(char cChar) {
+    return ftgl::texture_font_get_glyph(m_pHandle, &cChar);
+}
+
+float Font::GetKerning(char cBefore, char cCurrent) {
+    return ftgl::texture_glyph_get_kerning(GetGlyph(cCurrent), &cBefore);
 }

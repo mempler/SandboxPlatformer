@@ -153,6 +153,37 @@ void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, co
     event.indexes += 6;
 }
 
+void VertexBatcher::SubmitWithRawUV(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
+    if (!pTexture)
+        pTexture = m_pWhiteTexture;
+
+    BatchEvent &event = GetVertexData(pTexture);
+    event.vertices.resize(event.vertices.size() + 4);
+
+    VertexInfo *info = &event.vertices[event.vertices.size() - 4];
+
+    float u0 = v4UV.x;
+    float v0 = v4UV.y;
+    float u1 = v4UV.z;
+    float v1 = v4UV.w;
+
+    glm::mat4x2 muvs = {
+        u1, v1, // V1
+        u1, v0, // V2
+        u0, v0, // V3
+        u0, v1, // V4
+    };
+
+    for (size_t i = 0; i < 4; i++) {
+        info->pos = m4Transform * g_m4DefPos[i];
+        info->color = v4Color;
+        info->uv = muvs[i];
+        info++;
+    }
+
+    event.indexes += 6;
+}
+
 /*****************************************************
  * Submit
  *

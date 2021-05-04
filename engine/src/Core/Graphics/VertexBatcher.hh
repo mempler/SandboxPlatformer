@@ -106,6 +106,7 @@ public:
      * @param v4Color Color, use [0, 1].
      *****************************************************/
     void Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
+    void SubmitWithRawUV(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
 
     /*****************************************************
      * Submit

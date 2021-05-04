@@ -1,16 +1,14 @@
 #include "Core/Audio/AudioChannel.hh"
 #include "Core/Engine.hh"
+#include "Core/Graphics/Font/Label.hh"
 
 #include <glm/gtc/matrix_transform.hpp>
-
-#include <freetype-gl.h>
-
-#include <iostream>
 
 class SandboxGame : public BaseApp {
 protected:
     void Init() override {
-        m_pFont = m_pEngine->GetFontManager().LoadFromFile("file://arial.ttf", 128, 128, 64.f);
+        m_pFont = m_pEngine->GetFontManager().LoadFromFile("file://arial.ttf", 512, 512, 64.f);
+        m_pLabel.SetText({ 100, 100 }, "YEEEEEEEA BOIIIIIIIIIIIIIIIIIII", m_pFont);
 
         // m_pSoundEffectChannel = m_pEngine->GetAudioSystem().CreateChannel("audio://sound_effects");
         // m_pAudio = m_pEngine->GetAudioSystem().LoadMonoAudio(m_pSoundEffectChannel, "file://audio.wav");
@@ -25,10 +23,7 @@ protected:
 
     void Draw(float fDelta) override {
         // TESTS
-
-        // draw normal 100x100 rect
-        glm::mat4 trans = glm::translate(glm::mat4(1.f), { 20, 20, 1.f }) * glm::scale(glm::mat4(1.f), { 128.f, 128.f, 1.f });
-        m_pEngine->GetBatcher().SubmitRectangle(0, trans);
+        m_pLabel.Render();
     }
 
 private:
@@ -37,6 +32,7 @@ private:
 
     glm::vec3 m_v3AudioPosition;
     Font *m_pFont;
+    Label m_pLabel;
 };
 
 static BaseApp *app = nullptr;

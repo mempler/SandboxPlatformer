@@ -20,7 +20,7 @@ public:
             return;
         }
 
-#if _MSC_FULL_VER // m$ft moment
+#if _MSC_FULL_VER // cum shit cum shit cum shit cum shit cum shit cum shit cum shit cum shit cum shit cum shit cum shit 
         m_sProtocol = std::string_view(&*svUri.begin(), proto_end);
         m_sPath = std::string_view(&*svUri.begin() + proto_end + protoEnd.size());
 #else
