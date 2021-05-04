@@ -33,10 +33,10 @@ static const glm::mat4 g_m4DefPos = {
 };
 
 static const glm::mat4x2 g_m4DefCoords = {
-    1, 0, // V1
-    1, 1, // V2
-    0, 1, // V3
-    0, 0, // V4
+    1, 1, // V1
+    1, 0, // V2
+    0, 0, // V3
+    0, 1, // V4
 };
 
 class ENGINE_EXPORT VertexBatcher {

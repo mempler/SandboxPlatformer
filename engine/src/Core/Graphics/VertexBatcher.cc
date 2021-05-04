@@ -131,10 +131,22 @@ void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, co
 
     VertexInfo *info = &event.vertices[event.vertices.size() - 4];
 
+    float X = (1.f / pTexture->GetWidth()) * v4UV.x;
+    float Y = (1.f / pTexture->GetHeight()) * v4UV.y;
+    float W = (1.f / pTexture->GetWidth()) * v4UV.z;
+    float H = (1.f / pTexture->GetHeight()) * v4UV.w;
+
+    glm::mat4x2 muvs = {
+        X + W, Y + H, // V1
+        X + W, Y,     // V2
+        X, Y,         // V3
+        X, Y + H,     // V4
+    };
+
     for (size_t i = 0; i < 4; i++) {
         info->pos = m4Transform * g_m4DefPos[i];
         info->color = v4Color;
-        info->uv = g_m4DefCoords[i];
+        info->uv = muvs[i];
         info++;
     }
 
