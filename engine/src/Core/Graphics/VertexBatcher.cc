@@ -138,8 +138,8 @@ void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, co
 
     glm::mat4x2 muvs = {
         X + W, Y + H, // V1
-        X + W, Y,   // V2
-        X, Y,       // V3
+        X + W, Y,     // V2
+        X, Y,         // V3
         X, Y + H,     // V4
     };
 
