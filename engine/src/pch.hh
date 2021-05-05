@@ -40,9 +40,12 @@
 #include <bx/bx.h>
 #include <bx/timer.h>
 
+// Dumb X11
+#define Font X11Font
 #include <SDL.h>
 #include <SDL_syswm.h>
 #include <SDL_events.h>
+#undef Font
 
 // Dumb X11
 #ifdef None
