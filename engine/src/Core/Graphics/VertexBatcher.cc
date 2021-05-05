@@ -51,8 +51,7 @@ void VertexBatcher::Init(TextureManager &textureManager) {
     m_hDefaultProgramHandle = GetEngine()->GetShaderManager().LoadProgram("engine://default");
 
     // Initialize default textures here
-    m_pWhiteTexture =
-        textureManager.CreateTextureWithColor("engine://white", 1, 1, bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), 0xFFFFFFFF);
+    m_pWhiteTexture = textureManager.CreateTextureWithColor(1, 1, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), { 1.0f, 1.0f, 1.0f, 1.0f });
 }
 
 /*****************************************************
@@ -159,5 +158,8 @@ void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, co
  * Quick function to not deal with UVs
  *****************************************************/
 void VertexBatcher::SubmitRectangle(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color) {
-    Submit(pTexture, m4Transform, v4Color);
+    if (!pTexture)
+        pTexture = m_pWhiteTexture;
+
+    Submit(pTexture, m4Transform, { 0, 0, pTexture->GetWidth(), pTexture->GetHeight() }, v4Color);
 }

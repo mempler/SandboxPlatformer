@@ -4,6 +4,7 @@
 
 #include "Core/Audio/AudioSystem.hh"
 #include "Core/Debug/DefaultLayout.hh"
+#include "Core/Managers/InputManager.hh"
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
 #include "Core/Utils/Timer.hh"
@@ -59,6 +60,10 @@ ShaderManager &Engine::GetShaderManager() {
 
 AudioSystem &Engine::GetAudioSystem() {
     return m_AudioSystem;
+}
+
+InputManager &Engine::GetInputManager() {
+    return m_InputManager;
 }
 
 void Engine::Init() {
