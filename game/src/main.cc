@@ -33,9 +33,6 @@ protected:
 
     void Draw(float fDelta) override {
     }
-
-private:
-    glm::vec3 m_v3AudioPosition;
 };
 
 static BaseApp *app = nullptr;
