@@ -7,6 +7,8 @@ void GUIComponent::Init() {
     OnDraw.connect<&GUIComponent::Draw>(this);
 
     GetEngine()->GetInputManager().OnMouseMove.connect<&GUIComponent::OnMouseMove>(this);
+
+    GetEngine()->GetInputManager().OnMouseRelease.connect<&GUIComponent::OnMouseRelease>(this);
 }
 
 void GUIComponent::OnMouseMove(const glm::vec2 &v2Pos) {
@@ -26,6 +28,13 @@ void GUIComponent::OnMouseMove(const glm::vec2 &v2Pos) {
 
         m_bIsHovering = isHovering;
     }
+}
+
+void GUIComponent::OnMouseRelease(MouseButton eButton, const glm::vec2 &v2Pos) {
+    if (!IsHovered())
+        return;
+
+    OnClick(eButton, v2Pos);
 }
 
 glm::vec2 GUIComponent::CalculateOffset() {

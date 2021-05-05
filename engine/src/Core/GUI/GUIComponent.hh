@@ -56,8 +56,14 @@ public:
         return m_pChildren.end();
     }
 
+    bool IsHovered() {
+        return m_bIsHovering;
+    }
+
     signals::signal<void(const glm::vec2 &v2Pos)> OnHover;
     signals::signal<void(const glm::vec2 &v2Pos)> OnHoverLost;
+
+    signals::signal<void(MouseButton eButton, const glm::vec2 &v2Pos)> OnClick;
 
     signals::signal<void(float fDelta)> OnTick;
     signals::signal<void(float fDelta)> OnDraw;
@@ -115,6 +121,7 @@ private:
     void Draw(float fDelta);
 
     void OnMouseMove(const glm::vec2 &v2Pos);
+    void OnMouseRelease(MouseButton eButton, const glm::vec2 &v2Pos);
 
     Identifier m_Identifier = "gui://empty";
 
