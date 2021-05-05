@@ -8,6 +8,7 @@
 
 #include <SDL.h>
 #include <SDL_keycode.h>
+#include <signals.hpp>
 
 enum class ButtonState { Pressed, Released };
 
