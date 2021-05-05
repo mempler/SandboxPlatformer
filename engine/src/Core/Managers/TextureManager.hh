@@ -14,17 +14,17 @@ public:
 
 class TextureManager : public IResourceManager<Texture2D, TextureLoader> {
 public:
-    Texture2D *CreateTextureWithColor(
-        Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint32_t uColor) {
-        // Return cached texture
+    Texture2D *CreateTextureWithColor(int32_t iWidth, int32_t iHeight, uint64_t u64Filters, glm::vec4 v4Color) {
+        uint32_t data = glm::packUnorm4x8(v4Color);
+        Identifier identifier = fmt::format("color://{:x}", data); // Return cached texture
         if (Has(identifier))
             return Load(identifier);
 
         // Otherwise we create it
-        tcb::span<uint8_t> whiteTextureDataPtr = tcb::span((uint8_t *)&uColor, 4);
+        tcb::span<uint8_t> textureDataPtr = tcb::span((uint8_t *)&data, 4);
 
         Texture2D *resource = CreateEmpty(identifier);
-        Texture2D::LoadRaw(resource, identifier, iWidth, iHeight, eTextureFormat, u64Filters, whiteTextureDataPtr);
+        Texture2D::LoadRaw(resource, identifier, iWidth, iHeight, bgfx::TextureFormat::RGBA8, u64Filters, textureDataPtr);
 
         return resource;
     }

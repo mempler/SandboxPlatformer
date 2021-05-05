@@ -13,6 +13,7 @@ set(ENGINE_LIBS
     bgfx-imgui
     imgui
     implot
+    fmt
 )
 
 file(GLOB_RECURSE ENGINE_SOURCES 

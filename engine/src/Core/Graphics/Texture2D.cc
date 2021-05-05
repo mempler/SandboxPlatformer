@@ -76,7 +76,7 @@ void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, tcb::span<u
     if (!pDest->IsValid())
         return;
 
-    std::string bgfxName = identifier.Raw();
+    std::string_view bgfxName = identifier.Raw();
     bgfx::setName(pDest->m_thHandle, bgfxName.data(), bgfxName.length());
 }
 
@@ -101,7 +101,7 @@ void Texture2D::LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t 
     if (!pDest->IsValid())
         return;
 
-    std::string bgfxName = identifier.Raw();
+    std::string_view bgfxName = identifier.Raw();
     bgfx::setName(pDest->m_thHandle, bgfxName.data(), bgfxName.length());
 }
 
@@ -122,7 +122,7 @@ void Texture2D::Create(Texture2D *pDest, Identifier const &identifier, int32_t i
     pDest->m_iWidth = iWidth;
     pDest->m_iHeight = iHeight;
 
-    std::string bgfxName = identifier.Raw();
+    std::string_view bgfxName = identifier.Raw();
     bgfx::setName(pDest->m_thHandle, bgfxName.data(), (uint32_t)bgfxName.length());
 }
 
