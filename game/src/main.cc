@@ -8,14 +8,7 @@ class SandboxGame : public BaseApp {
 protected:
     void Init() override {
         m_pFont = m_pEngine->GetFontManager().LoadFromFile("file://Roboto-Regular.ttf", 512, 512, 64.f);
-        m_pLabel.SetText({ 100, 100, 1 }, "YEEEEEEEA BOIIIIIIIIIIIIIIIIIII", m_pFont);
-
-        // m_pSoundEffectChannel = m_pEngine->GetAudioSystem().CreateChannel("audio://sound_effects");
-        // m_pAudio = m_pEngine->GetAudioSystem().LoadMonoAudio(m_pSoundEffectChannel, "file://audio.wav");
-
-        // m_pAudio->SetPitch(1.25f);
-        // m_pAudio->SetVolume(0.5f);
-        // m_pAudio->Play();
+        m_pLabel.SetText({ 0, 0, 2 }, "AbCdEfguilmaw361bd", m_pFont);
     }
 
     void Tick(float fDelta) override {
@@ -23,7 +16,13 @@ protected:
 
     void Draw(float fDelta) override {
         // TESTS
+
         m_pLabel.Render();
+
+        m_pEngine->GetBatcher().SubmitRectangle(NULL,
+            glm::translate(glm::mat4(1.f), { m_pLabel.GetPosition().x, m_pLabel.GetPosition().y, 1 }) *
+                glm::scale(glm::mat4(1.f), { m_pLabel.GetSize().x, m_pLabel.GetSize().y, 1.f }),
+            { 1, 0, 0, 1 });
     }
 
 private:

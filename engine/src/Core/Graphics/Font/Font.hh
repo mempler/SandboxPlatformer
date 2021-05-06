@@ -47,6 +47,10 @@ public:
         return m_pTexture;
     }
 
+    ftgl::texture_font_t *GetHandle() const {
+        return m_pHandle;
+    }
+
 private:
     ftgl::texture_atlas_t *m_pAtlas;
     ftgl::texture_font_t *m_pHandle;

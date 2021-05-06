@@ -95,7 +95,7 @@ void VertexBatcher::Flush() {
             bgfx::setIndexBuffer(m_hIndexBufferHandle, 0, count);
 
             bgfx::setTexture(0, m_hTextureUniform, texture->GetHandle());
-            bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA | BGFX_STATE_MSAA | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS);
+            bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS);
             bgfx::submit(0, m_hDefaultProgramHandle);
         }
     }
@@ -130,8 +130,8 @@ void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, co
 
     for (size_t i = 0; i < 4; i++) {
         info->pos = m4Transform * g_m4DefPos[i];
-        info->color = v4Color;
         info->uv = m4UV[i];
+        info->color = v4Color;
         info++;
     }
 

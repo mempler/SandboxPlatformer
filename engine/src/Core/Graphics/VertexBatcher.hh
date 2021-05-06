@@ -26,10 +26,10 @@
 //     X X . . = mat4x2
 
 static const glm::mat4 g_m4DefPos = {
-    1, 1, 0, 1, // V1
-    1, 0, 0, 1, // V2
-    0, 0, 0, 1, // V3
-    0, 1, 0, 1  // V4
+    1, 1, 1, 1, // V1
+    1, 0, 1, 1, // V2
+    0, 0, 1, 1, // V3
+    0, 1, 1, 1  // V4
 };
 
 static const glm::mat4x2 g_m4DefCoords = {

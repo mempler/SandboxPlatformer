@@ -15,10 +15,12 @@ void Label::SetText(const std::string &sText, Font *pFont) {
     if (m_sText == "")
         return;
 
-    float linex = m_v3Pos.x;
+    float linex = 0.f;
 
     for (int i = 0; i < sText.length(); i++) {
         char c = sText[i];
+
+        m_v2Size.y = pFont->GetHandle()->height; // setting this at the top to make sure the text has at least one char
 
         float kerning = 0.f;
         if (i > 0)
@@ -32,12 +34,14 @@ void Label::SetText(const std::string &sText, Font *pFont) {
 
         ftgl::texture_glyph_t *g = pFont->GetGlyph(c);
         r.uvs = { g->s0, g->t0, g->s1, g->t1 };
-        
-        r.transform = glm::translate(glm::mat4(1.f), { linex + g->offset_x, m_v3Pos.y - g->offset_y, 1.f }) * glm::scale(glm::mat4(1.f), { g->width, g->height, 1.f });
+
+        r.transform = glm::translate(glm::mat4(1.f), { m_v3Pos.x + linex + g->offset_x, pFont->GetHandle()->height - g->offset_y + m_v3Pos.y, m_v3Pos.z }) *
+                      glm::scale(glm::mat4(1.f), { g->width, g->height, 1.f });
 
         m_vChars.push_back(r);
 
         linex += g->advance_x;
+        m_v2Size.x = linex;
     }
 }
 
