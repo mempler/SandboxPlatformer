@@ -10,20 +10,20 @@ class Label {
 public:
     Label(){};
 
-    void SetText(const glm::vec2 &v2Pos, const std::string &sText, Font *pFont);
+    void SetText(const glm::vec3 &v2Pos, const std::string &sText, Font *pFont);
     void SetText(const std::string &sText, Font *pFont);
 
-    void SetPosition(const glm::vec2 &v2Pos);
+    void SetPosition(const glm::vec3 &v2Pos);
 
     void Render();
 
 public:
-    const glm::vec2 &GetPosition() const {
-        return m_v2Pos;
+    const glm::vec3 &GetPosition() const {
+        return m_v3Pos;
     }
 
-    const glm::vec2 &GetScale() const {
-        return m_v2Scale;
+    const glm::vec2 &GetSize() const {
+        return m_v2Size;
     }
 
 private:
@@ -42,6 +42,6 @@ private:
 
     std::string m_sText = "";
 
-    glm::vec2 m_v2Pos{};
-    glm::vec2 m_v2Scale{};
+    glm::vec3 m_v3Pos{};
+    glm::vec2 m_v2Size{};
 };

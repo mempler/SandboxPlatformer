@@ -9,7 +9,7 @@ static uint32_t g_uMaxQuads = 80000;
 
 VertexBatcher::VertexBatcher() {
     m_vlDefaultLayout.begin()
-        .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)
+        .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
         .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
         .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Float, true)
         .end();
@@ -95,7 +95,7 @@ void VertexBatcher::Flush() {
             bgfx::setIndexBuffer(m_hIndexBufferHandle, 0, count);
 
             bgfx::setTexture(0, m_hTextureUniform, texture->GetHandle());
-            bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA | BGFX_STATE_MSAA);
+            bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA | BGFX_STATE_MSAA | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS);
             bgfx::submit(0, m_hDefaultProgramHandle);
         }
     }

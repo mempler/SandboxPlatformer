@@ -8,7 +8,7 @@ class SandboxGame : public BaseApp {
 protected:
     void Init() override {
         m_pFont = m_pEngine->GetFontManager().LoadFromFile("file://Roboto-Regular.ttf", 512, 512, 64.f);
-        m_pLabel.SetText({ 100, 100 }, "YEEEEEEEA BOIIIIIIIIIIIIIIIIIII", m_pFont);
+        m_pLabel.SetText({ 100, 100, 1 }, "YEEEEEEEA BOIIIIIIIIIIIIIIIIIII", m_pFont);
 
         // m_pSoundEffectChannel = m_pEngine->GetAudioSystem().CreateChannel("audio://sound_effects");
         // m_pAudio = m_pEngine->GetAudioSystem().LoadMonoAudio(m_pSoundEffectChannel, "file://audio.wav");

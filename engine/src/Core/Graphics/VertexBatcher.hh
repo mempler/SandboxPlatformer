@@ -144,7 +144,7 @@ public:
 
 private: // Interestingly, we cannot define this bellow the function bellow, GCC/CLANG doesn't like that on linux.
     struct VertexInfo {
-        glm::vec2 pos{};
+        glm::vec3 pos{};
         glm::vec2 uv{};
         glm::vec4 color{};
     };

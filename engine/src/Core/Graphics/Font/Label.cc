@@ -2,8 +2,8 @@
 
 #include "Core/Engine.hh"
 
-void Label::SetText(const glm::vec2 &v2Pos, const std::string &sText, Font *pFont) {
-    m_v2Pos = v2Pos;
+void Label::SetText(const glm::vec3 &v3Pos, const std::string &sText, Font *pFont) {
+    m_v3Pos = v3Pos;
     m_sText = sText;
 
     SetText(sText, pFont);
@@ -15,7 +15,7 @@ void Label::SetText(const std::string &sText, Font *pFont) {
     if (m_sText == "")
         return;
 
-    float linex = m_v2Pos.x;
+    float linex = m_v3Pos.x;
 
     for (int i = 0; i < sText.length(); i++) {
         char c = sText[i];
@@ -32,7 +32,8 @@ void Label::SetText(const std::string &sText, Font *pFont) {
 
         ftgl::texture_glyph_t *g = pFont->GetGlyph(c);
         r.uvs = { g->s0, g->t0, g->s1, g->t1 };
-        r.transform = glm::translate(glm::mat4(1.f), { linex + g->offset_x, m_v2Pos.y - g->offset_y, 1.f }) * glm::scale(glm::mat4(1.f), { g->width, g->height, 1.f });
+        
+        r.transform = glm::translate(glm::mat4(1.f), { linex + g->offset_x, m_v3Pos.y - g->offset_y, 1.f }) * glm::scale(glm::mat4(1.f), { g->width, g->height, 1.f });
 
         m_vChars.push_back(r);
 
@@ -40,8 +41,8 @@ void Label::SetText(const std::string &sText, Font *pFont) {
     }
 }
 
-void Label::SetPosition(const glm::vec2 &v2Pos) {
-    m_v2Pos = v2Pos;
+void Label::SetPosition(const glm::vec3 &v3Pos) {
+    m_v3Pos = v3Pos;
 
     CalculateTransform();
 }
