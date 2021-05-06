@@ -102,10 +102,33 @@ public:
      * 
      * @param pTexture Texture to be processed, set it to NULL for empty texture.
      * @param m4Transform Matrix transformation of rectangle to be drawn.
+     * @param m4UV Texture coordinates(matrix 4x2).
+     * @param v4Color Color, use [0, 1].
+     *****************************************************/
+    void Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::mat4x2 &m4UV, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
+
+    /*****************************************************
+     * SubmitWithUV
+     *
+     * Add new event into queue but set pixel space UVs manually.
+     * 
+     * @param pTexture Texture to be processed, set it to NULL for empty texture.
+     * @param m4Transform Matrix transformation of rectangle to be drawn.
      * @param v4UV Texture coordinates(x, y, w, h).
      * @param v4Color Color, use [0, 1].
      *****************************************************/
-    void Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
+    void SubmitWithUV(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
+
+    /*****************************************************
+     * SubmitWithRawUV
+     *
+     * Add new event into queue but set pre-calculated UVs manually.
+     * 
+     * @param pTexture Texture to be processed, set it to NULL for empty texture.
+     * @param m4Transform Matrix transformation of rectangle to be drawn.
+     * @param v4UV Texture coordinates(x, y, w, h).
+     * @param v4Color Color, use [0, 1].
+     *****************************************************/
     void SubmitWithRawUV(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
 
     /*****************************************************
