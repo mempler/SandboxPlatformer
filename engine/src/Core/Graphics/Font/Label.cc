@@ -35,8 +35,9 @@ void Label::SetText(const std::string &sText, Font *pFont) {
         ftgl::texture_glyph_t *g = pFont->GetGlyph(c);
         r.uvs = { g->s0, g->t0, g->s1, g->t1 };
 
-        r.transform = glm::translate(glm::mat4(1.f), { m_v3Pos.x + linex + g->offset_x, pFont->GetHandle()->height - g->offset_y + m_v3Pos.y, m_v3Pos.z }) *
-                      glm::scale(glm::mat4(1.f), { g->width, g->height, 1.f });
+        r.transform =
+            glm::translate(glm::mat4(1.f), glm::ceil(glm::vec3(m_v3Pos.x + linex + g->offset_x, pFont->GetHandle()->height - g->offset_y + m_v3Pos.y, m_v3Pos.z))) *
+            glm::scale(glm::mat4(1.f), { g->width, g->height, 1.f });
 
         m_vChars.push_back(r);
 
