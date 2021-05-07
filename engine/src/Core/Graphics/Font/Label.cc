@@ -6,12 +6,14 @@
 void Label::SetText(const glm::vec3 &v3Pos, const std::string &sText, Font *pFont) {
     m_v3Pos = v3Pos;
     m_sText = sText;
+    m_pUsingFont = pFont;
 
     SetText(sText, pFont);
 }
 
 void Label::SetText(const std::string &sText, Font *pFont) {
     m_sText = sText;
+    m_pUsingFont = pFont;
 
     if (m_sText == "")
         return;
