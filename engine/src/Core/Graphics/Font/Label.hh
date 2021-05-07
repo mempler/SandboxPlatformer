@@ -44,6 +44,8 @@ private:
 
     std::string m_sText = "";
 
+    Font *m_pUsingFont = 0;
+
     glm::vec3 m_v3Pos{};
     glm::vec2 m_v2Size{};
 };

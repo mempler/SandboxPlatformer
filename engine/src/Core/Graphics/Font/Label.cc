@@ -49,7 +49,7 @@ void Label::SetText(const std::string &sText, Font *pFont) {
 void Label::SetPosition(const glm::vec3 &v3Pos) {
     m_v3Pos = v3Pos;
 
-    CalculateTransform();
+    SetText(v3Pos, m_sText, m_pUsingFont); // recalculate whole text again, cause why not?
 }
 
 void Label::Render() {
@@ -74,11 +74,4 @@ glm::vec2 Label::CalculateTextSize(const std::string &sText, Font *pFont) {
     }
 
     return size;
-}
-
-void Label::CalculateTransform() {
-    for (auto &&r : m_vChars) {
-        // TODO
-        //r.transform = glm::translate(glm::mat4(1.f), { m_v2Pos.x, m_v2Pos.y + g->offset_y, 1.f }) * glm::scale(glm::mat4(1.f), { g->advance_x, g->height, 1.f });
-    }
 }
