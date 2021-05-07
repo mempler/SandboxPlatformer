@@ -17,6 +17,8 @@ public:
 
     void Render();
 
+    static glm::vec2 CalculateTextSize(const std::string &sText, Font *pFont);
+
 public:
     const glm::vec3 &GetPosition() const {
         return m_v3Pos;

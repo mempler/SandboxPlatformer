@@ -1,6 +1,7 @@
 #include "Label.hh"
 
 #include "Core/Engine.hh"
+#include "Core/Utils/Math.hh"
 
 void Label::SetText(const glm::vec3 &v3Pos, const std::string &sText, Font *pFont) {
     m_v3Pos = v3Pos;
@@ -36,8 +37,7 @@ void Label::SetText(const std::string &sText, Font *pFont) {
         r.uvs = { g->s0, g->t0, g->s1, g->t1 };
 
         r.transform =
-            glm::translate(glm::mat4(1.f), glm::ceil(glm::vec3(m_v3Pos.x + linex + g->offset_x, pFont->GetHandle()->height - g->offset_y + m_v3Pos.y, m_v3Pos.z))) *
-            glm::scale(glm::mat4(1.f), { g->width, g->height, 1.f });
+            Math::CalcTransform({ m_v3Pos.x + linex + g->offset_x, m_v3Pos.y - g->offset_y + pFont->GetHandle()->ascender, m_v3Pos.z }, { g->width, g->height });
 
         m_vChars.push_back(r);
 
@@ -54,6 +54,26 @@ void Label::SetPosition(const glm::vec3 &v3Pos) {
 
 void Label::Render() {
     for (auto &&r : m_vChars) GetEngine()->GetBatcher().SubmitWithRawUV(r.texture, r.transform, r.uvs, r.color);
+}
+
+glm::vec2 Label::CalculateTextSize(const std::string &sText, Font *pFont) {
+    glm::vec2 size{ 0.f, 0.f };
+
+    for (int i = 0; i < sText.length(); i++) {
+        char c = sText[i];
+
+        size.y = pFont->GetHandle()->height; // setting this at the top to make sure the text has at least one char
+
+        float kerning = 0.f;
+        if (i > 0)
+            pFont->GetKerning(sText[i - 1], c);
+
+        ftgl::texture_glyph_t *g = pFont->GetGlyph(c);
+
+        size.x += g->advance_x + kerning;
+    }
+
+    return size;
 }
 
 void Label::CalculateTransform() {

@@ -43,8 +43,9 @@
 // Dumb X11
 #define Font X11Font
 #include <SDL.h>
-#include <SDL_syswm.h>
 #include <SDL_events.h>
+#include <SDL_syswm.h>
+
 #undef Font
 
 // Dumb X11
@@ -66,31 +67,36 @@
 #include <Kokoro/FileSystem.hh>
 
 // Math
+#include <glm/fwd.hpp>
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/glm.hpp>
-#include <glm/fwd.hpp>
+
 
 // imgui
 #include <imgui.h>
-#include <imgui_internal.h>
-#include <implot.h>
 #include <imgui_impl_bgfx.h>
 #include <imgui_impl_sdl.h>
+#include <imgui_internal.h>
+#include <implot.h>
+
 
 // Utils
-#include <span.hpp>
 #include <signals.hpp>
+#include <span.hpp>
+
 
 // Our own stuff
 // this is stuff that we wont change at all (or super rarely)
+#include "Core/Audio/Helper.hh"
+#include "Core/Managers/IResourceManager.hh"
 #include "Core/Utils/FileSystem.hh"
 #include "Core/Utils/Identifier.hh"
 #include "Core/Utils/Logger.hh"
 #include "Core/Utils/Math.hh"
+#include "Core/Utils/String.hh"
 #include "Core/Utils/Timer.hh"
 #include "Core/Utils/XorStr.hh"
-#include "Core/Managers/IResourceManager.hh"
-#include "Core/Audio/Helper.hh"
+
 
 #undef main
