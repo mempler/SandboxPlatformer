@@ -1,19 +1,15 @@
 #include "Core/Audio/AudioChannel.hh"
 #include "Core/Engine.hh"
+#include "Core/Graphics/Font/Label.hh"
+#include "Core/Utils/Math.hh"
 
 #include <glm/gtc/matrix_transform.hpp>
-
-#include <iostream>
 
 class SandboxGame : public BaseApp {
 protected:
     void Init() override {
-        // m_pSoundEffectChannel = m_pEngine->GetAudioSystem().CreateChannel("audio://sound_effects");
-        // m_pAudio = m_pEngine->GetAudioSystem().LoadMonoAudio(m_pSoundEffectChannel, "file://audio.wav");
-
-        // m_pAudio->SetPitch(1.25f);
-        // m_pAudio->SetVolume(0.5f);
-        // m_pAudio->Play();
+        m_pFont = m_pEngine->GetFontManager().LoadFromFile("file://Roboto-Regular.ttf", 512, 512, 64.f);
+        m_pLabel.SetText({ 300, 300, 2 }, "TW // game engine", m_pFont);
     }
 
     void Tick(float fDelta) override {
@@ -21,15 +17,11 @@ protected:
 
     void Draw(float fDelta) override {
         // TESTS
+        glm::vec2 size = Label::CalculateTextSize("TW // game engine", m_pFont);
 
-        // draw normal 100x100 rect
-        m_pEngine->GetBatcher().SubmitRectangle(NULL, glm::translate(glm::mat4(1.f), { 100.f, 100.f, 1.f }) * glm::scale(glm::mat4(1.f), { 100.f, 100.f, 1.f }));
-        // reset the batcher to see if it works
-        m_pEngine->GetBatcher().Reset();
-        // draw rotated 100x100 rect
-        m_pEngine->GetBatcher().SubmitRectangle(NULL, glm::translate(glm::mat4(1.f), { 300.f, 50.f, 1.f }) *
-                                                          glm::rotate(glm::mat4(1.f), glm::radians(50.f), { .5f, .5f, 1.f }) *
-                                                          glm::scale(glm::mat4(1.f), { 100.f, 100.f, 1.f }));
+        m_pEngine->GetBatcher().SubmitRectangle(NULL, Math::CalcTransform({ 300, 300, 1 }, size), { 1, 0, 0, 1 });
+
+        m_pLabel.Render();
     }
 
 private:
@@ -37,6 +29,8 @@ private:
     // Audio *m_pAudio;
 
     glm::vec3 m_v3AudioPosition;
+    Font *m_pFont;
+    Label m_pLabel;
 };
 
 static BaseApp *app = nullptr;

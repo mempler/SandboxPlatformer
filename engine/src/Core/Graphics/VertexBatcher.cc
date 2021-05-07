@@ -9,7 +9,7 @@ static uint32_t g_uMaxQuads = 80000;
 
 VertexBatcher::VertexBatcher() {
     m_vlDefaultLayout.begin()
-        .add(bgfx::Attrib::Position, 2, bgfx::AttribType::Float)
+        .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
         .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
         .add(bgfx::Attrib::Color0, 4, bgfx::AttribType::Float, true)
         .end();
@@ -94,7 +94,7 @@ void VertexBatcher::Flush() {
             bgfx::setIndexBuffer(m_hIndexBufferHandle, 0, count);
 
             bgfx::setTexture(0, m_hTextureUniform, texture->GetHandle());
-            bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA | BGFX_STATE_MSAA);
+            bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS);
             bgfx::submit(0, m_hDefaultProgramHandle);
         }
     }
@@ -121,35 +121,44 @@ void VertexBatcher::Reset() {
  *
  * Add new event into queue but set UVs manually.
  *****************************************************/
-void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
-    if (!pTexture)
-        pTexture = m_pWhiteTexture;
-
+void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::mat4x2 &m4UV, const glm::vec4 &v4Color) {
     BatchEvent &event = GetVertexData(pTexture);
     event.vertices.resize(event.vertices.size() + 4);
 
     VertexInfo *info = &event.vertices[event.vertices.size() - 4];
+
+    for (size_t i = 0; i < 4; i++) {
+        info->pos = m4Transform * g_m4DefPos[i];
+        info->uv = m4UV[i];
+        info->color = v4Color;
+        info++;
+    }
+
+    event.indexes += 6;
+}
+
+void VertexBatcher::SubmitWithUV(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
+    if (!pTexture)
+        pTexture = m_pWhiteTexture;
 
     float X = (1.f / pTexture->GetWidth()) * v4UV.x;
     float Y = (1.f / pTexture->GetHeight()) * v4UV.y;
     float W = (1.f / pTexture->GetWidth()) * v4UV.z;
     float H = (1.f / pTexture->GetHeight()) * v4UV.w;
 
-    glm::mat4x2 muvs = {
-        X + W, Y + H, // V1
-        X + W, Y,     // V2
-        X, Y,         // V3
-        X, Y + H,     // V4
-    };
+    Submit(pTexture, m4Transform, { X + W, Y + H, X + W, Y, X, Y, X, Y + H }, v4Color);
+}
 
-    for (size_t i = 0; i < 4; i++) {
-        info->pos = m4Transform * g_m4DefPos[i];
-        info->color = v4Color;
-        info->uv = muvs[i];
-        info++;
-    }
+void VertexBatcher::SubmitWithRawUV(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
+    if (!pTexture)
+        pTexture = m_pWhiteTexture;
 
-    event.indexes += 6;
+    float u0 = v4UV.x;
+    float v0 = v4UV.y;
+    float u1 = v4UV.z;
+    float v1 = v4UV.w;
+
+    Submit(pTexture, m4Transform, { u1, v1, u1, v0, u0, v0, u0, v1 }, v4Color);
 }
 
 /*****************************************************
@@ -161,5 +170,5 @@ void VertexBatcher::SubmitRectangle(Texture2D *pTexture, const glm::mat4 &m4Tran
     if (!pTexture)
         pTexture = m_pWhiteTexture;
 
-    Submit(pTexture, m4Transform, { 0, 0, pTexture->GetWidth(), pTexture->GetHeight() }, v4Color);
+    Submit(pTexture, m4Transform, g_m4DefCoords, v4Color);
 }

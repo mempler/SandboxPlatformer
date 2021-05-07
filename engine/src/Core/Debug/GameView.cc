@@ -36,7 +36,7 @@ void GameView::Draw() {
         windowCenter.y *= 0.5;
 
         ImGui::SetCursorPos(windowCenter);
-        ImGui::Image((void *)(intptr_t)texture.idx, { window.Width() * scale.x * 0.6f, window.Height() * scale.y * 0.6f }, { 0, 1 }, { 1, 0 });
+        ImGui::Image((void *)(intptr_t)texture.idx, { window.Width() * scale.x * 0.6f, window.Height() * scale.y * 0.6f }, { 0, 0 }, { 1, 1 });
     }
 
     ImGui::End();
