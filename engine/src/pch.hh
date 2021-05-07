@@ -72,7 +72,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
 // imgui
 #include <imgui.h>
 #include <imgui_impl_bgfx.h>
@@ -80,11 +79,9 @@
 #include <imgui_internal.h>
 #include <implot.h>
 
-
 // Utils
 #include <signals.hpp>
 #include <span.hpp>
-
 
 // Our own stuff
 // this is stuff that we wont change at all (or super rarely)
@@ -94,9 +91,9 @@
 #include "Core/Utils/Identifier.hh"
 #include "Core/Utils/Logger.hh"
 #include "Core/Utils/Math.hh"
+#include "Core/Utils/Memory.hh"
 #include "Core/Utils/String.hh"
 #include "Core/Utils/Timer.hh"
 #include "Core/Utils/XorStr.hh"
-
 
 #undef main

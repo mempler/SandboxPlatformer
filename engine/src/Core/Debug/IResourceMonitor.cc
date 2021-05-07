@@ -34,7 +34,7 @@ void IResourceMonitor::Draw() {
                 ImGui::TextColored(ImVec4{ 0.0f, 1.0f, 0.0f, 1.0f }, "0B"); // TODO: Implement
 
                 ImGui::TableNextColumn();
-                ImGui::TextColored(ImVec4{ 0.0f, 1.0f, 0.0f, 1.0f }, "0B"); // TODO: Implement
+                ImGui::TextColored(ImVec4{ 0.0f, 1.0f, 0.0f, 1.0f }, "%s", Memory::SizeInText((double)resource.second.GetDataSize()).c_str()); // TODO: Implement
             }
 
             ImGui::EndTable();

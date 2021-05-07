@@ -7,6 +7,7 @@
 #include <bgfx/bgfx.h>
 
 #include <span.hpp>
+#include <stdint.h>
 
 // Low level texture wrapper
 class ENGINE_EXPORT Texture2D {
@@ -106,6 +107,17 @@ public:
     }
 
     /*****************************************************
+     * GetDataSize
+     *
+     * Gets the current Texture data size
+     *
+     * @return Texture data size
+     *****************************************************/
+    uint32_t GetDataSize() const {
+        return m_uDataSize;
+    }
+
+    /*****************************************************
      * GetHandle
      *
      * Gets the active texture Handle (for internal use)
@@ -143,6 +155,8 @@ private:
 
     int32_t m_iWidth = 0;
     int32_t m_iHeight = 0;
+
+    uint32_t m_uDataSize = 0;
 
     bgfx::TextureHandle m_thHandle = BGFX_INVALID_HANDLE;
 };

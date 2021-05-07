@@ -63,15 +63,16 @@ void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, tcb::span<u
     const auto *const pixelData = bgfx::makeRef(imageContainer->m_data, imageContainer->m_size, DeleteImageContainer, imageContainer);
 
     // Make sure we have a valid texture
-    if (!bgfx::isTextureValid(0, false, imageContainer->m_numLayers, (bgfx::TextureFormat::Enum)imageContainer->m_format, bgfx::TextureFormat::RGBA4))
+    if (!bgfx::isTextureValid(0, false, imageContainer->m_numLayers, (bgfx::TextureFormat::Enum)imageContainer->m_format, bgfx::TextureFormat::RGBA8))
         return;
 
     pDest->m_Identifier = identifier;
     pDest->m_thHandle = bgfx::createTexture2D((uint16_t)imageContainer->m_width, (uint16_t)imageContainer->m_height, 1 < imageContainer->m_numMips,
-        imageContainer->m_numLayers, (bgfx::TextureFormat::Enum)imageContainer->m_format, bgfx::TextureFormat::RGBA4, pixelData);
+        imageContainer->m_numLayers, (bgfx::TextureFormat::Enum)imageContainer->m_format, bgfx::TextureFormat::RGBA8, pixelData);
 
     pDest->m_iWidth = imageContainer->m_width;
     pDest->m_iHeight = imageContainer->m_height;
+    pDest->m_uDataSize = vData.size();
 
     if (!pDest->IsValid())
         return;
@@ -91,12 +92,13 @@ void Texture2D::LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t 
     tcb::span<uint8_t> const &vData) {
     LOG_INFO("Loading Raw Texture2D <%s>(%d, %d)", identifier.Raw().data(), iWidth, iHeight);
     const auto *const pixelData = bgfx::copy(vData.data(), vData.size()); // dont use makeRef dont use makeRef dont use makeRef dont use makeRef
-
+    
     pDest->m_Identifier = identifier;
     pDest->m_thHandle = bgfx::createTexture2D((uint16_t)iWidth, (uint16_t)iHeight, false, 1, eTextureFormat, u64Filters, pixelData);
 
     pDest->m_iWidth = iWidth;
     pDest->m_iHeight = iHeight;
+    pDest->m_uDataSize = vData.size();
 
     if (!pDest->IsValid())
         return;
@@ -121,6 +123,7 @@ void Texture2D::Create(Texture2D *pDest, Identifier const &identifier, int32_t i
 
     pDest->m_iWidth = iWidth;
     pDest->m_iHeight = iHeight;
+    pDest->m_uDataSize = 0;
 
     std::string_view bgfxName = identifier.Raw();
     bgfx::setName(pDest->m_thHandle, bgfxName.data(), (uint32_t)bgfxName.length());
@@ -137,6 +140,8 @@ void Texture2D::Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHe
         return;
 
     auto pixelData = bgfx::copy(vData.data(), vData.size());
+
+    m_uDataSize = vData.size();
 
     // Hack for figuring out our _pitch
     size_t pitch = 0;
