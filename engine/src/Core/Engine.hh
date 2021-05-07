@@ -26,6 +26,7 @@ public:
     ShaderManager &GetShaderManager();
     AudioSystem &GetAudioSystem();
     FontManager &GetFontManager();
+    InputManager &GetInputManager();
 
     void BeginFrame();
     void EndFrame();

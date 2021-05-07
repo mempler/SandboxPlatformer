@@ -14,6 +14,7 @@ set(ENGINE_LIBS
     imgui
     implot
     freetype-bgfx
+    fmt
 )
 
 file(GLOB_RECURSE ENGINE_SOURCES 

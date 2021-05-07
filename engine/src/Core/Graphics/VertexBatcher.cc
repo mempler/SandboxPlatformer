@@ -51,8 +51,7 @@ void VertexBatcher::Init(TextureManager &textureManager) {
     m_hDefaultProgramHandle = GetEngine()->GetShaderManager().LoadProgram("engine://default");
 
     // Initialize default textures here
-    m_pWhiteTexture =
-        textureManager.CreateTextureWithColor("engine://white", 1, 1, bgfx::TextureFormat::RGBA8, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), 0xFFFFFFFF);
+    m_pWhiteTexture = textureManager.CreateTextureWithColor(1, 1, (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT), { 1.0f, 1.0f, 1.0f, 1.0f });
 }
 
 /*****************************************************
