@@ -15,6 +15,8 @@ void Label::SetText(const std::string &sText, Font *pFont) {
     m_sText = sText;
     m_pUsingFont = pFont;
 
+    m_vChars.clear();
+
     if (m_sText == "")
         return;
 
@@ -38,6 +40,9 @@ void Label::SetText(const std::string &sText, Font *pFont) {
         ftgl::texture_glyph_t *g = pFont->GetGlyph(c);
         r.uvs = { g->s0, g->t0, g->s1, g->t1 };
 
+        r.size = { g->width, g->height };
+        r.glyphPos = { linex + g->offset_x, g->offset_y + pFont->GetHandle()->ascender };
+
         r.transform =
             Math::CalcTransform({ m_v3Pos.x + linex + g->offset_x, m_v3Pos.y - g->offset_y + pFont->GetHandle()->ascender, m_v3Pos.z }, { g->width, g->height });
 
@@ -51,7 +56,11 @@ void Label::SetText(const std::string &sText, Font *pFont) {
 void Label::SetPosition(const glm::vec3 &v3Pos) {
     m_v3Pos = v3Pos;
 
-    SetText(v3Pos, m_sText, m_pUsingFont); // recalculate whole text again, cause why not?
+    CalculateTransform();
+}
+
+void Label::SetColor(const glm::vec4 &v4Color) {
+    for (auto &&r : m_vChars) r.color = v4Color;
 }
 
 void Label::Render() {
@@ -76,4 +85,8 @@ glm::vec2 Label::CalculateTextSize(const std::string &sText, Font *pFont) {
     }
 
     return size;
+}
+
+void Label::CalculateTransform() {
+    for (auto &r : m_vChars) r.transform = Math::CalcTransform({ m_v3Pos.x + r.glyphPos.x, m_v3Pos.y - r.glyphPos.y, m_v3Pos.z }, r.size);
 }

@@ -4,3 +4,4 @@
 #            files that we dont want to be shipped.
 #            to E.G prevent leaks.
 ./Audio/audio.wav -> assets/audio/
+./Textures/tiles1.png -> assets/texture/

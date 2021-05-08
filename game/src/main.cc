@@ -3,34 +3,28 @@
 #include "Core/Graphics/Font/Label.hh"
 #include "Core/Utils/Math.hh"
 
-#include <glm/gtc/matrix_transform.hpp>
-
 class SandboxGame : public BaseApp {
 protected:
     void Init() override {
-        m_pFont = m_pEngine->GetFontManager().LoadFromFile("file://Roboto-Regular.ttf", 512, 512, 64.f);
-        m_pLabel.SetText({ 300, 300, 2 }, "TW // game engine", m_pFont);
+        m_pFont = m_pEngine->GetFontManager().LoadFromFile("file://Roboto-Regular.ttf", 256, 256, 22.f);
+        m_lWatermark.SetText({ 0, 0, 999 }, "ICESDK DEMO", m_pFont);
+        m_lWatermark.SetColor({ 1, 1, 1, .2 });
+
+        glm::vec3 center = { m_pEngine->GetWindow().Width() / 2.f - m_lWatermark.GetSize().x / 2, m_pEngine->GetWindow().Height() - 100.f, 999.f };
+
+        m_lWatermark.SetPosition(center);
     }
 
     void Tick(float fDelta) override {
     }
 
     void Draw(float fDelta) override {
-        // TESTS
-        glm::vec2 size = Label::CalculateTextSize("TW // game engine", m_pFont);
-
-        m_pEngine->GetBatcher().SubmitRectangle(NULL, Math::CalcTransform({ 300, 300, 1 }, size), { 1, 0, 0, 1 });
-
-        m_pLabel.Render();
+        m_lWatermark.Render();
     }
 
 private:
-    // AudioChannel *m_pSoundEffectChannel;
-    // Audio *m_pAudio;
-
-    glm::vec3 m_v3AudioPosition;
     Font *m_pFont;
-    Label m_pLabel;
+    Label m_lWatermark;
 };
 
 static BaseApp *app = nullptr;

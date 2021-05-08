@@ -49,7 +49,7 @@ private:
     AudioSystem m_AudioSystem;
 
     // Debug Utils
-    bool m_bShowDebugUtils = true;
+    bool m_bShowDebugUtils = false;
 
     GameView m_GameView;
     IResourceMonitor m_IResourceMonitor;

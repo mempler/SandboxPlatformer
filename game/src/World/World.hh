@@ -9,6 +9,8 @@ public:
     World();
     ~World();
 
+    void Init();
+
 private:
     std::vector<Tile> m_vTiles;
 };

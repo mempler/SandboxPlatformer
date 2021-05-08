@@ -21,7 +21,7 @@ static glm::mat4 CalculateView(const glm::vec2 &v2Pos, float fRotation) {
 }
 
 static glm::mat4 CalculateProjection(const glm::vec2 &v2Scale) {
-    glm::mat4 proj = glm::ortho(0.0f, glm::ceil(v2Scale.x), glm::ceil(v2Scale.y), .0f, .1f, 1000.f);
+    glm::mat4 proj = glm::ortho(0.0f, glm::ceil(v2Scale.x), glm::ceil(v2Scale.y), .0f, .1f, 10000.f);
     proj[3].z = 1.f;
     return proj;
 }

@@ -12,8 +12,8 @@ public:
 
     void SetText(const glm::vec3 &v2Pos, const std::string &sText, Font *pFont);
     void SetText(const std::string &sText, Font *pFont);
-
     void SetPosition(const glm::vec3 &v2Pos);
+    void SetColor(const glm::vec4 &v4Color);
 
     void Render();
 
@@ -30,11 +30,12 @@ public:
 
 private:
     void CalculateTransform();
-    void ProcessText();
 
 private:
     struct RenderableChar {
         glm::vec4 uvs;
+        glm::vec2 glyphPos;
+        glm::vec2 size;
         glm::mat4x4 transform;
         glm::vec4 color;
         Texture2D *texture;
