@@ -18,7 +18,7 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
     if ((eFlags & Flags::Fullscreen) > 0)
         flags = SDL_WINDOW_FULLSCREEN;
 
-    m_SDLWindow = SDL_CreateWindow(szTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, iWidth, iHeight, flags);
+    m_SDLWindow = SDL_CreateWindow(szTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, iWidth, iHeight, flags | SDL_WINDOW_RESIZABLE);
 #endif
 
     if (m_SDLWindow == nullptr) {
@@ -159,11 +159,8 @@ double GameWindow::BeginFrame() {
                 if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
                     LOG_INFO("Window size changed...");
 
-                    SDL_DisplayMode displayMode;
-                    SDL_GetDesktopDisplayMode(0, &displayMode);
-
-                    m_iWidth = displayMode.w;
-                    m_iHeight = displayMode.h;
+                    m_iWidth = e.window.data1;
+                    m_iHeight = e.window.data2;
 
                     OnResize(this, m_iWidth, m_iHeight);
 

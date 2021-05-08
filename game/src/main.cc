@@ -6,6 +6,8 @@
 class SandboxGame : public BaseApp {
 protected:
     void Init() override {
+        m_pEngine->GetWindow().OnResize.connect<&SandboxGame::OnWindowResize>(this);
+
         m_pFont = m_pEngine->GetFontManager().LoadFromFile("file://Roboto-Regular.ttf", 256, 256, 22.f);
         m_lWatermark.SetText({ 0, 0, 999 }, "ICESDK DEMO", m_pFont);
         m_lWatermark.SetColor({ 1, 1, 1, .2 });
@@ -20,6 +22,12 @@ protected:
 
     void Draw(float fDelta) override {
         m_lWatermark.Render();
+    }
+
+private:
+    void OnWindowResize(GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight) {
+        glm::vec3 center = { m_pEngine->GetWindow().Width() / 2.f - m_lWatermark.GetSize().x / 2, m_pEngine->GetWindow().Height() - 100.f, 999.f };
+        m_lWatermark.SetPosition(center);
     }
 
 private:
