@@ -3,9 +3,11 @@
 #include "pch.hh"
 
 #include "Core/Audio/AudioSystem.hh"
+#include "Core/Debug/GUIInspector.hh"
 #include "Core/Debug/GameView.hh"
 #include "Core/Debug/IResourceMonitor.hh"
 #include "Core/Debug/Profiler.hh"
+#include "Core/GUI/GUI.hh"
 #include "Core/Graphics/Camera2D.hh"
 #include "Core/Graphics/VertexBatcher.hh"
 #include "Core/Graphics/Window.hh"
@@ -27,6 +29,7 @@ public:
     AudioSystem &GetAudioSystem();
     FontManager &GetFontManager();
     InputManager &GetInputManager();
+    GUI *GetGUI();
 
     void BeginFrame();
     void EndFrame();
@@ -38,6 +41,8 @@ private:
     GameWindow m_GameWindow;
     Camera2D m_Camera;
     VertexBatcher m_VertexBatcher;
+
+    GUI *m_GUI;
 
     // Managers
     TextureManager m_TextureManager;
@@ -54,6 +59,7 @@ private:
     GameView m_GameView;
     IResourceMonitor m_IResourceMonitor;
     Profiler m_Profiler;
+    GUIInspector m_GUIInspector;
 
 private:
 };

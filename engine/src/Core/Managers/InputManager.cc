@@ -78,7 +78,7 @@ void InputManager::PumpSDL2Event(GameWindow *pWindow, SDL_Event &event) {
 
         m_v2MouseMoveDelta.x = motionEvent.x;
         m_v2MouseMoveDelta.y = motionEvent.y;
-        
+
         OnMouseMove(m_v2MouseMoveDelta);
     }
 

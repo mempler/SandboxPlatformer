@@ -1,15 +1,23 @@
-#include "Core/Audio/AudioChannel.hh"
 #include "Core/Engine.hh"
-#include "Core/Graphics/Font/Label.hh"
-#include "Core/Utils/Math.hh"
-
-#include <glm/gtc/matrix_transform.hpp>
+#include "Core/GUI/Components/Box.hh"
+#include "Core/GUI/GUI.hh"
 
 class SandboxGame : public BaseApp {
 protected:
     void Init() override {
-        m_pFont = m_pEngine->GetFontManager().LoadFromFile("file://Roboto-Regular.ttf", 512, 512, 64.f);
-        m_pLabel.SetText({ 300, 300, 2 }, "TW // game engine", m_pFont);
+        Box *box = GetEngine()->GetGUI()->Add<Box>("gui://random_box");
+        box->m_v2Position = { 100.0f, 100.0f };
+        box->m_v4Color = { 1.0f, 0.0f, 0.0f, 1.0f };
+        box->m_v2Size = { 500.f, 500.f };
+        box->m_eOrigin = Origin::Center;
+
+        box->CalculateTransformation();
+
+        //box->RotateTo(360)->Easing(EasingType::circularInOut)->Within(1000)->Repeat()->Easing(EasingType::backInOut)->Repeat();
+        //box->ScaleTo({ 1.5, 1.5 })->Easing(EasingType::Linear)->Within(1000)->Repeat()->Repeat();
+
+        box->FadeTo({ 0.5, 0.5, 1.0, 1.0 })->Easing(EasingType::elasticOut)->Within(1000);
+        box->SetImage("file://yes.png");
     }
 
     void Tick(float fDelta) override {
@@ -17,32 +25,18 @@ protected:
 
     void Draw(float fDelta) override {
         // TESTS
-        glm::vec2 size = Label::CalculateTextSize("TW // game engine", m_pFont);
-
-        m_pEngine->GetBatcher().SubmitRectangle(NULL, Math::CalcTransform({ 300, 300, 1 }, size), { 1, 0, 0, 1 });
-
-        m_pLabel.Render();
     }
 
 private:
-    // AudioChannel *m_pSoundEffectChannel;
-    // Audio *m_pAudio;
-
-    glm::vec3 m_v3AudioPosition;
-    Font *m_pFont;
-    Label m_pLabel;
 };
 
-static BaseApp *app = nullptr;
+SandboxGame *app = nullptr;
+BaseApp *GetApp() {
+    return app;
+}
 
 int main() {
     app = new SandboxGame;
-
     app->Run();
-
     return 0;
-}
-
-BaseApp *GetApp() {
-    return app;
 }

@@ -2,11 +2,8 @@
 
 #include "Engine.hh"
 
-#include "Core/Audio/AudioSystem.hh"
 #include "Core/Debug/DefaultLayout.hh"
 #include "Core/Managers/InputManager.hh"
-#include "Core/Managers/ShaderManager.hh"
-#include "Core/Managers/TextureManager.hh"
 #include "Core/Utils/Timer.hh"
 
 #include "bgfx/bgfx.h"
@@ -26,10 +23,12 @@ Engine *GetEngine() {
 Engine::Engine() 
   : m_GameWindow(), 
     m_Camera({ 0.f, 0.f }, { (float)m_GameWindow.Width(), (float)m_GameWindow.Height() }),
-    m_VertexBatcher(), 
+    m_VertexBatcher(),
+    m_GUI(new GUI),
     m_IResourceMonitor(this), 
     m_GameView(this),
-    m_Profiler(this)
+    m_Profiler(this),
+    m_GUIInspector(this)
 {
     m_Camera.SetUniformTransform(0);
 }
@@ -70,18 +69,22 @@ InputManager &Engine::GetInputManager() {
     return m_InputManager;
 }
 
+GUI *Engine::GetGUI() {
+    return m_GUI;
+}
+
 void Engine::Init() {
     m_ShaderManager.LoadDefaultShaders();
     m_AudioSystem.Init();
     m_Camera.Init();
     m_InputManager.Init();
-
     m_VertexBatcher.Init(m_TextureManager);
+    m_GUI->Init();
 
     // Show by default
     m_IResourceMonitor.SetShowing(true);
     m_GameView.SetShowing(true);
-    m_Profiler.SetShowing(false);
+    m_GUIInspector.SetShowing(true);
 }
 
 void Engine::BeginFrame() {
@@ -130,6 +133,10 @@ void Engine::BeginFrame() {
                     m_Profiler.SetShowing(!m_Profiler.IsShowing());
                 }
 
+                if (ImGui::MenuItem("GUI Inspector")) { // Toggle
+                    m_GUIInspector.SetShowing(!m_GUIInspector.IsShowing());
+                }
+
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -145,6 +152,10 @@ void Engine::BeginFrame() {
 
         if (m_Profiler.IsShowing()) {
             m_Profiler.Draw();
+        }
+
+        if (m_GUIInspector.IsShowing()) {
+            m_GUIInspector.Draw();
         }
 
         ImGui::End();
@@ -181,6 +192,9 @@ void BaseApp::Run() {
 
         Tick(elapsed);
         Draw(elapsed);
+
+        m_pEngine->GetGUI()->OnTick(elapsed);
+        m_pEngine->GetGUI()->OnDraw(elapsed);
 
         m_pEngine->EndFrame();
     }
