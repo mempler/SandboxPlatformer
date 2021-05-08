@@ -30,6 +30,13 @@ protected:
 private:
 };
 
+SandboxGame *app = nullptr;
 BaseApp *GetApp() {
     return app;
+}
+
+int main() {
+    app = new SandboxGame;
+    app->Run();
+    return 0;
 }
