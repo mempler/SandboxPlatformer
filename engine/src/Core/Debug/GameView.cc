@@ -5,6 +5,8 @@
 #include "Core/Engine.hh"
 #include "Core/Graphics/Window.hh"
 
+#include "bgfx/bgfx.h"
+
 #include <Core/Utils/Math.hh>
 
 #include <cstdint>
@@ -35,8 +37,13 @@ void GameView::Draw() {
         windowCenter.x *= 0.5;
         windowCenter.y *= 0.5;
 
+        glm::vec4 UVs = { 0, 0, 1, 1 };
+        if (bgfx::getCaps()->originBottomLeft) {
+            UVs = { 0, 1, 1, 0 };
+        }
+
         ImGui::SetCursorPos(windowCenter);
-        ImGui::Image((void *)(intptr_t)texture.idx, { window.Width() * scale.x * 0.6f, window.Height() * scale.y * 0.6f }, { 0, 0 }, { 1, 1 });
+        ImGui::Image((void *)(intptr_t)texture.idx, { window.Width() * scale.x * 0.6f, window.Height() * scale.y * 0.6f }, { UVs.x, UVs.y }, { UVs.z, UVs.w });
     }
 
     ImGui::End();
