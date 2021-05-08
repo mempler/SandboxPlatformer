@@ -1,4 +1,6 @@
 set(ENGINE_LIBS
+    bx
+    bimg
     bgfx
     glm
     Kokoro::Memory
