@@ -13,6 +13,7 @@ set(ENGINE_LIBS
     bgfx-imgui
     imgui
     implot
+    freetype-bgfx
     fmt
 )
 

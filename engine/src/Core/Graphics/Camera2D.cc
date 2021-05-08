@@ -4,6 +4,8 @@
 
 #include "Core/Engine.hh"
 
+#include "glm/common.hpp"
+
 Camera2D::Camera2D(const glm::vec2 &v2Pos, const glm::vec2 &v2Scale) : m_v2Pos(v2Pos), m_v2Scale(v2Scale) {
     CalculateMetrices();
 }
@@ -15,11 +17,11 @@ void Camera2D::Init() {
 
 static glm::mat4 CalculateView(const glm::vec2 &v2Pos, float fRotation) {
     return glm::inverse(
-        glm::translate(glm::mat4(1.f), glm::vec3(v2Pos.x, v2Pos.y, .0f)) * glm::rotate(glm::mat4(1.f), glm::radians(fRotation), glm::vec3(.0f, .0f, 1.f)));
+        glm::translate(glm::mat4(1.f), glm::ceil(glm::vec3(v2Pos.x, v2Pos.y, .0f))) * glm::rotate(glm::mat4(1.f), glm::radians(fRotation), glm::vec3(.0f, .0f, 1.f)));
 }
 
 static glm::mat4 CalculateProjection(const glm::vec2 &v2Scale) {
-    glm::mat4 proj = glm::ortho(0.0f, v2Scale.x, v2Scale.y, .0f, .1f, 1000.f);
+    glm::mat4 proj = glm::ortho(0.0f, glm::ceil(v2Scale.x), glm::ceil(v2Scale.y), .0f, .1f, 1000.f);
     proj[3].z = 1.f;
     return proj;
 }

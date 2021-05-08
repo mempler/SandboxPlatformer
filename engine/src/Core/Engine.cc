@@ -61,6 +61,10 @@ AudioSystem &Engine::GetAudioSystem() {
     return m_AudioSystem;
 }
 
+FontManager &Engine::GetFontManager() {
+    return m_FontManager;
+}
+
 InputManager &Engine::GetInputManager() {
     return m_InputManager;
 }

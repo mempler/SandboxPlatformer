@@ -11,6 +11,7 @@
 #include "Core/Graphics/Camera2D.hh"
 #include "Core/Graphics/VertexBatcher.hh"
 #include "Core/Graphics/Window.hh"
+#include "Core/Managers/FontManager.hh"
 #include "Core/Managers/InputManager.hh"
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
@@ -26,6 +27,7 @@ public:
     TextureManager &GetTextureManager();
     ShaderManager &GetShaderManager();
     AudioSystem &GetAudioSystem();
+    FontManager &GetFontManager();
     InputManager &GetInputManager();
     GUI *GetGUI();
 
@@ -46,6 +48,7 @@ private:
     TextureManager m_TextureManager;
     ShaderManager m_ShaderManager;
     InputManager m_InputManager;
+    FontManager m_FontManager;
 
     // Audio
     AudioSystem m_AudioSystem;

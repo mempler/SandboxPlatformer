@@ -2,8 +2,6 @@
 #include "Core/GUI/Components/Box.hh"
 #include "Core/GUI/GUI.hh"
 
-#include <iostream>
-
 class SandboxGame : public BaseApp {
 protected:
     void Init() override {
@@ -26,18 +24,11 @@ protected:
     }
 
     void Draw(float fDelta) override {
+        // TESTS
     }
+
+private:
 };
-
-static BaseApp *app = nullptr;
-
-int main() {
-    app = new SandboxGame;
-
-    app->Run();
-
-    return 0;
-}
 
 BaseApp *GetApp() {
     return app;

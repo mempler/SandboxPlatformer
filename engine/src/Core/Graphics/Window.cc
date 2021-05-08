@@ -72,7 +72,7 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
     LOG_INFO("BGFX Initialized...");
 
     // Setup our drawing surface
-    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x000000FF, 1.0f, 0);
+    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x00000000, 1.0f, 0);
 
     bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
