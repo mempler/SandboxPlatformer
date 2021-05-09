@@ -8,8 +8,8 @@ set(GAME_LIBS
     Kokoro::Config
 )
 
-set(GAME_SOURCES
-    src/main.cc
+file(GLOB_RECURSE GAME_SOURCES 
+    src/*.cc
 )
 
 add_executable(${PROJECT_NAME} ${GAME_SOURCES})
