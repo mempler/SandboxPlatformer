@@ -5,6 +5,7 @@
 #include "Tile.hh"
 
 #include "WorldRenderer.hh"
+#include "bgfx/bgfx.h"
 
 class World {
 public:
@@ -21,6 +22,8 @@ public:
 private:
     uint16_t m_uWidth;
     uint16_t m_uHeight;
+
+    bgfx::FrameBufferHandle m_hWorldFrameBuffer = BGFX_INVALID_HANDLE;
 
 protected:
     std::vector<Tile> m_vTiles;

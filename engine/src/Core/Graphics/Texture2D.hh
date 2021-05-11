@@ -9,6 +9,8 @@
 #include <span.hpp>
 #include <stdint.h>
 
+#define TEXTURE_FORMAT_NEAREST (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT)
+
 // Low level texture wrapper
 class ENGINE_EXPORT Texture2D {
 public:
@@ -23,7 +25,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static void Load(Texture2D *pDest, Identifier const &identifier);
+    static void Load(Texture2D *pDest, Identifier const &identifier, uint64_t u64Filters);
 
     /*****************************************************
      * Load
@@ -35,7 +37,7 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static void Load(Texture2D *pDest, Identifier const &identifier, tcb::span<uint8_t> const &vData);
+    static void Load(Texture2D *pDest, Identifier const &identifier, uint64_t u64Filters, tcb::span<uint8_t> const &vData);
 
     /*****************************************************
      * LoadRaw

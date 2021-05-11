@@ -4,6 +4,7 @@
 
 #include "Core/Graphics/Texture2D.hh"
 #include "Core/Managers/TextureManager.hh"
+#include "bgfx/bgfx.h"
 
 #include <glm/glm.hpp>
 
@@ -141,6 +142,11 @@ public:
      * @param v4Color Color, use [0, 1].
      *****************************************************/
     void SubmitRectangle(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
+    void SubmitRectangleRawHandle(bgfx::TextureHandle hTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color = { 1, 1, 1, 1 });
+
+    void SetCurrentView(bgfx::ViewId viID) {
+        m_viCurrentView = viID;
+    }
 
 private: // Interestingly, we cannot define this bellow the function bellow, GCC/CLANG doesn't like that on linux.
     struct VertexInfo {
@@ -155,7 +161,7 @@ private: // Interestingly, we cannot define this bellow the function bellow, GCC
     };
 
 private: // same goes for variables, it'll simply not compile.
-    std::vector<std::pair<Texture2D *, BatchEvent>> m_vBatchEvents{};
+    std::vector<std::pair<bgfx::TextureHandle, BatchEvent>> m_vBatchEvents{};
 
     bgfx::VertexLayout m_vlDefaultLayout;
     bgfx::IndexBufferHandle m_hIndexBufferHandle;
@@ -170,13 +176,25 @@ private: // same goes for variables, it'll simply not compile.
     // Empty 1x1 white texture, useful for many things
     Texture2D *m_pWhiteTexture;
 
+    bgfx::ViewId m_viCurrentView = 0;
+
 private:
     BatchEvent &GetVertexData(Texture2D *pTexture) {
         for (auto &&t : m_vBatchEvents)
-            if (t.first == pTexture)
+            if (t.first.idx == pTexture->GetHandle().idx)
                 return t.second;
 
-        m_vBatchEvents.push_back(std::make_pair(pTexture, BatchEvent{}));
+        m_vBatchEvents.push_back(std::make_pair(pTexture->GetHandle(), BatchEvent{}));
+
+        return m_vBatchEvents.back().second;
+    }
+
+    BatchEvent &GetVertexData(bgfx::TextureHandle &hTexture) {
+        for (auto &&t : m_vBatchEvents)
+            if (t.first.idx == hTexture.idx)
+                return t.second;
+
+        m_vBatchEvents.push_back(std::make_pair(hTexture, BatchEvent{}));
 
         return m_vBatchEvents.back().second;
     }

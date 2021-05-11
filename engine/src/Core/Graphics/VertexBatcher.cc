@@ -5,6 +5,10 @@
 #include "Core/Engine.hh"
 #include "Core/Managers/TextureManager.hh"
 
+#include "glm/common.hpp"
+
+#include "bgfx/bgfx.h"
+
 static uint32_t g_uMaxQuads = 80000;
 
 VertexBatcher::VertexBatcher() {
@@ -79,7 +83,7 @@ void VertexBatcher::EndFrame() {
  *****************************************************/
 void VertexBatcher::Flush() {
     for (auto &&event : m_vBatchEvents) {
-        Texture2D *texture = event.first;
+        bgfx::TextureHandle &texture = event.first;
         auto &vertexes = event.second.vertices;
         auto &indexes = event.second.indexes;
 
@@ -93,9 +97,9 @@ void VertexBatcher::Flush() {
             uint32_t count = indexes ? indexes : g_uMaxQuads * 6;
             bgfx::setIndexBuffer(m_hIndexBufferHandle, 0, count);
 
-            bgfx::setTexture(0, m_hTextureUniform, texture->GetHandle());
+            bgfx::setTexture(0, m_hTextureUniform, texture);
             bgfx::setState(BGFX_STATE_WRITE_RGB | BGFX_STATE_WRITE_A | BGFX_STATE_BLEND_ALPHA | BGFX_STATE_WRITE_Z | BGFX_STATE_DEPTH_TEST_LESS);
-            bgfx::submit(0, m_hDefaultProgramHandle);
+            bgfx::submit(m_viCurrentView, m_hDefaultProgramHandle);
         }
     }
 }
@@ -113,7 +117,7 @@ void VertexBatcher::Reset() {
     for (auto &&event : m_vBatchEvents) std::vector<VertexInfo>().swap(event.second.vertices);
 
     m_vBatchEvents.clear();
-    std::vector<std::pair<Texture2D *, BatchEvent>>().swap(m_vBatchEvents); // kill me fucking hell
+    std::vector<std::pair<bgfx::TextureHandle, BatchEvent>>().swap(m_vBatchEvents); // kill me fucking hell
 }
 
 /*****************************************************
@@ -171,4 +175,20 @@ void VertexBatcher::SubmitRectangle(Texture2D *pTexture, const glm::mat4 &m4Tran
         pTexture = m_pWhiteTexture;
 
     Submit(pTexture, m4Transform, g_m4DefCoords, v4Color);
+}
+
+void VertexBatcher::SubmitRectangleRawHandle(bgfx::TextureHandle hTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color) {
+    BatchEvent &event = GetVertexData(hTexture);
+    event.vertices.resize(event.vertices.size() + 4);
+
+    VertexInfo *info = &event.vertices[event.vertices.size() - 4];
+
+    for (size_t i = 0; i < 4; i++) {
+        info->pos = m4Transform * g_m4DefPos[i];
+        info->uv = g_m4DefCoords[i];
+        info->color = v4Color;
+        info++;
+    }
+
+    event.indexes += 6;
 }

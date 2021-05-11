@@ -8,7 +8,7 @@
 class TextureLoader : public IResourceLoader<Texture2D> {
 public:
     void Load(Texture2D *pDest, const Identifier &identifier) override {
-        Texture2D::Load(pDest, identifier);
+        Texture2D::Load(pDest, identifier, 0);
     }
 };
 
@@ -29,8 +29,8 @@ public:
         return resource;
     }
 
-    Texture2D *CreateTextureFromMemory(
-        Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters, uint8_t *pData, uint32_t uDataSize) {
+    Texture2D *CreateTextureFromMemory(Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters,
+        uint8_t *pData, uint32_t uDataSize) {
         // Return cached texture
         if (Has(identifier))
             return Load(identifier);
@@ -40,6 +40,17 @@ public:
 
         Texture2D *resource = CreateEmpty(identifier);
         Texture2D::LoadRaw(resource, identifier, iWidth, iHeight, eTextureFormat, u64Filters, textureDataPtr);
+
+        return resource;
+    }
+
+    Texture2D *CreateTextureFromFile(Identifier const &identifier, uint64_t u64Filters) {
+        // Return cached texture
+        if (Has(identifier))
+            return Load(identifier);
+
+        Texture2D *resource = CreateEmpty(identifier);
+        Texture2D::Load(resource, identifier, u64Filters);
 
         return resource;
     }

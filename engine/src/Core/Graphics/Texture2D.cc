@@ -29,7 +29,7 @@ Texture2D ::~Texture2D() {
  *
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-void Texture2D::Load(Texture2D *pDest, Identifier const &identifier) {
+void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, uint64_t u64Filters) {
     if (pDest == nullptr)
         return;
 
@@ -38,7 +38,7 @@ void Texture2D::Load(Texture2D *pDest, Identifier const &identifier) {
         data = FileSystem::ReadBinaryFile(identifier.Path().data()); // what the hell
     }
 
-    Texture2D::Load(pDest, identifier, data);
+    Texture2D::Load(pDest, identifier, u64Filters, data);
 }
 
 /*****************************************************
@@ -48,7 +48,7 @@ void Texture2D::Load(Texture2D *pDest, Identifier const &identifier) {
  *
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
-void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, tcb::span<uint8_t> const &vData) {
+void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, uint64_t u64Filters, tcb::span<uint8_t> const &vData) {
     if (pDest == nullptr)
         return;
 
@@ -63,12 +63,12 @@ void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, tcb::span<u
     const auto *const pixelData = bgfx::makeRef(imageContainer->m_data, imageContainer->m_size, DeleteImageContainer, imageContainer);
 
     // Make sure we have a valid texture
-    if (!bgfx::isTextureValid(0, false, imageContainer->m_numLayers, (bgfx::TextureFormat::Enum)imageContainer->m_format, bgfx::TextureFormat::RGBA8))
+    if (!bgfx::isTextureValid(0, false, imageContainer->m_numLayers, (bgfx::TextureFormat::Enum)imageContainer->m_format, 0))
         return;
 
     pDest->m_Identifier = identifier;
     pDest->m_thHandle = bgfx::createTexture2D((uint16_t)imageContainer->m_width, (uint16_t)imageContainer->m_height, 1 < imageContainer->m_numMips,
-        imageContainer->m_numLayers, (bgfx::TextureFormat::Enum)imageContainer->m_format, bgfx::TextureFormat::RGBA8, pixelData);
+        imageContainer->m_numLayers, (bgfx::TextureFormat::Enum)imageContainer->m_format, 0, pixelData);
 
     pDest->m_iWidth = imageContainer->m_width;
     pDest->m_iHeight = imageContainer->m_height;
@@ -116,7 +116,7 @@ void Texture2D::LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t 
  *****************************************************/
 void Texture2D::Create(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat) {
     pDest->m_Identifier = identifier;
-    pDest->m_thHandle = bgfx::createTexture2D(iWidth, iHeight, false, 1, eTextureFormat, eTextureFormat);
+    pDest->m_thHandle = bgfx::createTexture2D(iWidth, iHeight, false, 1, eTextureFormat, 0);
 
     if (!pDest->IsValid())
         return;

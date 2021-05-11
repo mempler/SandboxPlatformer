@@ -72,9 +72,7 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
     LOG_INFO("BGFX Initialized...");
 
     // Setup our drawing surface
-    bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x0000000FF, 1.0f, 0);
-
-    bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
+    AddView(0);
 
 #if PLATFORM_ANDROID
     // Set display size
@@ -165,9 +163,8 @@ double GameWindow::BeginFrame() {
                     OnResize(this, m_iWidth, m_iHeight);
 
                     bgfx::reset(m_iWidth, m_iHeight, BGFX_RESET_NONE);
-                    bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
-                    GetEngine()->GetCamera().SetUniformTransform(0);
+                    ResetTransform();
                 }
                 break;
             default: break;
@@ -220,4 +217,29 @@ void GameWindow::EndFrame() {
  *****************************************************/
 bool GameWindow::ShouldExit() {
     return m_bExit;
+}
+
+/*****************************************************
+ * AddView
+ *
+ * Adds another view into view stack, useful when
+ * updating all at once.
+ *****************************************************/
+void GameWindow::AddView(bgfx::ViewId viID) {
+    bgfx::setViewClear(viID, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x0000000FF, 1.0f, 0);
+    bgfx::setViewRect(viID, 0, 0, bgfx::BackbufferRatio::Equal);
+
+    m_vViews.push_back(viID);
+}
+
+/*****************************************************
+ * ResetTransform
+ *
+ * Updates transform uniform for all views in stack.
+ *****************************************************/
+void GameWindow::ResetTransform() {
+    for (auto &i : m_vViews) {
+        bgfx::setViewRect(i, 0, 0, bgfx::BackbufferRatio::Equal);
+        GetEngine()->GetCamera().SetUniformTransform(i);
+    }
 }

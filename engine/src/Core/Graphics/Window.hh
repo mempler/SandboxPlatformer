@@ -36,15 +36,6 @@ public:
      *****************************************************/
     ~GameWindow();
 
-    void SetViewMatrix(const glm::mat4 &m4View) {
-        this->m_m4View = m4View;
-
-        auto view = glm::value_ptr(m_m4View);
-        auto proj = glm::value_ptr(m_m4Projection);
-
-        bgfx::setViewTransform(0, view, proj);
-    }
-
     /*****************************************************
      * BeginRender
      *
@@ -73,6 +64,21 @@ public:
      *****************************************************/
     bool ShouldExit();
 
+    /*****************************************************
+     * AddView
+     *
+     * Adds another view into view stack, useful when
+     * updating all at once.
+     *****************************************************/
+    void AddView(bgfx::ViewId viID);
+
+    /*****************************************************
+     * ResetTransform
+     *
+     * Updates transform uniform for all views in stack.
+     *****************************************************/
+    void ResetTransform();
+
 public:
     int32_t Width() {
         return m_iWidth;
@@ -80,10 +86,6 @@ public:
 
     int32_t Height() {
         return m_iHeight;
-    }
-
-    const glm::mat4 &ProjectionMatrix() const {
-        return m_m4Projection;
     }
 
     // Yes, signals are public
@@ -100,6 +102,5 @@ private:
 
     int64_t m_iLastTime = 0;
 
-    glm::mat4 m_m4Projection;
-    glm::mat4 m_m4View;
+    std::vector<bgfx::ViewId> m_vViews;
 };
