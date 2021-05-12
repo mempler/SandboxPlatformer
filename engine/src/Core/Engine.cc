@@ -3,9 +3,12 @@
 #include "Engine.hh"
 
 #include "Core/Debug/DefaultLayout.hh"
+#include "Core/Graphics/Texture2D.hh"
+#include "Core/Managers/FontManager.hh"
 #include "Core/Managers/InputManager.hh"
 #include "Core/Utils/Timer.hh"
 
+#include "Kokoro/FileSystem.hh"
 #include "bgfx/bgfx.h"
 
 #include <SDL_keycode.h>
@@ -16,6 +19,39 @@
 //////////////////
 Engine *GetEngine() {
     return GetApp()->GetEngine();
+}
+
+void init_embedded_resources();
+
+void engine_load_embedded_resource(const char *szId, const uint8_t *pData, size_t sSize) {
+    Identifier identifier(szId);
+    tcb::span<uint8_t> data((uint8_t *)pData, sSize);
+
+    Engine *engine = GetEngine();
+
+    /*
+    if (FileSystem::HasExtension(identifier.Path(), ".ttf")) {
+        // Most common font sizes
+        // TODO: @loanselot find a better way
+        engine->GetFontManager().CreateFromMemory(identifier, 512, 512, 12, data);
+        engine->GetFontManager().CreateFromMemory(identifier, 512, 512, 16, data);
+        engine->GetFontManager().CreateFromMemory(identifier, 512, 512, 18, data);
+        engine->GetFontManager().CreateFromMemory(identifier, 512, 512, 20, data);
+        engine->GetFontManager().CreateFromMemory(identifier, 512, 512, 24, data);
+        engine->GetFontManager().CreateFromMemory(identifier, 512, 512, 30, data);
+        engine->GetFontManager().CreateFromMemory(identifier, 512, 512, 36, data);
+        engine->GetFontManager().CreateFromMemory(identifier, 512, 512, 42, data);
+        engine->GetFontManager().CreateFromMemory(identifier, 512, 512, 48, data);
+        engine->GetFontManager().CreateFromMemory(identifier, 512, 512, 60, data);
+        engine->GetFontManager().CreateFromMemory(identifier, 512, 512, 72, data);
+    }
+    */
+
+    if (FileSystem::HasExtension(identifier.Path(), ".png") || FileSystem::HasExtension(identifier.Path(), ".jpg") ||
+        FileSystem::HasExtension(identifier.Path(), ".bmp")) {
+        Texture2D *texture = engine->GetTextureManager().CreateEmpty(identifier);
+        Texture2D::Load(texture, identifier, data);
+    }
 }
 
 // Turn off formatting, there is some weird shit going on
@@ -80,6 +116,9 @@ void Engine::Init() {
     m_InputManager.Init();
     m_VertexBatcher.Init(m_TextureManager);
     m_GUI->Init();
+
+    // Initialize embedded resources
+    init_embedded_resources();
 
     // Show by default
     m_IResourceMonitor.SetShowing(true);

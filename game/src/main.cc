@@ -17,7 +17,7 @@ protected:
         //box->ScaleTo({ 1.5, 1.5 })->Easing(EasingType::Linear)->Within(1000)->Repeat()->Repeat();
 
         box->FadeTo({ 0.5, 0.5, 1.0, 1.0 })->Easing(EasingType::elasticOut)->Within(1000);
-        box->SetImage("file://yes.png");
+        box->SetImage("engine://textures/yes.png");
     }
 
     void Tick(float fDelta) override {

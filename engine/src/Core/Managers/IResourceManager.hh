@@ -56,7 +56,15 @@ public:
         return m_umResources.end();
     }
 
-protected:
+    /*****************************************************
+     * CreateEmpty
+     *
+     * Used to create an empty resource entry
+     *
+     * @param identifier Identifier of the resource
+     *
+     * @return Pointer to the inserted resource
+     *****************************************************/
     TResource *CreateEmpty(Identifier const &identifier) {
         m_umResources[identifier] = {};
 

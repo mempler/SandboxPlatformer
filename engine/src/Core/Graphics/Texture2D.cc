@@ -5,6 +5,8 @@
 #include "Core/Utils/FileSystem.hh"
 #include "Core/Utils/Identifier.hh"
 
+#include "bgfx/bgfx.h"
+
 namespace bgfx {
     // Hack for getting BGFX Allocator
     extern bx::AllocatorI *g_allocator;
@@ -54,11 +56,16 @@ void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, tcb::span<u
 
     LOG_INFO("Loading Texture2D <%s>", identifier.Raw().data());
 
-    // Parse the input image
-    auto *imageContainer = bimg::imageParse(bgfx::g_allocator, vData.data(), vData.size());
+    bgfx::Error *bgfxError;
 
-    if (imageContainer == nullptr)
+    // Parse the input image
+    auto *imageContainer = bimg::imageParse(bgfx::g_allocator, vData.data(), vData.size(), bgfx::TextureFormat::Count, bgfxError);
+
+    if (imageContainer == nullptr) {
+        LOG_ERROR("Failed to parse image: %s", bgfxError->getMessage())
+
         return;
+    }
 
     const auto *const pixelData = bgfx::makeRef(imageContainer->m_data, imageContainer->m_size, DeleteImageContainer, imageContainer);
 
@@ -92,7 +99,7 @@ void Texture2D::LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t 
     tcb::span<uint8_t> const &vData) {
     LOG_INFO("Loading Raw Texture2D <%s>(%d, %d)", identifier.Raw().data(), iWidth, iHeight);
     const auto *const pixelData = bgfx::copy(vData.data(), vData.size()); // dont use makeRef dont use makeRef dont use makeRef dont use makeRef
-    
+
     pDest->m_Identifier = identifier;
     pDest->m_thHandle = bgfx::createTexture2D((uint16_t)iWidth, (uint16_t)iHeight, false, 1, eTextureFormat, u64Filters, pixelData);
 
