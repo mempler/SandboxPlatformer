@@ -14,7 +14,7 @@ if (MSVC)
     add_definitions("/MP")
 endif()
 
-option(ENGINE_TRACING_ENABLED "Enable Tracing" ON)
+option(ENGINE_TRACING_ENABLED "Enable Tracing" OFF)
 if (ENGINE_TRACING_ENABLED)
     add_definitions(-DTRACY_ENABLE) # Enable tracing solution wide.
 endif()
