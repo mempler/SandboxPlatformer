@@ -5,10 +5,14 @@
 #include "Core/Engine.hh"
 
 void InputManager::Init() {
+    ZoneScoped;
+
     GetEngine()->GetWindow().OnSDL2Event.connect<&InputManager::PumpSDL2Event>(this);
 }
 
 void InputManager::PumpSDL2Event(GameWindow *pWindow, SDL_Event &event) {
+    ZoneScoped;
+
     if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
         auto keyEvent = event.key.keysym;
 
@@ -78,7 +82,7 @@ void InputManager::PumpSDL2Event(GameWindow *pWindow, SDL_Event &event) {
 
         m_v2MouseMoveDelta.x = motionEvent.x;
         m_v2MouseMoveDelta.y = motionEvent.y;
-        
+
         OnMouseMove(m_v2MouseMoveDelta);
     }
 

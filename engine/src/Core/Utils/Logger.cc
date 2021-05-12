@@ -11,6 +11,7 @@ void Logger::Clear() {
 }
 
 void Logger::Logf(const char *output, ...) {
+    ZoneScoped;
     FILE *f = fopen("log.txt", "a");
 
     va_list args;

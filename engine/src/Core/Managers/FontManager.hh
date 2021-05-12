@@ -8,14 +8,18 @@
 class FontLoader : public IResourceLoader<Font> {
 public:
     void Load(Font *pDest, const Identifier &identifier) override {
+        ZoneScoped;
+
         Font::Load(pDest, identifier, 512, 512, 32.f, g_szASCII);
     }
 };
 
 class FontManager : public IResourceManager<Font, FontLoader> {
 public:
-    Font *LoadFromMemory(Identifier const &identifier, size_t sAtlasWidth, size_t sAtlasHeight, float fSizePX, uint8_t *pData, uint32_t uDataSize,
-        const char *szChars = g_szASCII) {
+    Font *LoadFromMemory(
+        Identifier const &identifier, size_t sAtlasWidth, size_t sAtlasHeight, float fSizePX, uint8_t *pData, uint32_t uDataSize, const char *szChars = g_szASCII) {
+        ZoneScoped;
+
         // Return cached texture
         if (Has(identifier))
             return Load(identifier);
@@ -30,6 +34,8 @@ public:
     }
 
     Font *LoadFromFile(Identifier const &identifier, size_t sAtlasWidth, size_t sAtlasHeight, float fSizePX, const char *szChars = g_szASCII) {
+        ZoneScoped;
+
         // Return cached texture
         if (Has(identifier))
             return Load(identifier);

@@ -80,6 +80,7 @@
 #include <implot.h>
 
 // Utils
+#include <Tracy.hpp>
 #include <signals.hpp>
 #include <span.hpp>
 
@@ -93,7 +94,6 @@
 #include "Core/Utils/Logger.hh"
 #include "Core/Utils/Math.hh"
 #include "Core/Utils/Memory.hh"
-#include "Core/Utils/String.hh"
 #include "Core/Utils/Timer.hh"
 #include "Core/Utils/XorStr.hh"
 

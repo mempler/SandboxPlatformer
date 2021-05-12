@@ -5,10 +5,12 @@
 #include <bgfx/bgfx.h>
 
 void ShaderManager::AppendShader(Identifier const &rIdent, const bgfx::RendererType::Enum eRenderer, const ShaderType eType, uint8_t *pSrc, uint32_t uCodeLen) {
+    ZoneScoped;
     m_vShaders.push_back(Shader{ rIdent, eRenderer, eType, pSrc, uCodeLen });
 }
 
 bgfx::ShaderHandle ShaderManager::LoadShader(Identifier const &rIdent, const ShaderType pShaderType) {
+    ZoneScoped;
     Shader *p_shader = nullptr;
 
     for (auto &shader : m_vShaders) {
@@ -30,6 +32,7 @@ bgfx::ShaderHandle ShaderManager::LoadShader(Identifier const &rIdent, const Sha
 }
 
 bgfx::ProgramHandle ShaderManager::LoadProgram(Identifier const &rIdent) {
+    ZoneScoped;
     if (m_umPrograms.find(rIdent) != m_umPrograms.end())
         return m_umPrograms[rIdent];
 
@@ -57,6 +60,7 @@ bgfx::ProgramHandle ShaderManager::LoadProgram(Identifier const &rIdent) {
 #include "Core/Graphics/tempsh/vs_default.vulkan.h"
 
 void ShaderManager::LoadDefaultShaders() {
+    ZoneScoped;
     AppendShader("engine://default", bgfx::RendererType::Direct3D9, ShaderType::Fragment, (uint8_t *)fs_default_d3d9, sizeof(fs_default_d3d9));
     AppendShader("engine://default", bgfx::RendererType::Direct3D11, ShaderType::Fragment, (uint8_t *)fs_default_d3d11, sizeof(fs_default_d3d11));
     AppendShader("engine://default", bgfx::RendererType::Direct3D12, ShaderType::Fragment, (uint8_t *)fs_default_d3d12, sizeof(fs_default_d3d12));

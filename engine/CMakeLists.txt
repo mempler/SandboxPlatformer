@@ -17,6 +17,7 @@ set(ENGINE_LIBS
     implot
     freetype-bgfx
     fmt
+    tracy
 )
 
 file(GLOB_RECURSE ENGINE_SOURCES 

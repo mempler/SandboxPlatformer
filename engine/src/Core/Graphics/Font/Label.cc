@@ -4,6 +4,8 @@
 #include "Core/Utils/Math.hh"
 
 void Label::SetText(const glm::vec3 &v3Pos, const std::string &sText, Font *pFont) {
+    ZoneScoped;
+
     m_v3Pos = v3Pos;
     m_sText = sText;
     m_pUsingFont = pFont;
@@ -12,6 +14,8 @@ void Label::SetText(const glm::vec3 &v3Pos, const std::string &sText, Font *pFon
 }
 
 void Label::SetText(const std::string &sText, Font *pFont) {
+    ZoneScoped;
+
     m_sText = sText;
     m_pUsingFont = pFont;
 
@@ -54,20 +58,28 @@ void Label::SetText(const std::string &sText, Font *pFont) {
 }
 
 void Label::SetPosition(const glm::vec3 &v3Pos) {
+    ZoneScoped;
+
     m_v3Pos = v3Pos;
 
     CalculateTransform();
 }
 
 void Label::SetColor(const glm::vec4 &v4Color) {
+    ZoneScoped;
+
     for (auto &&r : m_vChars) r.color = v4Color;
 }
 
 void Label::Render() {
+    ZoneScoped;
+
     for (auto &&r : m_vChars) GetEngine()->GetBatcher().SubmitWithRawUV(r.texture, r.transform, r.uvs, r.color);
 }
 
 glm::vec2 Label::CalculateTextSize(const std::string &sText, Font *pFont) {
+    ZoneScoped;
+
     glm::vec2 size{ 0.f, 0.f };
 
     for (int i = 0; i < sText.length(); i++) {
@@ -88,5 +100,7 @@ glm::vec2 Label::CalculateTextSize(const std::string &sText, Font *pFont) {
 }
 
 void Label::CalculateTransform() {
+    ZoneScoped;
+
     for (auto &r : m_vChars) r.transform = Math::CalcTransform({ m_v3Pos.x + r.glyphPos.x, m_v3Pos.y - r.glyphPos.y, m_v3Pos.z }, r.size);
 }

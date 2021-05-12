@@ -11,12 +11,16 @@ namespace bgfx {
 } // namespace bgfx
 
 static void DeleteImageContainer(void *vpPtr, void *vpUserData) {
+    ZoneScoped;
+
     BX_UNUSED(vpPtr);
     bimg::ImageContainer *const imageContainer = (bimg::ImageContainer *)vpUserData;
     bimg::imageFree(imageContainer);
 }
 
 Texture2D ::~Texture2D() {
+    ZoneScoped;
+
     // Destroy GPU Texture Handle
     if (bgfx::isValid(this->m_thHandle))
         bgfx::destroy(this->m_thHandle);
@@ -30,6 +34,8 @@ Texture2D ::~Texture2D() {
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
 void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, uint64_t u64Filters) {
+    ZoneScoped;
+
     if (pDest == nullptr)
         return;
 
@@ -49,6 +55,8 @@ void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, uint64_t u6
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
 void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, uint64_t u64Filters, tcb::span<uint8_t> const &vData) {
+    ZoneScoped;
+
     if (pDest == nullptr)
         return;
 
@@ -90,9 +98,11 @@ void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, uint64_t u6
  *****************************************************/
 void Texture2D::LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters,
     tcb::span<uint8_t> const &vData) {
+    ZoneScoped;
+
     LOG_INFO("Loading Raw Texture2D <%s>(%d, %d)", identifier.Raw().data(), iWidth, iHeight);
     const auto *const pixelData = bgfx::copy(vData.data(), vData.size()); // dont use makeRef dont use makeRef dont use makeRef dont use makeRef
-    
+
     pDest->m_Identifier = identifier;
     pDest->m_thHandle = bgfx::createTexture2D((uint16_t)iWidth, (uint16_t)iHeight, false, 1, eTextureFormat, u64Filters, pixelData);
 
@@ -115,6 +125,8 @@ void Texture2D::LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t 
  * @return GPU Texture wrapper (Texture2D)
  *****************************************************/
 void Texture2D::Create(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat) {
+    ZoneScoped;
+
     pDest->m_Identifier = identifier;
     pDest->m_thHandle = bgfx::createTexture2D(iWidth, iHeight, false, 1, eTextureFormat, 0);
 
@@ -136,6 +148,8 @@ void Texture2D::Create(Texture2D *pDest, Identifier const &identifier, int32_t i
  *
  *****************************************************/
 void Texture2D::Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, tcb::span<uint8_t> const &vData) {
+    ZoneScoped;
+
     if (iWidth == 0 || iHeight == 0 || vData.size() == 0)
         return;
 

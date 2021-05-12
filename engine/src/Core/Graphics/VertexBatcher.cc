@@ -12,6 +12,8 @@
 static uint32_t g_uMaxQuads = 80000;
 
 VertexBatcher::VertexBatcher() {
+    ZoneScoped;
+
     m_vlDefaultLayout.begin()
         .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
         .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
@@ -39,6 +41,7 @@ VertexBatcher::VertexBatcher() {
 }
 
 VertexBatcher::~VertexBatcher() {
+    ZoneScoped;
 }
 
 /*****************************************************
@@ -48,6 +51,8 @@ VertexBatcher::~VertexBatcher() {
  * for example shader manager.
  *****************************************************/
 void VertexBatcher::Init(TextureManager &textureManager) {
+    ZoneScoped;
+
     // Initialize uniforms here
     m_hTextureUniform = bgfx::createUniform("u_texture", bgfx::UniformType::Sampler);
 
@@ -64,6 +69,7 @@ void VertexBatcher::Init(TextureManager &textureManager) {
  * Use this to take pre-rendering actions.
  *****************************************************/
 void VertexBatcher::BeginFrame() {
+    ZoneScoped;
 }
 
 /*****************************************************
@@ -73,6 +79,8 @@ void VertexBatcher::BeginFrame() {
  * will be drawn into screen.
  *****************************************************/
 void VertexBatcher::EndFrame() {
+    ZoneScoped;
+
     Reset();
 }
 
@@ -82,7 +90,10 @@ void VertexBatcher::EndFrame() {
  * Force finish all events in cache.
  *****************************************************/
 void VertexBatcher::Flush() {
+    ZoneScoped;
+
     for (auto &&event : m_vBatchEvents) {
+        ZoneScopedN("Vertex Event");
         bgfx::TextureHandle &texture = event.first;
         auto &vertexes = event.second.vertices;
         auto &indexes = event.second.indexes;
@@ -110,6 +121,8 @@ void VertexBatcher::Flush() {
  * Force finish all events in cache and restart again.
  *****************************************************/
 void VertexBatcher::Reset() {
+    ZoneScoped;
+
     Flush();
 
     // TODO: Add FreeSTL function
@@ -126,6 +139,8 @@ void VertexBatcher::Reset() {
  * Add new event into queue but set UVs manually.
  *****************************************************/
 void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::mat4x2 &m4UV, const glm::vec4 &v4Color) {
+    ZoneScoped;
+
     BatchEvent &event = GetVertexData(pTexture);
     event.vertices.resize(event.vertices.size() + 4);
 
@@ -142,6 +157,8 @@ void VertexBatcher::Submit(Texture2D *pTexture, const glm::mat4 &m4Transform, co
 }
 
 void VertexBatcher::SubmitWithUV(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
+    ZoneScoped;
+
     if (!pTexture)
         pTexture = m_pWhiteTexture;
 
@@ -154,6 +171,8 @@ void VertexBatcher::SubmitWithUV(Texture2D *pTexture, const glm::mat4 &m4Transfo
 }
 
 void VertexBatcher::SubmitWithRawUV(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4UV, const glm::vec4 &v4Color) {
+    ZoneScoped;
+
     if (!pTexture)
         pTexture = m_pWhiteTexture;
 
@@ -171,6 +190,8 @@ void VertexBatcher::SubmitWithRawUV(Texture2D *pTexture, const glm::mat4 &m4Tran
  * Quick function to not deal with UVs
  *****************************************************/
 void VertexBatcher::SubmitRectangle(Texture2D *pTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color) {
+    ZoneScoped;
+
     if (!pTexture)
         pTexture = m_pWhiteTexture;
 
@@ -178,6 +199,8 @@ void VertexBatcher::SubmitRectangle(Texture2D *pTexture, const glm::mat4 &m4Tran
 }
 
 void VertexBatcher::SubmitRectangleRawHandle(bgfx::TextureHandle hTexture, const glm::mat4 &m4Transform, const glm::vec4 &v4Color) {
+    ZoneScoped;
+
     BatchEvent &event = GetVertexData(hTexture);
     event.vertices.resize(event.vertices.size() + 4);
 

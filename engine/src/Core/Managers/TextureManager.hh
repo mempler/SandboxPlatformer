@@ -8,6 +8,7 @@
 class TextureLoader : public IResourceLoader<Texture2D> {
 public:
     void Load(Texture2D *pDest, const Identifier &identifier) override {
+        ZoneScoped;
         Texture2D::Load(pDest, identifier, 0);
     }
 };
@@ -15,6 +16,7 @@ public:
 class TextureManager : public IResourceManager<Texture2D, TextureLoader> {
 public:
     Texture2D *CreateTextureWithColor(int32_t iWidth, int32_t iHeight, uint64_t u64Filters, glm::vec4 v4Color) {
+        ZoneScoped;
         uint32_t data = glm::packUnorm4x8(v4Color);
         Identifier identifier = fmt::format("color://{:x}", data); // Return cached texture
         if (Has(identifier))
@@ -31,6 +33,7 @@ public:
 
     Texture2D *CreateTextureFromMemory(Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters,
         uint8_t *pData, uint32_t uDataSize) {
+        ZoneScoped;
         // Return cached texture
         if (Has(identifier))
             return Load(identifier);
@@ -45,6 +48,7 @@ public:
     }
 
     Texture2D *CreateTextureFromFile(Identifier const &identifier, uint64_t u64Filters) {
+        ZoneScoped;
         // Return cached texture
         if (Has(identifier))
             return Load(identifier);

@@ -10,13 +10,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_definitions(-DNOMINMAX) # Fuck you windows
-
-if (OFF)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
-endif()
-
 if (MSVC)
     add_definitions("/MP")
+endif()
+
+option(ENGINE_TRACING_ENABLED "Enable Tracing" ON)
+if (ENGINE_TRACING_ENABLED)
+    add_definitions(-DTRACY_ENABLE) # Enable tracing solution wide.
 endif()
 
 add_subdirectory(vendor)

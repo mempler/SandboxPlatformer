@@ -4,7 +4,11 @@
 
 #include "Core/Engine.hh"
 
+#include "bgfx/bgfx.h"
+
 GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *szTitle, const Flags eFlags) {
+    ZoneScoped;
+
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
         LOG_ERROR("Failed to initialize SDL2!");
         return;
@@ -121,6 +125,7 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
  * Destroys the Window && Shutsdown BGFX
  *****************************************************/
 GameWindow::~GameWindow() {
+    ZoneScoped;
 #if ENGINE_DEBUG
     ImGui_ImplSDL2_Shutdown();
     ImGui_Implbgfx_Shutdown();
@@ -142,6 +147,8 @@ GameWindow::~GameWindow() {
  * NOTE: This must be called on the Render thread.
  *****************************************************/
 double GameWindow::BeginFrame() {
+    ZoneScoped;
+
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0) { // TODO: Event Pipeline
 #if ENGINE_DEBUG
@@ -199,6 +206,8 @@ double GameWindow::BeginFrame() {
  * NOTE: This must be called on the Render thread.
  *****************************************************/
 void GameWindow::EndFrame() {
+    ZoneScoped;
+
 #if ENGINE_DEBUG
     ImGui::Render();
     ImGui_Implbgfx_RenderDrawLists(ImGui::GetDrawData());
@@ -226,6 +235,7 @@ bool GameWindow::ShouldExit() {
  * updating all at once.
  *****************************************************/
 void GameWindow::AddView(bgfx::ViewId viID) {
+    ZoneScoped;
     bgfx::setViewClear(viID, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x0000000FF, 1.0f, 0);
     bgfx::setViewRect(viID, 0, 0, bgfx::BackbufferRatio::Equal);
 
@@ -238,6 +248,7 @@ void GameWindow::AddView(bgfx::ViewId viID) {
  * Updates transform uniform for all views in stack.
  *****************************************************/
 void GameWindow::ResetTransform() {
+    ZoneScoped;
     for (auto &i : m_vViews) {
         bgfx::setViewRect(i, 0, 0, bgfx::BackbufferRatio::Equal);
         GetEngine()->GetCamera().SetUniformTransform(i);

@@ -18,6 +18,7 @@
 //    Engine    //
 //////////////////
 Engine *GetEngine() {
+    ZoneScoped;
     return GetApp()->GetEngine();
 }
 
@@ -31,11 +32,13 @@ Engine::Engine()
     m_GameView(this),
     m_Profiler(this)
 {
+        ZoneScoped;
     m_Camera.SetUniformTransform(0);
 }
 // clang-format on
 
 Engine::~Engine() {
+    ZoneScoped;
 }
 
 GameWindow &Engine::GetWindow() {
@@ -71,6 +74,7 @@ InputManager &Engine::GetInputManager() {
 }
 
 void Engine::Init() {
+    ZoneScoped;
     m_ShaderManager.LoadDefaultShaders();
     m_AudioSystem.Init();
     m_Camera.Init();
@@ -85,6 +89,9 @@ void Engine::Init() {
 }
 
 void Engine::BeginFrame() {
+    FrameMarkStart("Engine Frame");
+
+    ZoneScoped;
     m_GameWindow.BeginFrame();
     m_VertexBatcher.BeginFrame();
 
@@ -153,8 +160,11 @@ void Engine::BeginFrame() {
 }
 
 void Engine::EndFrame() {
+    ZoneScoped;
     m_VertexBatcher.EndFrame();
     m_GameWindow.EndFrame();
+
+    FrameMarkEnd("Engine Frame");
 }
 
 //////////////////
@@ -168,9 +178,12 @@ BaseApp::~BaseApp() {
 }
 
 void BaseApp::Run() {
-    m_pEngine->Init();
+    {
+        ZoneScoped;
+        m_pEngine->Init();
 
-    Init();
+        Init();
+    }
 
     Timer timer;
     while (!m_pEngine->GetWindow().ShouldExit()) {

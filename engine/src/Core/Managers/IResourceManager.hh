@@ -18,6 +18,8 @@ template <typename TResource, typename ILoader>
 class IResourceManager {
 public:
     TResource *Load(Identifier const &identifier) {
+        ZoneScoped;
+
         if (m_umResources.find(identifier) != m_umResources.end())
             return &m_umResources.at(identifier);
 
@@ -30,6 +32,8 @@ public:
     }
 
     void Destroy(TResource **ppResource) {
+        ZoneScoped;
+
         if (ppResource == nullptr)
             return;
 
@@ -42,22 +46,29 @@ public:
     }
 
     void Destroy(Identifier const &identifier) {
+        ZoneScoped;
+
         m_umResources.erase(identifier);
     }
 
     bool Has(Identifier const &identifier) {
+        ZoneScoped;
+
         return m_umResources.find(identifier) != m_umResources.end();
     }
 
     typename std::unordered_map<Identifier, TResource>::iterator begin() {
+        ZoneScoped;
         return m_umResources.begin();
     }
     typename std::unordered_map<Identifier, TResource>::iterator end() {
+        ZoneScoped;
         return m_umResources.end();
     }
 
 protected:
     TResource *CreateEmpty(Identifier const &identifier) {
+        ZoneScoped;
         m_umResources[identifier] = {};
 
         return &m_umResources.at(identifier);
