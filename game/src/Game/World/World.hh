@@ -7,7 +7,14 @@
 #include "WorldRenderer.hh"
 #include "bgfx/bgfx.h"
 
-class World {
+enum class eWorldState {
+    None = 0,
+    IsValid = 1 << 1,
+};
+
+EnumFlags(eWorldState)
+
+    class World {
 public:
     World(){};
     ~World(){};
@@ -19,9 +26,20 @@ public:
     void PlaceFore(uint16_t uID, uint16_t x, uint16_t y);
     void PlaceBack(uint16_t uID, uint16_t x, uint16_t y);
 
+public:
+    bool IsValid() {
+        return (m_eState & eWorldState::IsValid);
+    }
+
+    bgfx::FrameBufferHandle &GetFrameBuffer() {
+        return m_hWorldFrameBuffer;
+    }
+
 private:
     uint16_t m_uWidth;
     uint16_t m_uHeight;
+
+    eWorldState m_eState = eWorldState::None;
 
     bgfx::FrameBufferHandle m_hWorldFrameBuffer = BGFX_INVALID_HANDLE;
 

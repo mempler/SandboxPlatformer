@@ -87,6 +87,7 @@
 // this is stuff that we wont change at all (or super rarely)
 #include "Core/Audio/Helper.hh"
 #include "Core/Managers/IResourceManager.hh"
+#include "Core/Utils/EnumFlags.hh"
 #include "Core/Utils/FileSystem.hh"
 #include "Core/Utils/Identifier.hh"
 #include "Core/Utils/Logger.hh"

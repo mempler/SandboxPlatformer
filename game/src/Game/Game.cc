@@ -3,11 +3,23 @@
 #include "Core/Engine.hh"
 #include "Core/Graphics/Texture2D.hh"
 
+void Game::OnGameResize(GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight) {
+    if (m_World.IsValid()) {
+        if (bgfx::isValid(m_World.GetFrameBuffer()))
+            bgfx::destroy(m_World.GetFrameBuffer());
+
+        m_World.GetFrameBuffer() = bgfx::createFrameBuffer(pGameWindow->Width(), pGameWindow->Height(), bgfx::TextureFormat::RGBA8, g_uFrameBufferFlags);
+    }
+}
+
 // do not init world
 Game::Game() : m_ItemInfoManager() {
 }
 
 void Game::Init() {
+    // PREINIT EVENTS
+    GetEngine()->GetWindow().OnResize.connect<&Game::OnGameResize>(this);
+
     // PREINIT VIEWS
     GetEngine()->GetWindow().AddView(2); // World tile layer
     GetEngine()->GetWindow().ResetTransform();
