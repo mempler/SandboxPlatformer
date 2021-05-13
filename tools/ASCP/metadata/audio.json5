@@ -9,7 +9,7 @@
     // This file should be encrypted + lossless compressed
     flags: [
         "encryption:aes256",
-        "compression:zlib",
+        "compression:gzip",
     ],
 
     // File extensions
@@ -25,8 +25,7 @@
             frequency: "uint32",
             isMono: "uint8",
 
-            channelLeftData: "[..]byte",
-            channelRightData: "[..]byte",
+            channelData: "[..]byte",
         }
     ],
 }

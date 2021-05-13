@@ -9,7 +9,7 @@
     // This file should be encrypted + lossless compressed
     flags: [
         "encryption:aes256",
-        "compression:zlib",
+        "compression:gzip",
     ],
 
     // File extensions

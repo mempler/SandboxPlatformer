@@ -112,8 +112,8 @@ add_subdirectory(implot)
 
 ###############################################################################################
 
-if (UNIX)
-    find_package(Freetype REQUIRED)
+find_package(Freetype)
+if (FREETYPE_FOUND)
     add_library(freetype INTERFACE)
     target_link_libraries(freetype INTERFACE ${FREETYPE_LIBRARIES})
     target_include_directories(freetype INTERFACE ${FREETYPE_INCLUDE_DIRS})

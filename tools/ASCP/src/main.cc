@@ -1,6 +1,8 @@
 #include <string_view>
 #include <unordered_map>
 
+#include "utils/compress.hh"
+
 #include "parser/audio.hh"
 #include "parser/file.hh"
 #include "parser/image.hh"
@@ -229,8 +231,16 @@ Kokoro::Memory::Buffer constructBinaryFromMeta(IParser *parser, MetadataInfo met
             if (v == nullptr) {
                 LOG_WARN << "Unimplemented key in parser: " << s.first << std::endl;
             } else {
-                buffer.Push(v->size());
-                buffer.Append(*v);
+                // Compression
+                std::vector<uint8_t> outputData = *v;
+                for (auto &flags : meta.m_vsFlags) {
+                    if (flags == "compression:gzip") {
+                        outputData = CompressDataGZIP(outputData);
+                    }
+                }
+
+                buffer.Push(outputData.size());
+                buffer.Append(outputData);
             }
         }
 

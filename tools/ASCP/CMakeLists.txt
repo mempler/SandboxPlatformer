@@ -7,6 +7,7 @@ set(ASCP_LIBS
     Kokoro::FileSystem
     Kokoro::Utility
     lw
+    zlib
 )
 
 file(GLOB_RECURSE ASCP_SOURCES 
