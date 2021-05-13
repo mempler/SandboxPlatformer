@@ -95,6 +95,6 @@
 #include "Core/Utils/Math.hh"
 #include "Core/Utils/Memory.hh"
 #include "Core/Utils/Timer.hh"
-#include "Core/Utils/XorStr.hh"
+//#include "Core/Utils/XorStr.hh"
 
 #undef main
