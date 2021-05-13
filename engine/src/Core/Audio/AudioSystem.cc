@@ -41,8 +41,8 @@ void AudioSystem::Init() {
     if (!name || alcGetError(m_alDevice) != AL_NO_ERROR)
         name = alcGetString(m_alDevice, ALC_DEVICE_SPECIFIER);
 
-    LOG_INFO("Audio Device: %s", name);
-    LOG_INFO("Successfully Initialized Audio System!");
+    Console::Info("Audio Device: {}", name);
+    Console::Info("Successfully Initialized Audio System!");
 }
 
 AudioChannel *AudioSystem::CreateChannel(Identifier const &rIdent) {

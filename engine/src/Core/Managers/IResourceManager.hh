@@ -23,7 +23,7 @@ public:
         if (m_umResources.find(identifier) != m_umResources.end())
             return &m_umResources.at(identifier);
 
-        LOG_INFO("Loading resource %s", identifier.Raw().data());
+        Console::Info("Loading resource {}", identifier);
 
         TResource *resource = CreateEmpty(identifier);
         m_Loader.Load(resource, identifier);

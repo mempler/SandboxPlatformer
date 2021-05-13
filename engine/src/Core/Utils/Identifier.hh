@@ -32,7 +32,6 @@ public:
             return;
         }
 
-
 #if _MSC_FULL_VER // m$ft moment
         m_sProtocol = std::string_view(&*uri.begin(), proto_end);
         m_sPath = std::string_view(&*uri.begin() + proto_end + protoEnd.size());
@@ -59,6 +58,14 @@ public:
 
     constexpr std::string_view Raw() const {
         return std::string_view(m_vString.data());
+    }
+
+    constexpr operator const char *() const {
+        return m_vString.data();
+    }
+
+    constexpr operator std::string_view() const {
+        return Raw();
     }
 
     constexpr bool operator==(const Identifier &other) const {

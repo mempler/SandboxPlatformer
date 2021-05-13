@@ -9,8 +9,10 @@
 GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *szTitle, const Flags eFlags) {
     ZoneScoped;
 
+    Console::Init(); // just in case
+
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
-        LOG_ERROR("Failed to initialize SDL2!");
+        Console::Fatal("Failed to initialize SDL2!");
         return;
     }
 
@@ -26,7 +28,7 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
 #endif
 
     if (m_SDLWindow == nullptr) {
-        LOG_ERROR("Failed to create window!");
+        Console::Fatal("Failed to create window!");
         return;
     }
 
@@ -68,12 +70,12 @@ GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *
     bgfxInit.resolution.height = m_iHeight;
     bgfxInit.resolution.reset = BGFX_RESET_NONE;
     if (!bgfx::init(bgfxInit)) {
-        LOG_ERROR("Failed to initialize BGFX!");
+        Console::Fatal("Failed to initialize BGFX!");
         return;
     }
 
-    LOG_INFO("Game Window Initialized...");
-    LOG_INFO("BGFX Initialized...");
+    Console::Info("Game Window Initialized...");
+    Console::Info("BGFX Initialized...");
 
     // Setup our drawing surface
     AddView(0);
@@ -162,7 +164,7 @@ double GameWindow::BeginFrame() {
             case SDL_QUIT: m_bExit = true; break;
             case SDL_WINDOWEVENT:
                 if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                    LOG_INFO("Window size changed...");
+                    Console::Info("Window size changed...");
 
                     m_iWidth = e.window.data1;
                     m_iHeight = e.window.data2;

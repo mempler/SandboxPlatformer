@@ -1,39 +1,105 @@
 #pragma once
 
-// Some basic logger implementation that can be removed
-// later on, I am just too lazy to add some logger lib -loanselot
+#include "Platform.hh"
 
-#include "pch.hh"
+#include <spdlog/fmt/ostr.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog.h>
 
-#include "Kokoro/Exception/BaseException.hh"
+#include <memory>
 
-#define LOG(x, ...) logger::Logf(x "\n", ##__VA_ARGS__)
+#define CHECK(expr, fail_msg, ...) \
+    if (!(expr))                   \
+        Console::Fatal(fail_msg, ##__VA_ARGS__);
 
-// clang-format off
-#if !ENGINE_DEBUG
-#define LOG_INFO(x, ...)        Logger::Logf(" ---- | INFO  | " x "\n", ##__VA_ARGS__)
-#define LOG_WARN(x, ...)        Logger::Logf(" ---- | WARN  | " x "\n", ##__VA_ARGS__)
-#define LOG_ERROR(x, ...)       Logger::Logf(" ---- | ERROR | " x "\n", ##__VA_ARGS__)
-#define DEBUG_LOG_INFO(x, ...)  Logger::Logf("DEBUG | INFO  | [%s:%d - '%s']: " x "\n", __FILENAME__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
-#define DEBUG_LOG_WARN(x, ...)  Logger::Logf("DEBUG | WARN  | [%s:%d - '%s']: " x "\n", __FILENAME__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
-#define DEBUG_LOG_ERROR(x, ...) Logger::Logf("DEBUG | ERROR | [%s:%d - '%s']: " x "\n", __FILENAME__, __LINE__, __FUNCTION__, ##__VA_ARGS__)
-#else
-// #define LOG_INFO(x, ...)        Logger::Logf(Xor("INFO  | " x "\n"), ##__VA_ARGS__)
-// #define LOG_WARN(x, ...)        Logger::Logf(Xor("WARN  | " x "\n"), ##__VA_ARGS__)
-// #define LOG_ERROR(x, ...)       Logger::Logf(Xor("ERROR | " x "\n"), ##__VA_ARGS__)
-#define LOG_INFO(x, ...)        Logger::Logf("INFO  | " x "\n", ##__VA_ARGS__)
-#define LOG_WARN(x, ...)        Logger::Logf("WARN  | " x "\n", ##__VA_ARGS__)
-#define LOG_ERROR(x, ...)       Logger::Logf("ERROR | " x "\n", ##__VA_ARGS__)
-#define DEBUG_LOG_INFO(x, ...)  (void *)0;
-#define DEBUG_LOG_WARN(x, ...)  (void *)0;
-#define DEBUG_LOG_ERROR(x, ...) (void *)0;
-#endif
+class Console {
+private:
+    inline static std::shared_ptr<spdlog::logger> s_pCoreLogger = nullptr;
+    inline static bool g_LoggerInitialized = false;
 
-#define CHECK(expr, fail_msg, ...) if (!(expr)) LOG_ERROR(fail_msg, ##__VA_ARGS__); if (!(expr)) exit(1)
+public:
+    static void Init() {
+        if (g_LoggerInitialized)
+            return;
 
-// clang-format on
+        std::vector<spdlog::sink_ptr> logSinks;
+        logSinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+        logSinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("game.log", true));
 
-namespace Logger {
-    void Clear();
-    void Logf(const char *output, ...);
-} // namespace Logger
+        logSinks[0]->set_pattern("%T %5^%l%$\t| %v");
+        logSinks[1]->set_pattern("%T %l\t| %v");
+
+        s_pCoreLogger = std::make_shared<spdlog::logger>("Engine", begin(logSinks), end(logSinks));
+        spdlog::register_logger(s_pCoreLogger);
+        s_pCoreLogger->set_level(spdlog::level::trace);
+        s_pCoreLogger->flush_on(spdlog::level::trace);
+
+        g_LoggerInitialized = true;
+    }
+
+    template <typename T>
+    static void Log(const T &msg) {
+        s_pCoreLogger->debug(msg);
+    }
+
+    template <typename T>
+    static void Trace(const T &msg) {
+        s_pCoreLogger->trace(msg);
+    }
+
+    template <typename T>
+    static void Warn(const T &msg) {
+        s_pCoreLogger->warn(msg);
+    }
+
+    template <typename T>
+    static void Error(const T &msg) {
+        s_pCoreLogger->error(msg);
+    }
+
+    template <typename T>
+    static void Fatal(const T &msg) {
+        s_pCoreLogger->critical(msg);
+        s_pCoreLogger->dump_backtrace();
+        s_pCoreLogger->flush();
+        abort();
+    }
+
+    template <typename FormatString, typename... Args>
+    static void Log(const FormatString &fmt, Args &&...args) {
+        s_pCoreLogger->debug(fmt, std::forward<Args>(args)...);
+    }
+
+    template <typename FormatString, typename... Args>
+    static void Trace(const FormatString &fmt, Args &&...args) {
+        s_pCoreLogger->trace(fmt, std::forward<Args>(args)...);
+    }
+
+    template <typename FormatString, typename... Args>
+    static void Info(const FormatString &fmt, Args &&...args) {
+        s_pCoreLogger->info(fmt, std::forward<Args>(args)...);
+    }
+
+    template <typename FormatString, typename... Args>
+    static void Warn(const FormatString &fmt, Args &&...args) {
+        s_pCoreLogger->warn(fmt, std::forward<Args>(args)...);
+    }
+
+    template <typename FormatString, typename... Args>
+    static void Error(const FormatString &fmt, Args &&...args) {
+        s_pCoreLogger->error(fmt, std::forward<Args>(args)...);
+    }
+
+    template <typename FormatString, typename... Args>
+    static void Fatal(const FormatString &fmt, Args &&...args) {
+        s_pCoreLogger->critical(fmt, std::forward<Args>(args)...);
+        s_pCoreLogger->dump_backtrace();
+        s_pCoreLogger->flush();
+        abort();
+    }
+
+    static std::shared_ptr<spdlog::logger> &GetCoreLogger() {
+        return s_pCoreLogger;
+    }
+};

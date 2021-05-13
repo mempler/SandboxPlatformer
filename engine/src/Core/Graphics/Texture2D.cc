@@ -60,7 +60,7 @@ void Texture2D::Load(Texture2D *pDest, Identifier const &identifier, uint64_t u6
     if (pDest == nullptr)
         return;
 
-    LOG_INFO("Loading Texture2D <%s>", identifier.Raw().data());
+    Console::Info("Loading Texture2D <{}>", identifier);
 
     // Parse the input image
     auto *imageContainer = bimg::imageParse(bgfx::g_allocator, vData.data(), vData.size());
@@ -100,7 +100,7 @@ void Texture2D::LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t 
     tcb::span<uint8_t> const &vData) {
     ZoneScoped;
 
-    LOG_INFO("Loading Raw Texture2D <%s>(%d, %d)", identifier.Raw().data(), iWidth, iHeight);
+    Console::Info("Loading Raw Texture2D <{}>({}, {})", identifier, iWidth, iHeight);
     const auto *const pixelData = bgfx::copy(vData.data(), vData.size()); // dont use makeRef dont use makeRef dont use makeRef dont use makeRef
 
     pDest->m_Identifier = identifier;

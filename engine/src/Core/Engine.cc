@@ -75,6 +75,9 @@ InputManager &Engine::GetInputManager() {
 
 void Engine::Init() {
     ZoneScoped;
+
+    Console::Init();
+
     m_ShaderManager.LoadDefaultShaders();
     m_AudioSystem.Init();
     m_Camera.Init();

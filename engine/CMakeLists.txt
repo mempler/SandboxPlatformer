@@ -18,6 +18,7 @@ set(ENGINE_LIBS
     freetype-bgfx
     fmt
     tracy
+    spdlog
 )
 
 file(GLOB_RECURSE ENGINE_SOURCES 
