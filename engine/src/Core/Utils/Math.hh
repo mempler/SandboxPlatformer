@@ -19,4 +19,14 @@ namespace Math {
         return glm::translate(glm::mat4(1.f), glm::ceil(v3Position)) * glm::rotate(glm::mat4(1.f), glm::radians(fRotation), v3RotationAxis) *
                glm::scale(glm::mat4(1.f), { v2Size.x, v2Size.y, 1.f });
     }
+
+    inline float Approach(float target, float current, float delta) {
+        float deltaVel = target - current;
+        if (deltaVel > delta)
+            return current + delta;
+        if (deltaVel < -delta)
+            return current - delta;
+
+        return target;
+    }
 } // namespace Math

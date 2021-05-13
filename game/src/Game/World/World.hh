@@ -12,9 +12,9 @@ enum class eWorldState {
     IsValid = 1 << 1,
 };
 
-EnumFlags(eWorldState)
+EnumFlags(eWorldState);
 
-    class World {
+class World {
 public:
     World(){};
     ~World(){};
@@ -25,6 +25,13 @@ public:
 
     void PlaceFore(uint16_t uID, uint16_t x, uint16_t y);
     void PlaceBack(uint16_t uID, uint16_t x, uint16_t y);
+
+    // Events
+    void OnPlayerEnter();
+
+public:
+    signals::signal<void(float)> OnAvatarUpdate;
+    signals::signal<void()> OnAvatarRender;
 
 public:
     bool IsValid() {
