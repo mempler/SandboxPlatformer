@@ -26,7 +26,7 @@ bgfx::ShaderHandle ShaderManager::LoadShader(Identifier const &rIdent, const Sha
     const auto *buffer = bgfx::copy(p_shader->m_pCode, p_shader->m_uCodeLen);
 
     const auto handle = bgfx::createShader(buffer);
-    bgfx::setName(handle, rIdent.Raw().data());
+    bgfx::setName(handle, rIdent);
 
     return handle;
 }

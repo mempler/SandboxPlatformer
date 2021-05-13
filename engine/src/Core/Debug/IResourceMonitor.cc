@@ -25,7 +25,7 @@ void IResourceMonitor::Draw() {
 
                 // NOTE: this is very expensive, lots of CPU time wasted. but it should be fine.
                 //       as this is a debugging utility anyway
-                ImGui::Text("%s", resource.first.Raw().data());
+                ImGui::Text("%s", resource.first);
 
                 ImGui::TableNextColumn();
                 ImGui::TextColored(ImVec4{ 0.0f, 1.0f, 0.0f, 1.0f }, "%s", Memory::SizeInText((double)resource.second.GetDataSize()).c_str()); // TODO: Implement
