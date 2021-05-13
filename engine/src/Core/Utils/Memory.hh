@@ -1,38 +1,25 @@
 #pragma once
 
-#include <memory>
-#include <sstream>
-#include <string>
+#include <fmt/format.h>
 
 namespace Memory {
     inline std::string SizeInText(const double pLen) {
-        std::ostringstream out;
-        out.precision(2);
-
         if (pLen < 1024.0) {
-            out << pLen << " B";
-
-            return out.str();
+            return fmt::format("{:.2f}B", pLen);
         }
 
         if (pLen < 1024.0 * 1024.0) {
-            out << pLen / 1024.0 << " KB";
-
-            return out.str();
+            return fmt::format("{:.2f}KB", pLen / 1024.0);
         }
 
         if (pLen < 1024.0 * 1024.0 * 1024.0) {
-            out << pLen / (1024.0 * 1024.0) << " MB";
-
-            return out.str();
+            return fmt::format("{:.2f}MB", pLen / (1024.0 * 1024.0));
         }
 
         if (pLen < 1024.0 * 1024.0 * 1024.0 * 1024.0) {
-            out << pLen / (1024.0 * 1024.0 * 1024.0) << " GB";
-
-            return out.str();
+            return fmt::format("{:.2f}GB", pLen / (1024.0 * 1024.0 * 1024.0));
         }
 
-        return std::to_string(pLen) + " UK";
+        return fmt::format("{:.2f}B", pLen);
     }
 } // namespace Memory

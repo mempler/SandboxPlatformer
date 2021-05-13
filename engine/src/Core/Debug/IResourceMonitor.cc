@@ -11,7 +11,7 @@ void IResourceMonitor::Draw() {
     // Currently we only support TextureManager as that one uses the newer IResource class
 
     if (ImGui::CollapsingHeader("TextureManager")) {
-        if (ImGui::BeginTable("##texture_manager", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders)) {
+        if (ImGui::BeginTable("##texture_manager", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_Borders)) {
             ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
             ImGui::TableNextColumn();
@@ -20,18 +20,12 @@ void IResourceMonitor::Draw() {
             ImGui::TableNextColumn();
             ImGui::Text("Memory Usage");
 
-            ImGui::TableNextColumn();
-            ImGui::Text("GPU Memory Usage");
-
             for (auto &resource : m_pEngine->GetTextureManager()) {
                 ImGui::TableNextColumn();
 
                 // NOTE: this is very expensive, lots of CPU time wasted. but it should be fine.
                 //       as this is a debugging utility anyway
                 ImGui::Text("%s", resource.first.Raw().data());
-
-                ImGui::TableNextColumn();
-                ImGui::TextColored(ImVec4{ 0.0f, 1.0f, 0.0f, 1.0f }, "0B"); // TODO: Implement
 
                 ImGui::TableNextColumn();
                 ImGui::TextColored(ImVec4{ 0.0f, 1.0f, 0.0f, 1.0f }, "%s", Memory::SizeInText((double)resource.second.GetDataSize()).c_str()); // TODO: Implement
