@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pch.hh"
-
 #include "Core/Graphics/Window.hh"
 
 #include "Game/Managers/ItemInfoManager.hh"

@@ -1,11 +1,8 @@
 #pragma once
 
-#include "pch.hh"
-
 #include "Tile.hh"
 
 #include "WorldRenderer.hh"
-#include "bgfx/bgfx.h"
 
 enum class eWorldState {
     None = 0,

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pch.hh"
-
 #include "Core/Graphics/Texture2D.hh"
 
 struct Item {

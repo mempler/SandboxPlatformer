@@ -1,16 +1,19 @@
 #pragma once
 
-#include "pch.hh"
-
 #include "Avatar.hh"
+
+#include "Game/World/World.hh"
 
 class Player {
 public:
     Player();
     ~Player();
-    
-    Avatar &GetAvatar();
+
+    void Init(World &cWorld);
+    void InitAvatar();
+
+    Avatar *GetAvatar();
 
 private:
-    Avatar m_Avatar;
+    Avatar *m_pAvatar;
 };

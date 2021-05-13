@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pch.hh"
-
 #include "Game/Managers/ItemInfoManager.hh"
 
 struct Tile {
