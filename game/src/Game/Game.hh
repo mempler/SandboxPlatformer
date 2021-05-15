@@ -3,6 +3,7 @@
 #include "Core/Graphics/Window.hh"
 
 #include "Game/Managers/ItemInfoManager.hh"
+#include "Game/Player/Player.hh"
 #include "Game/World/World.hh"
 
 // not the best place to put
@@ -17,6 +18,7 @@ public:
     ItemInfoManager &GetItemInfoMan();
 
     World &GetWorld();
+    Player &GetLocalPlayer();
 
     void Init();
     void Tick(float fDeltaTime);
@@ -30,6 +32,7 @@ private:
 
     // Main handlers
     World m_World;
+    Player m_Player;
 };
 
 extern Game *GetGame();

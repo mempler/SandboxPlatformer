@@ -5,6 +5,7 @@
 #include "imgui.h"
 
 #include "Core/Engine.hh"
+#include "Core/Utils/Logger.hh"
 
 #include "bgfx/bgfx.h"
 #include "bgfx/defines.h"
@@ -14,6 +15,8 @@
 #if PLATFORM_ANDROID
 #include <EGL/egl.h>
 #endif
+
+#include <SDL_events.h>
 
 GameWindow::GameWindow(const int32_t iWidth, const int32_t iHeight, const char *szTitle, const Flags eFlags) {
     ZoneScoped;
@@ -85,8 +88,7 @@ double GameWindow::BeginFrame() {
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0) { // TODO: Event Pipeline
 #if ENGINE_DEBUG
-        if (ImGui_ImplSDL2_ProcessEvent(&e))
-            continue;
+        ImGui_ImplSDL2_ProcessEvent(&e);
 #endif
         OnSDL2Event(this, e);
 

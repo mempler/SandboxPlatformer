@@ -3,6 +3,8 @@
 #include "Core/Engine.hh"
 #include "Core/Graphics/Texture2D.hh"
 
+#include "Game/Player/Player.hh"
+
 void Game::OnGameResize(GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight) {
     if (m_World.IsValid()) {
         if (bgfx::isValid(m_World.GetFrameBuffer()))
@@ -12,13 +14,14 @@ void Game::OnGameResize(GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeig
     }
 }
 
-// do not init world
-Game::Game() : m_ItemInfoManager() {
+Game::Game() : m_ItemInfoManager(), m_World(), m_Player() {
 }
 
 void Game::Init() {
     // PREINIT EVENTS
     GetEngine()->GetWindow().OnResize.connect<&Game::OnGameResize>(this);
+    GetEngine()->GetInputManager().OnKeyDown.connect<&Player::OnKeyDown>(&m_Player);
+    GetEngine()->GetInputManager().OnKeyDown.connect<&Player::OnKeyRelease>(&m_Player);
 
     // PREINIT VIEWS
     GetEngine()->GetWindow().AddView(2); // World tile layer
@@ -41,6 +44,8 @@ void Game::Init() {
             m_World.PlaceFore(1, x, y);
         }
     }
+
+    m_World.OnPlayerEnter();
 }
 
 void Game::Tick(float fDeltaTime) {
@@ -57,4 +62,8 @@ ItemInfoManager &Game ::GetItemInfoMan() {
 
 World &Game::GetWorld() {
     return m_World;
+}
+
+Player &Game::GetLocalPlayer() {
+    return m_Player;
 }

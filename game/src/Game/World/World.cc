@@ -4,6 +4,7 @@
 #include "Core/Utils/Math.hh"
 
 #include "Game/Game.hh"
+#include "Game/Player/Avatar.hh"
 #include "Game/World/WorldRenderer.hh"
 
 #define XYTV(x, y) (x + (y * m_uWidth))
@@ -26,9 +27,16 @@ void World::Init(uint16_t uWidth, uint16_t uHeight) {
 }
 
 void World::Tick(float fDeltaTime) {
+    if (!IsValid())
+        return;
+
+    for (auto &&i : m_vAvatars) i->OnUpdate(fDeltaTime);
 }
 
 void World::Draw() {
+    if (!IsValid())
+        return;
+
     GameWindow &window = GetEngine()->GetWindow();
 
     GetEngine()->GetBatcher().Reset(); // reset what we've drawn, we will be switching views
@@ -37,9 +45,15 @@ void World::Draw() {
 
     WorldRenderer::Draw(this); // WorldRenderer will handle what we want
 
+    RenderAvatars();
+
     GetEngine()->GetBatcher().Reset(); // we are done
     GetEngine()->GetBatcher().SubmitRectangleRawHandle(bgfx::getTexture(m_hWorldFrameBuffer), Math::CalcTransform({ 0, 0, 1 }, { window.Width(), window.Height() }));
     GetEngine()->GetBatcher().SetCurrentView(0); // back to default view
+}
+
+void World::RenderAvatars() {
+    for (auto &&i : m_vAvatars) i->OnRender();
 }
 
 void World::PlaceFore(uint16_t uID, uint16_t x, uint16_t y) {
@@ -52,4 +66,15 @@ void World::PlaceFore(uint16_t uID, uint16_t x, uint16_t y) {
 }
 
 void World::PlaceBack(uint16_t uID, uint16_t x, uint16_t y) {
+}
+
+Avatar *World::AddAvatar(Avatar *avatar) {
+    m_vAvatars.push_back(avatar);
+
+    return avatar;
+}
+
+void World::OnPlayerEnter() {
+    Avatar *avatar = new Avatar({ 100.f, 100.f, 7 }, "None");
+    GetGame()->GetLocalPlayer().InitAvatar(AddAvatar(avatar));
 }

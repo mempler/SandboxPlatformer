@@ -2,7 +2,10 @@
 
 #include "Tile.hh"
 
+#include "Game/Player/Avatar.hh"
+
 #include "WorldRenderer.hh"
+
 
 enum class eWorldState {
     None = 0,
@@ -24,11 +27,8 @@ public:
     void PlaceBack(uint16_t uID, uint16_t x, uint16_t y);
 
     // Events
+    Avatar *AddAvatar(Avatar *avatar);
     void OnPlayerEnter();
-
-public:
-    signals::signal<void(float)> OnAvatarUpdate;
-    signals::signal<void()> OnAvatarRender;
 
 public:
     bool IsValid() {
@@ -40,6 +40,11 @@ public:
     }
 
 private:
+    void RenderAvatars();
+
+private:
+    std::vector<Avatar *> m_vAvatars;
+
     uint16_t m_uWidth;
     uint16_t m_uHeight;
 
