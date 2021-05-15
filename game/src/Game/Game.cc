@@ -1,9 +1,6 @@
 #include "Game.hh"
 
 #include "Core/Engine.hh"
-#include "Core/Graphics/Texture2D.hh"
-
-#include "Game/Player/Player.hh"
 
 void Game::OnGameResize(GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight) {
     if (m_World.IsValid()) {
@@ -17,11 +14,14 @@ void Game::OnGameResize(GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeig
 Game::Game() : m_ItemInfoManager(), m_World(), m_Player() {
 }
 
+Game::~Game() {
+}
+
 void Game::Init() {
     // PREINIT EVENTS
     GetEngine()->GetWindow().OnResize.connect<&Game::OnGameResize>(this);
     GetEngine()->GetInputManager().OnKeyDown.connect<&Player::OnKeyDown>(&m_Player);
-    GetEngine()->GetInputManager().OnKeyDown.connect<&Player::OnKeyRelease>(&m_Player);
+    GetEngine()->GetInputManager().OnKeyRelease.connect<&Player::OnKeyRelease>(&m_Player);
 
     // PREINIT VIEWS
     GetEngine()->GetWindow().AddView(2); // World tile layer
@@ -37,10 +37,10 @@ void Game::Init() {
 
     m_World.Init(100, 60);
 
-    for (uint16_t i = 0; i < 20; i++) m_World.PlaceFore(2, i, 0);
+    for (uint16_t i = 0; i < 100; i++) m_World.PlaceFore(2, i, 0);
 
-    for (uint16_t x = 0; x < 20; x++) {
-        for (uint16_t y = 1; y < 10; y++) {
+    for (uint16_t x = 0; x < 100; x++) {
+        for (uint16_t y = 1; y < 60; y++) {
             m_World.PlaceFore(1, x, y);
         }
     }

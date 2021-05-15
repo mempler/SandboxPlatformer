@@ -8,11 +8,9 @@ set(GAME_LIBS
     Kokoro::Config
 )
 
-#file(GLOB_RECURSE GAME_SOURCES
-#    src/*.cc
-#)
-set(GAME_SOURCES
-        src/main.cc)
+file(GLOB_RECURSE GAME_SOURCES
+   src/*.cc
+)
 
 if (ANDROID)
     add_library(${PROJECT_NAME} MODULE ${GAME_SOURCES})

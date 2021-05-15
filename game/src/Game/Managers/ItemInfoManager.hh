@@ -13,6 +13,7 @@ struct Item {
 class ItemInfoManager {
 public:
     ItemInfoManager(){};
+    ~ItemInfoManager(){};
 
     void Preload(const glm::vec4 &v4UVs, Texture2D *pTexture);
 

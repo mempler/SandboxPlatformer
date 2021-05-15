@@ -2,7 +2,7 @@
 
 const float g_fVelX = 300.f;
 const float g_fVelY = 250.f;
-const float g_fAcceleration = 1500.f;
+const float g_fAcceleration = 5000.f;
 
 class Player;
 class Avatar {

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Core/Graphics/Window.hh"
-
 #include "Game/Managers/ItemInfoManager.hh"
 #include "Game/Player/Player.hh"
 #include "Game/World/World.hh"
@@ -13,7 +11,7 @@ constexpr uintptr_t g_uFrameBufferFlags =
 class Game {
 public:
     Game();
-    ~Game(){};
+    ~Game();
 
     ItemInfoManager &GetItemInfoMan();
 

@@ -62,19 +62,19 @@ void InputManager::PumpSDL2Event(GameWindow *pWindow, SDL_Event &event) {
     }
 
     if (event.type == SDL_KEYDOWN) {
-        auto keyEvent = event.key.keysym;
+        auto keyEvent = event.key.keysym.sym;
 
-        m_umKeyState.insert_or_assign((Key)SDL_SCANCODE_TO_KEYCODE(keyEvent.scancode), ButtonState::Pressed);
+        m_umKeyState.insert_or_assign((Key)(keyEvent - 32), ButtonState::Pressed);
 
-        OnKeyDown((Key)SDL_SCANCODE_TO_KEYCODE(keyEvent.scancode), (KeyMod)m_iKeyMods);
+        OnKeyDown((Key)(keyEvent - 32), (KeyMod)m_iKeyMods);
     }
 
     if (event.type == SDL_KEYUP) {
-        auto keyEvent = event.key.keysym;
+        auto keyEvent = event.key.keysym.sym;
 
-        m_umKeyState.insert_or_assign((Key)SDL_SCANCODE_TO_KEYCODE(keyEvent.scancode), ButtonState::Released);
+        m_umKeyState.insert_or_assign((Key)(keyEvent - 32), ButtonState::Released);
 
-        OnKeyRelease((Key)SDL_SCANCODE_TO_KEYCODE(keyEvent.scancode), (KeyMod)m_iKeyMods);
+        OnKeyRelease((Key)(keyEvent - 32), (KeyMod)m_iKeyMods);
     }
 
     if (event.type == SDL_MOUSEMOTION) {

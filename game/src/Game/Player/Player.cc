@@ -16,16 +16,20 @@ void Player::OnKeyDown(Key eKey, KeyMod eMod) {
         return;
 
     if (eKey == Key::Key_W) {
-        // jump
+        GetAvatar()->SetTargetVel({ GetAvatar()->GetTargetVelocity().x, -g_fVelY });
+    }
+
+    if (eKey == Key::Key_S) {
+        GetAvatar()->SetTargetVel({ GetAvatar()->GetTargetVelocity().x, g_fVelY });
     }
 
     if (eKey == Key::Key_A) {
-        m_pAvatar->m_v2TargetVelocity.x = -g_fVelX;
+        GetAvatar()->SetTargetVel({ -g_fVelX, GetAvatar()->GetTargetVelocity().y });
     }
 
-    // if (eKey == Key::Key_D) {
-    GetAvatar()->SetTargetVel({ g_fVelX, 0 });
-    // }
+    if (eKey == Key::Key_D) {
+        GetAvatar()->SetTargetVel({ g_fVelX, GetAvatar()->GetTargetVelocity().y });
+    }
 }
 
 void Player::OnKeyRelease(Key eKey, KeyMod eMod) {
@@ -33,16 +37,20 @@ void Player::OnKeyRelease(Key eKey, KeyMod eMod) {
         return;
 
     if (eKey == Key::Key_W) {
-        // jump
+        GetAvatar()->SetTargetVel({ GetAvatar()->GetTargetVelocity().x, 0 });
+    }
+
+    if (eKey == Key::Key_S) {
+        GetAvatar()->SetTargetVel({ GetAvatar()->GetTargetVelocity().x, 0 });
     }
 
     if (eKey == Key::Key_A) {
-        m_pAvatar->m_v2TargetVelocity.x = 0;
+        GetAvatar()->SetTargetVel({ 0, GetAvatar()->GetTargetVelocity().y });
     }
 
-    // if (eKey == Key::Key_D) {
-    GetAvatar()->SetTargetVel({ 0, 0 });
-    // }
+    if (eKey == Key::Key_D) {
+        GetAvatar()->SetTargetVel({ 0, GetAvatar()->GetTargetVelocity().y });
+    }
 }
 
 Avatar *Player::GetAvatar() {

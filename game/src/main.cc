@@ -1,14 +1,10 @@
 #include "Core/Audio/AudioChannel.hh"
 #include "Core/Engine.hh"
 #include "Core/Graphics/Font/Label.hh"
-#include "Core/Utils/Math.hh"
 
 #include "Game/Game.hh"
 
 class Application : public BaseApp {
-public:
-    Game m_Game;
-
 protected:
     void Init() override {
         m_pEngine->GetWindow().OnResize.connect<&Application::OnWindowResize>(this);
@@ -34,6 +30,11 @@ protected:
         m_lWatermark.Render();
     }
 
+public:
+    Game &GetGame() {
+        return m_Game;
+    }
+
 private:
     void OnWindowResize(GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight) {
         glm::vec3 center = { m_pEngine->GetWindow().Width() / 2.f - m_lWatermark.GetSize().x / 2.f, m_pEngine->GetWindow().Height() - 100.f, 999.f };
@@ -41,6 +42,8 @@ private:
     }
 
 private:
+    Game m_Game;
+
     Font *m_pFont;
     Label m_lWatermark;
 };
@@ -60,5 +63,5 @@ BaseApp *GetApp() {
 }
 
 Game *GetGame() {
-    return &app->m_Game;
+    return &app->GetGame();
 }
