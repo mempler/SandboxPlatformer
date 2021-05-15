@@ -49,7 +49,11 @@ private:
     AudioSystem m_AudioSystem;
 
     // Debug Utils
+#if PLATFORM_ANDROID
+    bool m_bShowDebugUtils = true;
+#else
     bool m_bShowDebugUtils = false;
+#endif
 
     GameView m_GameView;
     IResourceMonitor m_IResourceMonitor;
@@ -82,3 +86,8 @@ protected:
 
 extern BaseApp *GetApp();
 extern Engine *GetEngine();
+
+#if PLATFORM_ANDROID
+int SDL_main(int argc, char *argv[]);
+#define main SDL_main
+#endif

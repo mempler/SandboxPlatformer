@@ -79,7 +79,13 @@ public:
      *****************************************************/
     void ResetTransform();
 
+    bool CanRender() {
+        return m_bIsBGFXInitialized;
+    }
+
 public:
+    void InitBGFX();
+
     int32_t Width() {
         return m_iWidth;
     }
@@ -99,6 +105,7 @@ private:
     int32_t m_iHeight = 0;
 
     bool m_bExit = false;
+    bool m_bIsBGFXInitialized = false;
 
     int64_t m_iLastTime = 0;
 

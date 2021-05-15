@@ -5,6 +5,8 @@
 #include "Core/Utils/Identifier.hh"
 #include "Core/Utils/Logger.hh"
 
+#include <Tracy.hpp>
+
 #include <cstddef>
 #include <iterator>
 

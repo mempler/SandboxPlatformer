@@ -5,6 +5,7 @@
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/android_sink.h>
 #include <spdlog/spdlog.h>
 
 #include <memory>
@@ -24,11 +25,19 @@ public:
             return;
 
         std::vector<spdlog::sink_ptr> logSinks;
+
+#if PLATFORM_ANDROID
+        // ANDROID
+        logSinks.emplace_back(std::make_shared<spdlog::sinks::android_sink_mt>());
+        logSinks[0]->set_pattern("%T %5^%l%$\t| %v");
+#else
+        // PC
         logSinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
         logSinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("game.log", true));
 
         logSinks[0]->set_pattern("%T %5^%l%$\t| %v");
         logSinks[1]->set_pattern("%T %l\t| %v");
+#endif
 
         s_pCoreLogger = std::make_shared<spdlog::logger>("Engine", begin(logSinks), end(logSinks));
         spdlog::register_logger(s_pCoreLogger);

@@ -37,8 +37,11 @@ if (MSVC)
 endif()
 
 # This will most likely fail on WIN32 so we simply add SDL2 as subdir if it did.
-find_package(SDL2)
+if (NOT ANDROID)
+    find_package(SDL2)
+endif()
 
+# on Android, this will always be false
 if (SDL2_FOUND)
     # It's not static in reality
     # it's just a wrapper
@@ -53,7 +56,7 @@ if (SDL2_FOUND)
         target_link_libraries(SDL2-static INTERFACE SDL2::SDL2main SDL2::SDL2)
     endif()
 else()
-    message(WARNING, "SDL2 not found! It'll be compiled manually.")
+    message(WARNING "SDL2 not found! It'll be compiled manually.")
     
     add_subdirectory(SDL2)
 endif()
@@ -66,7 +69,7 @@ if (ZLIB_FOUND)
     add_library(zlib INTERFACE)
     target_link_libraries(zlib INTERFACE ZLIB::ZLIB)
 else()
-    message(WARNING, "ZLIB not found! It'll be compiled manually.")
+    message(WARNING "ZLIB not found! It'll be compiled manually.")
 
     add_definitions(-DZLIB_DLL)
     add_subdirectory(zlib)
@@ -79,6 +82,10 @@ if (OPENAL_FOUND)
     add_library(OpenAL INTERFACE)
     target_link_libraries(OpenAL INTERFACE ${OPENAL_LIBRARY})
 else()
+    if (ANDROID)
+        set(HAVE_ARM_NEON_H OFF)
+    endif()
+
     option(ALSOFT_DLOPEN  "Check for the dlopen API for loading optional libs"  ON)
 
     option(ALSOFT_WERROR  "Treat compile warnings as errors"      OFF)
@@ -129,6 +136,7 @@ add_subdirectory(tracy)
 
 ###############################################################################################
 
+option(SPDLOG_FMT_EXTERNAL_HO "Use external fmt header-only library instead of bundled" ON)
 add_subdirectory(spdlog)
 
 ###############################################################################################

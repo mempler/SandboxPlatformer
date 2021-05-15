@@ -5,6 +5,8 @@
 #include "Core/Graphics/Texture2D.hh"
 #include "Core/Utils/Identifier.hh"
 
+#include <glm/packing.hpp>
+
 class TextureLoader : public IResourceLoader<Texture2D> {
 public:
     void Load(Texture2D *pDest, const Identifier &identifier) override {
