@@ -7,8 +7,8 @@
 #include "Core/Debug/IResourceMonitor.hh"
 #include "Core/Debug/Profiler.hh"
 #include "Core/Graphics/Camera2D.hh"
+#include "Core/Graphics/Surface/Surface.hh"
 #include "Core/Graphics/VertexBatcher.hh"
-#include "Core/Graphics/Window.hh"
 #include "Core/Managers/FontManager.hh"
 #include "Core/Managers/InputManager.hh"
 #include "Core/Managers/ShaderManager.hh"
@@ -17,17 +17,20 @@
 class Engine
 {
   public:
-    Engine();
+    Engine( SurfaceDesc &surfaceDesc );
     ~Engine();
 
     Camera2D &GetCamera();
-    GameWindow &GetWindow();
+    BaseSurface *GetSurface();
     VertexBatcher &GetBatcher();
     TextureManager &GetTextureManager();
     ShaderManager &GetShaderManager();
     AudioSystem &GetAudioSystem();
     FontManager &GetFontManager();
     InputManager &GetInputManager();
+
+    void AddView( bgfx::ViewId viID );
+    void ResetTransform();
 
     void BeginFrame();
     void EndFrame();
@@ -36,7 +39,8 @@ class Engine
 
   private:
     // Graphics
-    GameWindow m_GameWindow;
+    void InitBGFX();
+    BaseSurface *m_BaseSurface = 0;
     Camera2D m_Camera;
     VertexBatcher m_VertexBatcher;
 
@@ -56,9 +60,18 @@ class Engine
     bool m_bShowDebugUtils = false;
 #endif
 
+    // Callback utils
+    void OnResolutionChanged( BaseSurface *pSurface, uint32_t uWidth, uint32_t uHeight );
+
     GameView m_GameView;
     IResourceMonitor m_IResourceMonitor;
     Profiler m_Profiler;
+
+    bool m_bIsBGFXInitialized = false;
+
+    int64_t m_iLastTime = 0;
+
+    std::vector<bgfx::ViewId> m_vViews;
 
   private:
 };

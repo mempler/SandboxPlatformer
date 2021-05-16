@@ -3,22 +3,15 @@
 #include "GameView.hh"
 
 #include "Core/Engine.hh"
-#include "Core/Graphics/Window.hh"
-
-#include "bgfx/bgfx.h"
-
-#include <Core/Utils/Math.hh>
-
-#include <cstdint>
 
 void GameView::Draw()
 {
     if ( !bgfx::isValid( m_hFrameBuffer ) )
     {
-        GameWindow &window = m_pEngine->GetWindow();
+        BaseSurface *surface = m_pEngine->GetSurface();
 
         m_hFrameBuffer = bgfx::createFrameBuffer(
-            window.Width(), window.Height(), bgfx::TextureFormat::RGBA8 );
+            surface->GetWidth(), surface->GetHeight(), bgfx::TextureFormat::RGBA8 );
     }
 
     ImGui::Begin( "Game View", &m_bIsShowing );
@@ -26,19 +19,23 @@ void GameView::Draw()
 
     if ( bgfx::isValid( m_hFrameBuffer ) )
     {
-        GameWindow &window = m_pEngine->GetWindow();
+        BaseSurface *surface = m_pEngine->GetSurface();
 
         // Render everything to frame buffer, note that imgui is on view 999!
         bgfx::setViewFrameBuffer( 0, m_hFrameBuffer );
 
-        glm::vec2 scale = ApplyScale( { window.Width(), window.Height() },
-                                      { size.x, size.y } );
+        glm::vec2 scale = ApplyScale(
+            {
+                surface->GetWidth(),
+                surface->GetHeight(),
+            },
+            { size.x, size.y } );
 
         auto texture = bgfx::getTexture( m_hFrameBuffer );
 
         auto windowCenter = size;
-        windowCenter.x -= window.Width() * scale.x * 0.6f;
-        windowCenter.y -= window.Height() * scale.y * 0.6f;
+        windowCenter.x -= surface->GetWidth() * scale.x * 0.6f;
+        windowCenter.y -= surface->GetHeight() * scale.y * 0.6f;
         windowCenter.x *= 0.5;
         windowCenter.y *= 0.5;
 
@@ -50,8 +47,8 @@ void GameView::Draw()
 
         ImGui::SetCursorPos( windowCenter );
         ImGui::Image( (void *) (intptr_t) texture.idx,
-                      { window.Width() * scale.x * 0.6f,
-                        window.Height() * scale.y * 0.6f },
+                      { surface->GetWidth() * scale.x * 0.6f,
+                        surface->GetHeight() * scale.y * 0.6f },
                       { UVs.x, UVs.y }, { UVs.z, UVs.w } );
     }
 

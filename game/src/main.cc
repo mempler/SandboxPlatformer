@@ -9,17 +9,16 @@ class Application : public BaseApp
   protected:
     void Init() override
     {
-        m_pEngine->GetWindow().OnResize.connect<&Application::OnWindowResize>(
-            this );
+        m_pEngine->GetSurface()
+            ->OnResolutionChanged.connect<&Application::OnWindowResize>( this );
 
-        m_pFont = m_pEngine->GetFontManager().LoadFromFile(
-            "file://Roboto-Regular.ttf", 256, 256, 22.f );
+        m_pFont = m_pEngine->GetFontManager().LoadFromFile( "file://Roboto-Regular.ttf",
+                                                            256, 256, 22.f );
         m_lWatermark.SetText( { 0, 0, 999.f }, "ICESDK DEMO", m_pFont );
         m_lWatermark.SetColor( { 1, 1, 1, .2 } );
 
-        glm::vec3 center = { m_pEngine->GetWindow().Width() / 2.f
-                                 - m_lWatermark.GetSize().x / 2,
-                             m_pEngine->GetWindow().Height() - 100.f, 999.f };
+        glm::vec3 center = { m_pEngine->GetSurface()->GetWidth() / 2.f - m_lWatermark.GetSize().x / 2,
+                             m_pEngine->GetSurface()->GetHeight() - 100.f, 999.f };
 
         m_lWatermark.SetPosition( center );
 
@@ -45,12 +44,11 @@ class Application : public BaseApp
     }
 
   private:
-    void OnWindowResize( GameWindow *pGameWindow, uint32_t iWidth,
-                         uint32_t iHeight )
+    void OnWindowResize( BaseSurface *pSurface, uint32_t iWidth, uint32_t iHeight )
     {
-        glm::vec3 center = { m_pEngine->GetWindow().Width() / 2.f
-                                 - m_lWatermark.GetSize().x / 2.f,
-                             m_pEngine->GetWindow().Height() - 100.f, 999.f };
+        glm::vec3 center = { pSurface->GetWidth() / 2.f - m_lWatermark.GetSize().x / 2.f,
+                             pSurface->GetHeight() - 100.f, 999.f };
+
         m_lWatermark.SetPosition( center );
     }
 

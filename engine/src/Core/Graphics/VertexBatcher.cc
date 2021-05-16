@@ -14,7 +14,22 @@ static uint32_t g_uMaxQuads = 80000;
 VertexBatcher::VertexBatcher()
 {
     ZoneScoped;
+}
 
+VertexBatcher::~VertexBatcher()
+{
+    ZoneScoped;
+}
+
+/*****************************************************
+ * Initialize
+ *
+ * Initialize what we need after Engine initialization
+ * for example shader manager.
+ *****************************************************/
+void VertexBatcher::Init( TextureManager &textureManager )
+{
+    ZoneScoped;
     m_vlDefaultLayout.begin()
         .add( bgfx::Attrib::Position, 3, bgfx::AttribType::Float )
         .add( bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float )
@@ -39,29 +54,11 @@ VertexBatcher::VertexBatcher()
     }
 
     m_hIndexBufferHandle = bgfx::createIndexBuffer(
-        bgfx::copy( quads, g_uMaxQuads * 6 * sizeof( uint32_t ) ),
-        BGFX_BUFFER_INDEX32 );
+        bgfx::copy( quads, g_uMaxQuads * 6 * sizeof( uint32_t ) ), BGFX_BUFFER_INDEX32 );
     delete [] quads;
-}
-
-VertexBatcher::~VertexBatcher()
-{
-    ZoneScoped;
-}
-
-/*****************************************************
- * Initialize
- *
- * Initialize what we need after Engine initialization
- * for example shader manager.
- *****************************************************/
-void VertexBatcher::Init( TextureManager &textureManager )
-{
-    ZoneScoped;
 
     // Initialize uniforms here
-    m_hTextureUniform =
-        bgfx::createUniform( "u_texture", bgfx::UniformType::Sampler );
+    m_hTextureUniform = bgfx::createUniform( "u_texture", bgfx::UniformType::Sampler );
 
     // Initialize programs here
     m_hDefaultProgramHandle =
@@ -115,10 +112,8 @@ void VertexBatcher::Flush()
         if ( vertexes.size() > 0 )
         {
             bgfx::TransientVertexBuffer tvb;
-            bgfx::allocTransientVertexBuffer( &tvb, vertexes.size(),
-                                              m_vlDefaultLayout );
-            memcpy( tvb.data, &vertexes [ 0 ],
-                    vertexes.size() * sizeof( VertexInfo ) );
+            bgfx::allocTransientVertexBuffer( &tvb, vertexes.size(), m_vlDefaultLayout );
+            memcpy( tvb.data, &vertexes [ 0 ], vertexes.size() * sizeof( VertexInfo ) );
             bgfx::setVertexBuffer( 0, &tvb, 0, vertexes.size() );
 
             // This is wrong, nvm, not for now
@@ -181,10 +176,8 @@ void VertexBatcher::Submit( Texture2D *pTexture, const glm::mat4 &m4Transform,
     event.indexes += 6;
 }
 
-void VertexBatcher::SubmitWithUV( Texture2D *pTexture,
-                                  const glm::mat4 &m4Transform,
-                                  const glm::vec4 &v4UV,
-                                  const glm::vec4 &v4Color )
+void VertexBatcher::SubmitWithUV( Texture2D *pTexture, const glm::mat4 &m4Transform,
+                                  const glm::vec4 &v4UV, const glm::vec4 &v4Color )
 {
     ZoneScoped;
 
@@ -195,14 +188,11 @@ void VertexBatcher::SubmitWithUV( Texture2D *pTexture,
     float W = ( 1.f / pTexture->GetWidth() ) * v4UV.z;
     float H = ( 1.f / pTexture->GetHeight() ) * v4UV.w;
 
-    Submit( pTexture, m4Transform, { X + W, Y + H, X + W, Y, X, Y, X, Y + H },
-            v4Color );
+    Submit( pTexture, m4Transform, { X + W, Y + H, X + W, Y, X, Y, X, Y + H }, v4Color );
 }
 
-void VertexBatcher::SubmitWithRawUV( Texture2D *pTexture,
-                                     const glm::mat4 &m4Transform,
-                                     const glm::vec4 &v4UV,
-                                     const glm::vec4 &v4Color )
+void VertexBatcher::SubmitWithRawUV( Texture2D *pTexture, const glm::mat4 &m4Transform,
+                                     const glm::vec4 &v4UV, const glm::vec4 &v4Color )
 {
     ZoneScoped;
 
@@ -213,8 +203,7 @@ void VertexBatcher::SubmitWithRawUV( Texture2D *pTexture,
     float u1 = v4UV.z;
     float v1 = v4UV.w;
 
-    Submit( pTexture, m4Transform, { u1, v1, u1, v0, u0, v0, u0, v1 },
-            v4Color );
+    Submit( pTexture, m4Transform, { u1, v1, u1, v0, u0, v0, u0, v1 }, v4Color );
 }
 
 /*****************************************************
@@ -222,8 +211,7 @@ void VertexBatcher::SubmitWithRawUV( Texture2D *pTexture,
  *
  * Quick function to not deal with UVs
  *****************************************************/
-void VertexBatcher::SubmitRectangle( Texture2D *pTexture,
-                                     const glm::mat4 &m4Transform,
+void VertexBatcher::SubmitRectangle( Texture2D *pTexture, const glm::mat4 &m4Transform,
                                      const glm::vec4 &v4Color )
 {
     ZoneScoped;

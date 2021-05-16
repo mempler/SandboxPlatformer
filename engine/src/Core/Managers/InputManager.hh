@@ -1,15 +1,5 @@
 #pragma once
 
-#include <unordered_map>
-
-#include "Core/Graphics/Window.hh"
-
-#include <glm/glm.hpp>
-
-#include <SDL.h>
-#include <SDL_keycode.h>
-#include <signals.hpp>
-
 enum class ButtonState
 {
     Pressed,
@@ -239,6 +229,5 @@ class InputManager
     uint8_t m_iKeyMods;
 
   private:
-    void PumpSDL2Event( GameWindow *pWindow, SDL_Event &event );
     void UpdateKeyboardState( float fDelta );
 };

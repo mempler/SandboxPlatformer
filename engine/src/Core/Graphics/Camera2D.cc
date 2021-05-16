@@ -11,39 +11,40 @@ Camera2D::Camera2D( const glm::vec2 &v2Pos, const glm::vec2 &v2Scale ) :
 {
     ZoneScoped;
 
-    CalculateMetrices( );
+    CalculateMetrices();
 }
 
-void Camera2D::Init( )
+void Camera2D::Init()
 {
     ZoneScoped;
 
     // I wonder what would happen if this Camera gets destroyed...
-    GetEngine( )->GetWindow( ).OnResize.connect<&Camera2D::OnResize>( this );
+    GetEngine()
+        ->GetSurface()
+        ->OnResolutionChanged.connect<&Camera2D::OnResolutionChanged>( this );
 }
 
 static glm::mat4 CalculateView( const glm::vec2 &v2Pos, float fRotation )
 {
     ZoneScoped;
 
-    return glm::inverse(
-        glm::translate( glm::mat4( 1.f ),
-                        glm::ceil( glm::vec3( v2Pos.x, v2Pos.y, .0f ) ) )
-        * glm::rotate( glm::mat4( 1.f ), glm::radians( fRotation ),
-                       glm::vec3( .0f, .0f, 1.f ) ) );
+    return glm::inverse( glm::translate( glm::mat4( 1.f ),
+                                         glm::ceil( glm::vec3( v2Pos.x, v2Pos.y, .0f ) ) )
+                         * glm::rotate( glm::mat4( 1.f ), glm::radians( fRotation ),
+                                        glm::vec3( .0f, .0f, 1.f ) ) );
 }
 
 static glm::mat4 CalculateProjection( const glm::vec2 &v2Scale )
 {
     ZoneScoped;
 
-    glm::mat4 proj = glm::ortho( 0.0f, glm::ceil( v2Scale.x ),
-                                 glm::ceil( v2Scale.y ), .0f, .1f, 10000.f );
+    glm::mat4 proj = glm::ortho( 0.0f, glm::ceil( v2Scale.x ), glm::ceil( v2Scale.y ),
+                                 .0f, .1f, 10000.f );
     proj [ 3 ].z = 1.f;
     return proj;
 }
 
-void Camera2D::CalculateMetrices( )
+void Camera2D::CalculateMetrices()
 {
     ZoneScoped;
 
@@ -82,8 +83,8 @@ void Camera2D::SetUniformTransform( bgfx::ViewId vViewID )
                             glm::value_ptr( m_m4Projection ) );
 }
 
-void Camera2D::OnResize( GameWindow *pGameWindow, uint32_t iWidth,
-                         uint32_t iHeight )
+void Camera2D::OnResolutionChanged( BaseSurface *pGameWindow, uint32_t iWidth,
+                                    uint32_t iHeight )
 {
     ZoneScoped;
 

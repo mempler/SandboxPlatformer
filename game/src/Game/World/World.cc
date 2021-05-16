@@ -18,15 +18,14 @@ void World::Init( uint16_t uWidth, uint16_t uHeight )
 
     m_eState |= eWorldState::IsValid;  // testing purposes
 
-    GameWindow &window = GetEngine()->GetWindow();
+    BaseSurface *surface = GetEngine()->GetSurface();
 
     // TODO: MOVE THIS TO A BETTER PLACE
-    if ( bgfx::isValid( m_hWorldFrameBuffer ) )
-        bgfx::destroy( m_hWorldFrameBuffer );
+    if ( bgfx::isValid( m_hWorldFrameBuffer ) ) bgfx::destroy( m_hWorldFrameBuffer );
 
-    m_hWorldFrameBuffer = bgfx::createFrameBuffer(
-        window.Width(), window.Height(), bgfx::TextureFormat::RGBA8,
-        g_uFrameBufferFlags );
+    m_hWorldFrameBuffer =
+        bgfx::createFrameBuffer( surface->GetWidth(), surface->GetHeight(),
+                                 bgfx::TextureFormat::RGBA8, g_uFrameBufferFlags );
 }
 
 void World::Tick( float fDeltaTime )
@@ -40,7 +39,7 @@ void World::Draw()
 {
     if ( !IsValid() ) return;
 
-    GameWindow &window = GetEngine()->GetWindow();
+    BaseSurface *surface = GetEngine()->GetSurface();
 
     GetEngine()
         ->GetBatcher()
@@ -58,7 +57,7 @@ void World::Draw()
     GetEngine()->GetBatcher().SubmitRectangleRawHandle(
         bgfx::getTexture( m_hWorldFrameBuffer ),
         Math::CalcTransform( { 0, 0, 1 },
-                             { window.Width(), window.Height() } ) );
+                             { surface->GetWidth(), surface->GetHeight() } ) );
     GetEngine()->GetBatcher().SetCurrentView( 0 );  // back to default view
 }
 

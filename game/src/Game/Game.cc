@@ -2,8 +2,7 @@
 
 #include "Core/Engine.hh"
 
-void Game::OnGameResize( GameWindow *pGameWindow, uint32_t iWidth,
-                         uint32_t iHeight )
+void Game::OnResolutionChanged( BaseSurface *pSurface, uint32_t iWidth, uint32_t iHeight )
 {
     if ( m_World.IsValid() )
     {
@@ -11,8 +10,7 @@ void Game::OnGameResize( GameWindow *pGameWindow, uint32_t iWidth,
             bgfx::destroy( m_World.GetFrameBuffer() );
 
         m_World.GetFrameBuffer() = bgfx::createFrameBuffer(
-            pGameWindow->Width(), pGameWindow->Height(),
-            bgfx::TextureFormat::RGBA8, g_uFrameBufferFlags );
+            iWidth, iHeight, bgfx::TextureFormat::RGBA8, g_uFrameBufferFlags );
     }
 }
 
@@ -27,32 +25,29 @@ Game::~Game()
 void Game::Init()
 {
     // PREINIT EVENTS
-    GetEngine()->GetWindow().OnResize.connect<&Game::OnGameResize>( this );
-    GetEngine()->GetInputManager().OnKeyDown.connect<&Player::OnKeyDown>(
-        &m_Player );
+    GetEngine()->GetSurface()->OnResolutionChanged.connect<&Game::OnResolutionChanged>(
+        this );
+    GetEngine()->GetInputManager().OnKeyDown.connect<&Player::OnKeyDown>( &m_Player );
     GetEngine()->GetInputManager().OnKeyRelease.connect<&Player::OnKeyRelease>(
         &m_Player );
 
     // PREINIT VIEWS
-    GetEngine()->GetWindow().AddView( 2 );  // World tile layer
-    GetEngine()->GetWindow().ResetTransform();
+    GetEngine()->AddView( 2 );  // World tile layer
+    GetEngine()->ResetTransform();
 
     // PRELOAD ITEMS, FOR NOW
     // Rock
-    m_ItemInfoManager.Preload(
-        { 0., 0, 32, 32 },
-        GetEngine()->GetTextureManager().CreateTextureFromFile(
-            "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
+    m_ItemInfoManager.Preload( { 0., 0, 32, 32 },
+                               GetEngine()->GetTextureManager().CreateTextureFromFile(
+                                   "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
     // Dirt
-    m_ItemInfoManager.Preload(
-        { 32, 0, 32, 32 },
-        GetEngine()->GetTextureManager().CreateTextureFromFile(
-            "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
+    m_ItemInfoManager.Preload( { 32, 0, 32, 32 },
+                               GetEngine()->GetTextureManager().CreateTextureFromFile(
+                                   "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
     // Grass
-    m_ItemInfoManager.Preload(
-        { 64, 0, 32, 32 },
-        GetEngine()->GetTextureManager().CreateTextureFromFile(
-            "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
+    m_ItemInfoManager.Preload( { 64, 0, 32, 32 },
+                               GetEngine()->GetTextureManager().CreateTextureFromFile(
+                                   "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
 
     m_World.Init( 100, 60 );
 
