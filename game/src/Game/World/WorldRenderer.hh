@@ -3,7 +3,8 @@
 #include "pch.hh"
 
 class World;
-class WorldRenderer {
-public:
-    static void Draw(World *pWorld);
+class WorldRenderer
+{
+  public:
+    static void Draw( World *pWorld );
 };

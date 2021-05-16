@@ -2,23 +2,25 @@
 
 #include "Core/Graphics/Texture2D.hh"
 
-struct Item {
+struct Item
+{
     uint16_t uID = 0;
 
-    glm::vec4 v4UVs{};
+    glm::vec4 v4UVs {};
 
     Texture2D *pAtlas = 0;
 };
 
-class ItemInfoManager {
-public:
-    ItemInfoManager(){};
-    ~ItemInfoManager(){};
+class ItemInfoManager
+{
+  public:
+    ItemInfoManager() {};
+    ~ItemInfoManager() {};
 
-    void Preload(const glm::vec4 &v4UVs, Texture2D *pTexture);
+    void Preload( const glm::vec4 &v4UVs, Texture2D *pTexture );
 
-    Item *GetItem(uint16_t uID);
+    Item *GetItem( uint16_t uID );
 
-private:
+  private:
     std::vector<Item> m_vItems;
 };

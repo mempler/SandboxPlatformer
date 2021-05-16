@@ -4,7 +4,9 @@
 
 #include <string>
 
-class ImageParser : public IParser {
-public:
-    void performParse(const std::string_view &svFileName, Kokoro::Memory::Buffer &bInputBuffer) override;
+class ImageParser : public IParser
+{
+  public:
+    void performParse( const std::string_view &svFileName,
+                       Kokoro::Memory::Buffer &bInputBuffer ) override;
 };
