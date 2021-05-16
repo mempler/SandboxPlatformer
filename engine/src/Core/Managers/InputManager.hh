@@ -10,9 +10,14 @@
 #include <SDL_keycode.h>
 #include <signals.hpp>
 
-enum class ButtonState { Pressed, Released };
+enum class ButtonState
+{
+    Pressed,
+    Released
+};
 
-enum KeyMod : uint8_t {
+enum KeyMod : uint8_t
+{
     None = 0,
     SHIFT = 1 << 0,
     CONTROL = 1 << 1,
@@ -22,7 +27,8 @@ enum KeyMod : uint8_t {
     NUM_LOCK = 1 << 5,
 };
 
-enum class Key {
+enum class Key
+{
     Key_UNKNOWN = 0,
 
     Key_SPACE = 32,
@@ -149,7 +155,8 @@ enum class Key {
     Key_MENU = 348,
 };
 
-enum class MouseButton {
+enum class MouseButton
+{
     BTN_1 = 0,
     BTN_2 = 1,
     BTN_3 = 2,
@@ -164,46 +171,56 @@ enum class MouseButton {
     BTN_MIDDLE = BTN_4,
 };
 
-class InputManager {
-public:
-    void Init();
+class InputManager
+{
+  public:
+    void Init( );
 
-    bool IsKeyDown(Key eKey) {
-        return m_umKeyState.at(eKey) == ButtonState::Pressed;
+    bool IsKeyDown( Key eKey )
+    {
+        return m_umKeyState.at( eKey ) == ButtonState::Pressed;
     }
-    bool IsKeyUp(Key eKey) {
-        return m_umKeyState.at(eKey) == ButtonState::Released;
+    bool IsKeyUp( Key eKey )
+    {
+        return m_umKeyState.at( eKey ) == ButtonState::Released;
     }
 
-    bool IsKeyModActive(KeyMod eMod) {
-        uint8_t mod = (uint8_t)eMod;
+    bool IsKeyModActive( KeyMod eMod )
+    {
+        uint8_t mod = (uint8_t) eMod;
 
         return m_iKeyMods & eMod;
     }
 
-    bool IsMouseBtnDown(MouseButton eBtn) {
-        return m_umMouseButtonState.at(eBtn) == ButtonState::Pressed;
+    bool IsMouseBtnDown( MouseButton eBtn )
+    {
+        return m_umMouseButtonState.at( eBtn ) == ButtonState::Pressed;
     }
-    bool IsMouseBtnUp(MouseButton eBtn) {
-        return m_umMouseButtonState.at(eBtn) == ButtonState::Pressed;
+    bool IsMouseBtnUp( MouseButton eBtn )
+    {
+        return m_umMouseButtonState.at( eBtn ) == ButtonState::Pressed;
     }
 
-    const glm::vec2 GetMouseScrollAxis() {
+    const glm::vec2 GetMouseScrollAxis( )
+    {
         return m_v2MouseScrollAxis;
     }
 
-    const glm::vec2 GetMouseMoveDelta() {
+    const glm::vec2 GetMouseMoveDelta( )
+    {
         return m_v2MouseMoveDelta;
     }
 
-    signals::signal<void(MouseButton eButton, const glm::vec2 &v2Pos)> OnMouseDown;
-    signals::signal<void(MouseButton eButton, const glm::vec2 &v2Pos)> OnMouseRelease;
-    signals::signal<void(const glm::vec2 &v2Pos)> OnMouseMove;
-    signals::signal<void(const glm::vec2 &v2Pos)> OnMouseScroll;
-    signals::signal<void(Key eKey, KeyMod eMod)> OnKeyDown;
-    signals::signal<void(Key eKey, KeyMod eMod)> OnKeyRelease;
+    signals::signal<void( MouseButton eButton, const glm::vec2& v2Pos )>
+        OnMouseDown;
+    signals::signal<void( MouseButton eButton, const glm::vec2& v2Pos )>
+        OnMouseRelease;
+    signals::signal<void( const glm::vec2& v2Pos )> OnMouseMove;
+    signals::signal<void( const glm::vec2& v2Pos )> OnMouseScroll;
+    signals::signal<void( Key eKey, KeyMod eMod )> OnKeyDown;
+    signals::signal<void( Key eKey, KeyMod eMod )> OnKeyRelease;
 
-private:
+  private:
     std::unordered_map<MouseButton, ButtonState> m_umMouseButtonState;
     std::unordered_map<Key, ButtonState> m_umKeyState;
 
@@ -212,6 +229,6 @@ private:
 
     uint8_t m_iKeyMods;
 
-private:
-    void PumpSDL2Event(GameWindow *pWindow, SDL_Event &event);
+  private:
+    void PumpSDL2Event( GameWindow* pWindow, SDL_Event& event );
 };

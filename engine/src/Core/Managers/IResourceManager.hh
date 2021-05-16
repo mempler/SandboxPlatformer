@@ -11,72 +11,79 @@
 #include <iterator>
 
 template <typename TResource>
-class IResourceLoader {
-public:
-    virtual void Load(TResource *pDest, Identifier const &identifier) = 0;
+class IResourceLoader
+{
+  public:
+    virtual void Load( TResource *pDest, Identifier const &identifier ) = 0;
 };
 
 template <typename TResource, typename ILoader>
-class IResourceManager {
-public:
-    TResource *Load(Identifier const &identifier) {
+class IResourceManager
+{
+  public:
+    TResource *Load( Identifier const &identifier )
+    {
         ZoneScoped;
 
-        if (m_umResources.find(identifier) != m_umResources.end())
-            return &m_umResources.at(identifier);
+        if ( m_umResources.find( identifier ) != m_umResources.end( ) )
+            return &m_umResources.at( identifier );
 
-        Console::Info("Loading resource {}", identifier);
+        Console::Info( "Loading resource {}", identifier );
 
-        TResource *resource = CreateEmpty(identifier);
-        m_Loader.Load(resource, identifier);
+        TResource *resource = CreateEmpty( identifier );
+        m_Loader.Load( resource, identifier );
 
-        return &m_umResources.at(identifier);
+        return &m_umResources.at( identifier );
     }
 
-    void Destroy(TResource **ppResource) {
+    void Destroy( TResource **ppResource )
+    {
         ZoneScoped;
 
-        if (ppResource == nullptr)
-            return;
+        if ( ppResource == nullptr ) return;
 
-        if (*ppResource == nullptr)
-            return;
+        if ( *ppResource == nullptr ) return;
 
-        m_umResources.erase(**ppResource);
+        m_umResources.erase( **ppResource );
 
         *ppResource = nullptr;
     }
 
-    void Destroy(Identifier const &identifier) {
+    void Destroy( Identifier const &identifier )
+    {
         ZoneScoped;
 
-        m_umResources.erase(identifier);
+        m_umResources.erase( identifier );
     }
 
-    bool Has(Identifier const &identifier) {
+    bool Has( Identifier const &identifier )
+    {
         ZoneScoped;
 
-        return m_umResources.find(identifier) != m_umResources.end();
+        return m_umResources.find( identifier ) != m_umResources.end( );
     }
 
-    typename std::unordered_map<Identifier, TResource>::iterator begin() {
+    typename std::unordered_map<Identifier, TResource>::iterator begin( )
+    {
         ZoneScoped;
-        return m_umResources.begin();
+        return m_umResources.begin( );
     }
-    typename std::unordered_map<Identifier, TResource>::iterator end() {
+    typename std::unordered_map<Identifier, TResource>::iterator end( )
+    {
         ZoneScoped;
-        return m_umResources.end();
+        return m_umResources.end( );
     }
 
-protected:
-    TResource *CreateEmpty(Identifier const &identifier) {
+  protected:
+    TResource *CreateEmpty( Identifier const &identifier )
+    {
         ZoneScoped;
-        m_umResources[identifier] = {};
+        m_umResources [ identifier ] = { };
 
-        return &m_umResources.at(identifier);
+        return &m_umResources.at( identifier );
     }
 
-private:
+  private:
     ILoader m_Loader;
     std::unordered_map<Identifier, TResource> m_umResources;
 };

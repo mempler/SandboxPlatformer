@@ -9,11 +9,13 @@
 #include <span.hpp>
 #include <stdint.h>
 
-#define TEXTURE_FORMAT_NEAREST (BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT)
+#define TEXTURE_FORMAT_NEAREST                                                 \
+    ( BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT )
 
 // Low level texture wrapper
-class ENGINE_EXPORT Texture2D {
-public:
+class ENGINE_EXPORT Texture2D
+{
+  public:
     ~Texture2D();
 
     /*****************************************************
@@ -25,7 +27,8 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static void Load(Texture2D *pDest, Identifier const &identifier, uint64_t u64Filters);
+    static void Load( Texture2D *pDest, Identifier const &identifier,
+                      uint64_t u64Filters );
 
     /*****************************************************
      * Load
@@ -37,7 +40,8 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static void Load(Texture2D *pDest, Identifier const &identifier, uint64_t u64Filters, tcb::span<uint8_t> const &vData);
+    static void Load( Texture2D *pDest, Identifier const &identifier,
+                      uint64_t u64Filters, tcb::span<uint8_t> const &vData );
 
     /*****************************************************
      * LoadRaw
@@ -53,8 +57,10 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static void LoadRaw(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, uint64_t u64Filters,
-        tcb::span<uint8_t> const &vData);
+    static void LoadRaw( Texture2D *pDest, Identifier const &identifier,
+                         int32_t iWidth, int32_t iHeight,
+                         bgfx::TextureFormat::Enum eTextureFormat,
+                         uint64_t u64Filters, tcb::span<uint8_t> const &vData );
 
     /*****************************************************
      * Create
@@ -69,7 +75,9 @@ public:
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static void Create(Texture2D *pDest, Identifier const &identifier, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat);
+    static void Create( Texture2D *pDest, Identifier const &identifier,
+                        int32_t iWidth, int32_t iHeight,
+                        bgfx::TextureFormat::Enum eTextureFormat );
 
     /*****************************************************
      * Modify
@@ -81,11 +89,14 @@ public:
      * @param iWidth Texture Width
      * @param iHeight Texture Height
      * @param eTextureFormat Texture Format
-     * @param vData Readonly chunk of pixel data that will be copied onto this texture.
+     * @param vData Readonly chunk of pixel data that will be copied onto this
+     *texture.
      *****************************************************/
-    void Modify(int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat, tcb::span<uint8_t> const &vData);
+    void Modify( int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight,
+                 bgfx::TextureFormat::Enum eTextureFormat,
+                 tcb::span<uint8_t> const &vData );
 
-public:
+  public:
     /*****************************************************
      * GetWidth
      *
@@ -93,7 +104,8 @@ public:
      *
      * @return Texture Width
      *****************************************************/
-    uint32_t GetWidth() const {
+    uint32_t GetWidth() const
+    {
         return m_iWidth;
     }
 
@@ -104,7 +116,8 @@ public:
      *
      * @return Texture Height
      *****************************************************/
-    uint32_t GetHeight() const {
+    uint32_t GetHeight() const
+    {
         return m_iHeight;
     }
 
@@ -115,7 +128,8 @@ public:
      *
      * @return Texture data size
      *****************************************************/
-    uint32_t GetDataSize() const {
+    uint32_t GetDataSize() const
+    {
         return m_uDataSize;
     }
 
@@ -126,7 +140,8 @@ public:
      *
      * @return Texture Handle
      *****************************************************/
-    bgfx::TextureHandle GetHandle() const {
+    bgfx::TextureHandle GetHandle() const
+    {
         return m_thHandle;
     }
 
@@ -137,7 +152,8 @@ public:
      *
      * @return Texture Handle
      *****************************************************/
-    Identifier GetIdentifier() const {
+    Identifier GetIdentifier() const
+    {
         return m_Identifier;
     }
 
@@ -148,11 +164,12 @@ public:
      *
      * @return False if invalid
      *****************************************************/
-    bool IsValid() {
-        return bgfx::isValid(m_thHandle);
+    bool IsValid()
+    {
+        return bgfx::isValid( m_thHandle );
     }
 
-private:
+  private:
     Identifier m_Identifier = "engine://invalid_texture";
 
     int32_t m_iWidth = 0;

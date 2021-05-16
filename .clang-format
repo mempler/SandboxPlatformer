@@ -6,11 +6,13 @@ Language: Cpp
 DerivePointerAlignment: false
 PointerAlignment: Right
 
+ColumnLimit: 80
+
 #
 # someLongFunction(argument1,
 #                  argument2);
 #
-AlignAfterOpenBracket: DontAlign
+AlignAfterOpenBracket: Align
 
 #
 # #define A                                                                      \
@@ -18,7 +20,7 @@ AlignAfterOpenBracket: DontAlign
 #   int b;                                                                       \
 #   int dddddddddd;
 #
-AlignEscapedNewlines: Left
+AlignEscapedNewlines: Right
 
 #
 # int aaa = bbbbbbbbbbbbbbb +
@@ -74,13 +76,13 @@ AllowShortFunctionsOnASingleLine: None
 # else
 #   return;
 #
-AllowShortIfStatementsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: WithoutElse
 
 #
 # auto lambda = [](int a) {}
 # auto lambda2 = [](int a) { return a; };
 #
-AllowShortLambdasOnASingleLine: false
+AllowShortLambdasOnASingleLine: All
 
 #
 # class A {
@@ -129,7 +131,22 @@ BinPackArguments: true
 # {
 # }
 #
-BreakBeforeBraces: Attach
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterStruct: true
+  AfterClass: true
+  AfterNamespace: true
+  AfterFunction: true
+  AfterCaseLabel: true
+  AfterControlStatement: Always
+  AfterEnum: true
+  AfterUnion: true
+  AfterExternBlock: true
+  BeforeCatch: true
+  BeforeElse: true
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
 
 SortIncludes: true
 IncludeBlocks: Regroup
@@ -189,39 +206,41 @@ IncludeCategories:
 
 
 
-BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Attach
-BreakBeforeTernaryOperators: 'true'
-BreakConstructorInitializers: BeforeColon
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: AfterColon
 BreakInheritanceList: BeforeColon
-BreakStringLiterals: 'true'
-ColumnLimit: '170'
-ConstructorInitializerAllOnOneLineOrOnePerLine: 'false'
-ConstructorInitializerIndentWidth: '100'
-Cpp11BracedListStyle: 'false'
-DerivePointerAlignment: 'false'
-IndentCaseLabels: 'true'
-IndentPPDirectives: None
-IndentWidth: '4'
-IndentWrappedFunctionNames: 'false'
-KeepEmptyLinesAtTheStartOfBlocks: 'false'
+BreakStringLiterals: true
+CompactNamespaces: true
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+Cpp11BracedListStyle: false
+FixNamespaceComments: true
+IndentCaseLabels: false
+IndentGotoLabels: false
+IndentPPDirectives: BeforeHash
+KeepEmptyLinesAtTheStartOfBlocks: true
+MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
-PointerAlignment: Right
-ReflowComments: 'false'
-SortUsingDeclarations: 'true'
-SpaceAfterCStyleCast: 'false'
-SpaceAfterTemplateKeyword: 'true'
-SpaceBeforeAssignmentOperators: 'true'
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: ControlStatements
-SpaceBeforeRangeBasedForLoopColon: 'true'
-SpaceInEmptyParentheses: 'false'
-SpacesBeforeTrailingComments: '1'
-SpacesInAngles: 'false'
-SpacesInCStyleCastParentheses: 'false'
-SpacesInContainerLiterals: 'true'
-SpacesInParentheses: 'false'
-SpacesInSquareBrackets: 'false'
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: true
+SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInContainerLiterals: true
+SpacesInParentheses: true
+SpacesInSquareBrackets: true
 Standard: Latest
 UseCRLF: false
 UseTab: Never
-AccessModifierOffset: -4
+AccessModifierOffset: -2
+---

@@ -6,33 +6,38 @@
 
 #include "Font.hh"
 
-class Label {
-public:
-    Label(){};
+class Label
+{
+  public:
+    Label() {};
 
-    void SetText(const glm::vec3 &v2Pos, const std::string &sText, Font *pFont);
-    void SetText(const std::string &sText, Font *pFont);
-    void SetPosition(const glm::vec3 &v2Pos);
-    void SetColor(const glm::vec4 &v4Color);
+    void SetText( const glm::vec3 &v2Pos, const std::string &sText,
+                  Font *pFont );
+    void SetText( const std::string &sText, Font *pFont );
+    void SetPosition( const glm::vec3 &v2Pos );
+    void SetColor( const glm::vec4 &v4Color );
 
     void Render();
 
-    static glm::vec2 CalculateTextSize(const std::string &sText, Font *pFont);
+    static glm::vec2 CalculateTextSize( const std::string &sText, Font *pFont );
 
-public:
-    const glm::vec3 &GetPosition() const {
+  public:
+    const glm::vec3 &GetPosition() const
+    {
         return m_v3Pos;
     }
 
-    const glm::vec2 &GetSize() const {
+    const glm::vec2 &GetSize() const
+    {
         return m_v2Size;
     }
 
-private:
+  private:
     void CalculateTransform();
 
-private:
-    struct RenderableChar {
+  private:
+    struct RenderableChar
+    {
         glm::vec4 uvs;
         glm::vec2 glyphPos;
         glm::vec2 size;
@@ -41,12 +46,12 @@ private:
         Texture2D *texture;
     };
 
-    std::vector<RenderableChar> m_vChars; // - in cache
+    std::vector<RenderableChar> m_vChars;  // - in cache
 
     std::string m_sText = "";
 
     Font *m_pUsingFont = 0;
 
-    glm::vec3 m_v3Pos{};
-    glm::vec2 m_v2Size{};
+    glm::vec3 m_v3Pos {};
+    glm::vec2 m_v2Size {};
 };

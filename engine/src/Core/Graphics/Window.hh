@@ -9,9 +9,15 @@
 
 #include <SDL_events.h>
 
-class ENGINE_EXPORT GameWindow {
-public:
-    enum Flags { None = 0, Fullscreen = 1 << 1, Unresizable = 1 << 2 };
+class ENGINE_EXPORT GameWindow
+{
+  public:
+    enum Flags
+    {
+        None = 0,
+        Fullscreen = 1 << 1,
+        Unresizable = 1 << 2
+    };
 
     /*****************************************************
      * GameWindow
@@ -27,7 +33,9 @@ public:
      * @param eFlags Window Flags
      *****************************************************/
     explicit GameWindow(
-        const int32_t iWidth = 1280, const int32_t iHeight = 720, const char *szTitle = "Sandbox Platformer: Game Window", const Flags eFlags = Flags::None);
+        const int32_t iWidth = 1280, const int32_t iHeight = 720,
+        const char *szTitle = "Sandbox Platformer: Game Window",
+        const Flags eFlags = Flags::None );
 
     /*****************************************************
      * ~GameWindow
@@ -70,7 +78,7 @@ public:
      * Adds another view into view stack, useful when
      * updating all at once.
      *****************************************************/
-    void AddView(bgfx::ViewId viID);
+    void AddView( bgfx::ViewId viID );
 
     /*****************************************************
      * ResetTransform
@@ -79,26 +87,29 @@ public:
      *****************************************************/
     void ResetTransform();
 
-    bool CanRender() {
+    bool CanRender()
+    {
         return m_bIsBGFXInitialized;
     }
 
-public:
+  public:
     void InitBGFX();
 
-    int32_t Width() {
+    int32_t Width()
+    {
         return m_iWidth;
     }
 
-    int32_t Height() {
+    int32_t Height()
+    {
         return m_iHeight;
     }
 
     // Yes, signals are public
-    signals::signal<void(GameWindow *, SDL_Event &)> OnSDL2Event;
-    signals::signal<void(GameWindow *, uint32_t, uint32_t)> OnResize;
+    signals::signal<void( GameWindow *, SDL_Event & )> OnSDL2Event;
+    signals::signal<void( GameWindow *, uint32_t, uint32_t )> OnResize;
 
-private:
+  private:
     SDL_Window *m_SDLWindow = nullptr;
 
     int32_t m_iWidth = 0;
