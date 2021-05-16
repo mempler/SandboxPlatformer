@@ -140,3 +140,11 @@ option(SPDLOG_FMT_EXTERNAL_HO "Use external fmt header-only library instead of b
 add_subdirectory(spdlog)
 
 ###############################################################################################
+
+add_subdirectory(GameNetworkingSockets)
+
+###############################################################################################
+
+add_subdirectory(backward)
+
+###############################################################################################

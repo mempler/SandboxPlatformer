@@ -10,7 +10,7 @@
 
 #include <memory>
 
-#define CHECK( expr, fail_msg, ... )                                           \
+#define CHECK( expr, fail_msg, ... )                                                     \
     if ( !( expr ) ) Console::Fatal( fail_msg, ##__VA_ARGS__ );
 
 class Console
@@ -28,23 +28,20 @@ class Console
 
 #if PLATFORM_ANDROID
         // ANDROID
-        logSinks.emplace_back(
-            std::make_shared<spdlog::sinks::android_sink_mt>() );
+        logSinks.emplace_back( std::make_shared<spdlog::sinks::android_sink_mt>() );
         logSinks [ 0 ]->set_pattern( "%T %5^%l%$\t| %v" );
 #else
         // PC
+        logSinks.emplace_back( std::make_shared<spdlog::sinks::stdout_color_sink_mt>() );
         logSinks.emplace_back(
-            std::make_shared<spdlog::sinks::stdout_color_sink_mt>() );
-        logSinks.emplace_back(
-            std::make_shared<spdlog::sinks::basic_file_sink_mt>( "game.log",
-                                                                 true ) );
+            std::make_shared<spdlog::sinks::basic_file_sink_mt>( "game.log", true ) );
 
         logSinks [ 0 ]->set_pattern( "%T %5^%l%$\t| %v" );
         logSinks [ 1 ]->set_pattern( "%T %l\t| %v" );
 #endif
 
-        s_pCoreLogger = std::make_shared<spdlog::logger>(
-            "Engine", begin( logSinks ), end( logSinks ) );
+        s_pCoreLogger = std::make_shared<spdlog::logger>( "Engine", begin( logSinks ),
+                                                          end( logSinks ) );
         spdlog::register_logger( s_pCoreLogger );
         s_pCoreLogger->set_level( spdlog::level::trace );
         s_pCoreLogger->flush_on( spdlog::level::trace );
@@ -118,8 +115,7 @@ class Console
     template <typename FormatString, typename... Args>
     static void Fatal( const FormatString &fmt, Args &&...args )
     {
-        s_pCoreLogger->critical( fmt, std::forward<Args>( args )... );
-        s_pCoreLogger->dump_backtrace();
+        s_pCoreLogger->error( fmt, std::forward<Args>( args )... );
         s_pCoreLogger->flush();
         abort();
     }

@@ -4,16 +4,18 @@
 
 #include "Game/Game.hh"
 
+#if GAME_SERVER
+    #include "Server/Server.hh"
+#endif
 class Application : public BaseApp
 {
   protected:
     void Init() override
     {
-        m_pEngine->GetWindow().OnResize.connect<&Application::OnWindowResize>(
-            this );
+        m_pEngine->GetWindow().OnResize.connect<&Application::OnWindowResize>( this );
 
-        m_pFont = m_pEngine->GetFontManager().LoadFromFile(
-            "file://Roboto-Regular.ttf", 256, 256, 22.f );
+        m_pFont = m_pEngine->GetFontManager().LoadFromFile( "file://Roboto-Regular.ttf",
+                                                            256, 256, 22.f );
         m_lWatermark.SetText( { 0, 0, 999.f }, "ICESDK DEMO", m_pFont );
         m_lWatermark.SetColor( { 1, 1, 1, .2 } );
 
@@ -45,8 +47,7 @@ class Application : public BaseApp
     }
 
   private:
-    void OnWindowResize( GameWindow *pGameWindow, uint32_t iWidth,
-                         uint32_t iHeight )
+    void OnWindowResize( GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight )
     {
         glm::vec3 center = { m_pEngine->GetWindow().Width() / 2.f
                                  - m_lWatermark.GetSize().x / 2.f,
@@ -63,11 +64,21 @@ class Application : public BaseApp
 
 static Application *app = nullptr;
 
+#if GAME_SERVER
+static Server *g_pServer = nullptr;
+#endif
+
 int main()
 {
+#if GAME_SERVER
+    g_pServer = new Server;
+
+    g_pServer->Run();
+#else
     app = new Application;
 
     app->Run();
+#endif
 
     return 0;
 }
@@ -81,3 +92,10 @@ Game *GetGame()
 {
     return &app->GetGame();
 }
+
+#if GAME_SERVER
+Server *GetServer()
+{
+    return g_pServer;
+}
+#endif
