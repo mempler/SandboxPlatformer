@@ -4,13 +4,15 @@
 
 #include "Core/Engine.hh"
 
-void InputManager::Init( )
+#include <SDL_keycode.h>
+
+void InputManager::Init()
 {
     ZoneScoped;
 
-    GetEngine( )
-        ->GetWindow( )
-        .OnSDL2Event.connect<&InputManager::PumpSDL2Event>( this );
+    GetEngine()->GetWindow().OnSDL2Event.connect<&InputManager::PumpSDL2Event>( this );
+
+    GetEngine()->GetWindow().OnUpdate.connect<&InputManager::UpdateKeyboardState>( this );
 }
 
 void InputManager::PumpSDL2Event( GameWindow *pWindow, SDL_Event &event )
@@ -79,21 +81,21 @@ void InputManager::PumpSDL2Event( GameWindow *pWindow, SDL_Event &event )
     if ( event.type == SDL_KEYDOWN )
     {
         auto keyEvent = event.key.keysym.sym;
+        keyEvent -= 32;
 
-        m_umKeyState.insert_or_assign( (Key) ( keyEvent - 32 ),
-                                       ButtonState::Pressed );
+        m_umKeyState.insert_or_assign( (Key) ( keyEvent ), ButtonState::Pressed );
 
-        OnKeyDown( (Key) ( keyEvent - 32 ), (KeyMod) m_iKeyMods );
+        OnKeyDownInput( (Key) ( keyEvent ), (KeyMod) m_iKeyMods );
     }
 
     if ( event.type == SDL_KEYUP )
     {
         auto keyEvent = event.key.keysym.sym;
+        keyEvent -= 32;
 
-        m_umKeyState.insert_or_assign( (Key) ( keyEvent - 32 ),
-                                       ButtonState::Released );
+        m_umKeyState.insert_or_assign( (Key) ( keyEvent ), ButtonState::Released );
 
-        OnKeyRelease( (Key) ( keyEvent - 32 ), (KeyMod) m_iKeyMods );
+        OnKeyReleaseInput( (Key) ( keyEvent ), (KeyMod) m_iKeyMods );
     }
 
     if ( event.type == SDL_MOUSEMOTION )
@@ -121,11 +123,9 @@ void InputManager::PumpSDL2Event( GameWindow *pWindow, SDL_Event &event )
         auto mouseButtonEvent = event.button;
 
         m_umMouseButtonState.insert_or_assign(
-            (MouseButton) ( mouseButtonEvent.button + 1 ),
-            ButtonState::Pressed );
+            (MouseButton) ( mouseButtonEvent.button + 1 ), ButtonState::Pressed );
 
-        OnMouseDown( (MouseButton) ( mouseButtonEvent.button + 1 ),
-                     m_v2MouseMoveDelta );
+        OnMouseDown( (MouseButton) ( mouseButtonEvent.button + 1 ), m_v2MouseMoveDelta );
     }
 
     if ( event.type == SDL_MOUSEBUTTONUP )
@@ -133,10 +133,12 @@ void InputManager::PumpSDL2Event( GameWindow *pWindow, SDL_Event &event )
         auto mouseButtonEvent = event.button;
 
         m_umMouseButtonState.insert_or_assign(
-            (MouseButton) ( mouseButtonEvent.button + 1 ),
-            ButtonState::Released );
+            (MouseButton) ( mouseButtonEvent.button + 1 ), ButtonState::Released );
 
-        OnMouseDown( (MouseButton) ( mouseButtonEvent.button + 1 ),
-                     m_v2MouseMoveDelta );
+        OnMouseDown( (MouseButton) ( mouseButtonEvent.button + 1 ), m_v2MouseMoveDelta );
     }
+}
+
+void InputManager::UpdateKeyboardState( float fDelta )
+{
 }

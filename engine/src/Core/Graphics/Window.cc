@@ -132,6 +132,8 @@ double GameWindow::BeginFrame()
     const auto freq = static_cast<float>( bx::getHPFrequency() );
     const auto delta = static_cast<float>( frameTime ) / freq;
 
+    OnUpdate( delta );
+
     // This dummy draw call is here to make sure that view 0 is cleared if no
     // other draw calls are submitted to view 0.
     bgfx::touch( 0 );

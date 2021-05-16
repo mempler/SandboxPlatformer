@@ -108,6 +108,7 @@ class ENGINE_EXPORT GameWindow
     // Yes, signals are public
     signals::signal<void( GameWindow *, SDL_Event & )> OnSDL2Event;
     signals::signal<void( GameWindow *, uint32_t, uint32_t )> OnResize;
+    signals::signal<void( float )> OnUpdate;
 
   private:
     SDL_Window *m_SDLWindow = nullptr;
