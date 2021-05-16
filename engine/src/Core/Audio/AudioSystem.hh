@@ -7,20 +7,23 @@
 #include "Core/Audio/AudioChannel.hh"
 #include "Core/Utils/Identifier.hh"
 
-class AudioSystem {
-public:
+class AudioSystem
+{
+  public:
     ~AudioSystem();
 
-    AudioChannel *CreateChannel(Identifier const &rIdent);
+    AudioChannel *CreateChannel( Identifier const &rIdent );
 
-    Audio *LoadStereoAudio(AudioChannel *pChannel, Identifier const &rIdent, Identifier const &rIdentLeft, Identifier const &rIdentRight);
-    Audio *LoadMonoAudio(AudioChannel *pChannel, Identifier const &rIdent);
+    Audio *LoadStereoAudio( AudioChannel *pChannel, Identifier const &rIdent,
+                            Identifier const &rIdentLeft,
+                            Identifier const &rIdentRight );
+    Audio *LoadMonoAudio( AudioChannel *pChannel, Identifier const &rIdent );
 
     void Init();
 
-private:
+  private:
     std::vector<AudioChannel> m_vAudioChannels;
 
-    ALCdevice *m_alDevice;   // Active Audio Device
-    ALCcontext *m_alContext; // Active OpenAL Context (once per thread)
+    ALCdevice *m_alDevice;    // Active Audio Device
+    ALCcontext *m_alContext;  // Active OpenAL Context (once per thread)
 };

@@ -4,9 +4,11 @@
 
 #include <imgui.h>
 
-class IResourceMonitor : public IDebugUtil {
-public:
-    IResourceMonitor(Engine *pEngine) : IDebugUtil(pEngine) {
+class IResourceMonitor : public IDebugUtil
+{
+  public:
+    IResourceMonitor( Engine *pEngine ) : IDebugUtil( pEngine )
+    {
     }
 
     void Draw() override;
