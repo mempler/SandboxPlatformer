@@ -17,7 +17,8 @@
 //////////////////
 //    Engine    //
 //////////////////
-Engine *GetEngine() {
+Engine *GetEngine()
+{
     ZoneScoped;
     return GetApp()->GetEngine();
 }
@@ -37,43 +38,53 @@ Engine::Engine()
 }
 // clang-format on
 
-Engine::~Engine() {
+Engine::~Engine()
+{
     ZoneScoped;
 }
 
-GameWindow &Engine::GetWindow() {
+GameWindow &Engine::GetWindow()
+{
     return m_GameWindow;
 }
 
-Camera2D &Engine::GetCamera() {
+Camera2D &Engine::GetCamera()
+{
     return m_Camera;
 }
 
-VertexBatcher &Engine::GetBatcher() {
+VertexBatcher &Engine::GetBatcher()
+{
     return m_VertexBatcher;
 }
 
-TextureManager &Engine::GetTextureManager() {
+TextureManager &Engine::GetTextureManager()
+{
     return m_TextureManager;
 }
 
-ShaderManager &Engine::GetShaderManager() {
+ShaderManager &Engine::GetShaderManager()
+{
     return m_ShaderManager;
 }
 
-AudioSystem &Engine::GetAudioSystem() {
+AudioSystem &Engine::GetAudioSystem()
+{
     return m_AudioSystem;
 }
 
-FontManager &Engine::GetFontManager() {
+FontManager &Engine::GetFontManager()
+{
     return m_FontManager;
 }
 
-InputManager &Engine::GetInputManager() {
+InputManager &Engine::GetInputManager()
+{
     return m_InputManager;
 }
 
-void Engine::Init() {
+void Engine::Init()
+{
     ZoneScoped;
 
     Console::Init();
@@ -83,61 +94,76 @@ void Engine::Init() {
     m_Camera.Init();
     m_InputManager.Init();
 
-    m_VertexBatcher.Init(m_TextureManager);
+    m_VertexBatcher.Init( m_TextureManager );
 
     // Show by default
-    m_IResourceMonitor.SetShowing(true);
-    m_GameView.SetShowing(true);
-    m_Profiler.SetShowing(false);
+    m_IResourceMonitor.SetShowing( true );
+    m_GameView.SetShowing( true );
+    m_Profiler.SetShowing( false );
 }
 
-void Engine::BeginFrame() {
-    FrameMarkStart("Engine Frame");
+void Engine::BeginFrame()
+{
+    FrameMarkStart( "Engine Frame" );
 
     ZoneScoped;
     m_GameWindow.BeginFrame();
     m_VertexBatcher.BeginFrame();
 
 #if ENGINE_DEBUG
-    if (ImGui::IsKeyPressed(SDL_SCANCODE_F8, false)) {
+    if ( ImGui::IsKeyPressed( SDL_SCANCODE_F8, false ) )
+    {
         m_bShowDebugUtils = !m_bShowDebugUtils;
 
-        if (!m_bShowDebugUtils && m_GameView.IsShowing())
-            bgfx::setViewFrameBuffer(0, BGFX_INVALID_HANDLE); // Reset framebuffer
+        if ( !m_bShowDebugUtils && m_GameView.IsShowing() )
+            bgfx::setViewFrameBuffer(
+                0, BGFX_INVALID_HANDLE );  // Reset framebuffer
     }
 
-    if (m_bShowDebugUtils) {
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+    if ( m_bShowDebugUtils )
+    {
+        ImGuiWindowFlags window_flags =
+            ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+        window_flags |= ImGuiWindowFlags_NoTitleBar
+                        | ImGuiWindowFlags_NoCollapse
+                        | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |=
+            ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus
+            | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
 
         const ImGuiViewport *viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->WorkPos);
-        ImGui::SetNextWindowSize(viewport->WorkSize);
-        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::SetNextWindowPos( viewport->WorkPos );
+        ImGui::SetNextWindowSize( viewport->WorkSize );
+        ImGui::SetNextWindowViewport( viewport->ID );
 
-        ImGui::Begin("EngineDebug", nullptr, window_flags);
+        ImGui::Begin( "EngineDebug", nullptr, window_flags );
 
-        ImGuiID dockspace_id = ImGui::GetID("EngineDockSpace");
-        if (ImGui::DockBuilderGetNode(dockspace_id) == NULL)
-            DefaultImGuiLayout(this, dockspace_id);
+        ImGuiID dockspace_id = ImGui::GetID( "EngineDockSpace" );
+        if ( ImGui::DockBuilderGetNode( dockspace_id ) == NULL )
+            DefaultImGuiLayout( this, dockspace_id );
 
-        ImGui::DockSpace(dockspace_id, ImVec2(0, 0));
+        ImGui::DockSpace( dockspace_id, ImVec2( 0, 0 ) );
 
-        if (ImGui::BeginMenuBar()) {
-            if (ImGui::BeginMenu("Engine")) {
-                if (ImGui::MenuItem("IResource Monitor")) { // Toggle
-                    m_IResourceMonitor.SetShowing(!m_IResourceMonitor.IsShowing());
+        if ( ImGui::BeginMenuBar() )
+        {
+            if ( ImGui::BeginMenu( "Engine" ) )
+            {
+                if ( ImGui::MenuItem( "IResource Monitor" ) )
+                {  // Toggle
+                    m_IResourceMonitor.SetShowing(
+                        !m_IResourceMonitor.IsShowing() );
                 }
 
-                if (ImGui::MenuItem("Game View")) { // Toggle
-                    m_GameView.SetShowing(!m_GameView.IsShowing());
+                if ( ImGui::MenuItem( "Game View" ) )
+                {  // Toggle
+                    m_GameView.SetShowing( !m_GameView.IsShowing() );
 
-                    m_GameView.Draw(); // Draw one more time
+                    m_GameView.Draw();  // Draw one more time
                 }
 
-                if (ImGui::MenuItem("Profiler")) { // Toggle
-                    m_Profiler.SetShowing(!m_Profiler.IsShowing());
+                if ( ImGui::MenuItem( "Profiler" ) )
+                {  // Toggle
+                    m_Profiler.SetShowing( !m_Profiler.IsShowing() );
                 }
 
                 ImGui::EndMenu();
@@ -145,15 +171,18 @@ void Engine::BeginFrame() {
             ImGui::EndMenuBar();
         }
 
-        if (m_IResourceMonitor.IsShowing()) {
+        if ( m_IResourceMonitor.IsShowing() )
+        {
             m_IResourceMonitor.Draw();
         }
 
-        if (m_GameView.IsShowing()) {
+        if ( m_GameView.IsShowing() )
+        {
             m_GameView.Draw();
         }
 
-        if (m_Profiler.IsShowing()) {
+        if ( m_Profiler.IsShowing() )
+        {
             m_Profiler.Draw();
         }
 
@@ -162,25 +191,29 @@ void Engine::BeginFrame() {
 #endif
 }
 
-void Engine::EndFrame() {
+void Engine::EndFrame()
+{
     ZoneScoped;
     m_VertexBatcher.EndFrame();
     m_GameWindow.EndFrame();
 
-    FrameMarkEnd("Engine Frame");
+    FrameMarkEnd( "Engine Frame" );
 }
 
 //////////////////
 //    BaseApp   //
 //////////////////
-BaseApp::BaseApp() : m_pEngine(new Engine) {
+BaseApp::BaseApp() : m_pEngine( new Engine )
+{
 }
 
-BaseApp::~BaseApp() {
+BaseApp::~BaseApp()
+{
     delete m_pEngine;
 }
 
-void BaseApp::Run() {
+void BaseApp::Run()
+{
     {
         ZoneScoped;
         m_pEngine->Init();
@@ -189,14 +222,15 @@ void BaseApp::Run() {
     }
 
     Timer timer;
-    while (!m_pEngine->GetWindow().ShouldExit()) {
+    while ( !m_pEngine->GetWindow().ShouldExit() )
+    {
         auto elapsed = timer.elapsed();
         timer.reset();
 
         m_pEngine->BeginFrame();
 
-        Tick(elapsed);
-        Draw(elapsed);
+        Tick( elapsed );
+        Draw( elapsed );
 
         m_pEngine->EndFrame();
     }

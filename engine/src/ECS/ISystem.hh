@@ -4,9 +4,11 @@
 
 #include <memory>
 
-class ISystem {
-public:
-    explicit ISystem(entt::registry *pRegistry) : m_pRegistry(pRegistry) {
+class ISystem
+{
+  public:
+    explicit ISystem( entt::registry *pRegistry ) : m_pRegistry( pRegistry )
+    {
     }
 
     virtual ~ISystem() = default;
@@ -18,7 +20,7 @@ public:
      *
      * @param fDelta Delta time between the last tick
      *****************************************************/
-    virtual void Tick(float fDelta) = 0;
+    virtual void Tick( float fDelta ) = 0;
 
     /*****************************************************
      * Draw
@@ -27,8 +29,8 @@ public:
      *
      * @param fDelta Delta time between the last draw
      *****************************************************/
-    virtual void Draw(float fDelta) = 0;
+    virtual void Draw( float fDelta ) = 0;
 
-protected:
+  protected:
     entt::registry *m_pRegistry;
 };

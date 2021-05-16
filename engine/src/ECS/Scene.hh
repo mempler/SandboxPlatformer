@@ -12,8 +12,9 @@
 
 #include <optional>
 
-class Scene final {
-public:
+class Scene final
+{
+  public:
     explicit Scene();
     ~Scene();
 
@@ -28,7 +29,7 @@ public:
      *
      * @return Entity
      *****************************************************/
-    Entity CreateEntity(Identifier const &identifier);
+    Entity CreateEntity( Identifier const &identifier );
 
     /*****************************************************
      * RegisterSystem
@@ -38,8 +39,9 @@ public:
      * workflow
      *****************************************************/
     template <typename Sys = ISystem>
-    void RegisterSystem() {
-        m_vpSystems.push_back(new Sys(GetRegistry()));
+    void RegisterSystem()
+    {
+        m_vpSystems.push_back( new Sys( GetRegistry() ) );
     }
 
     /*****************************************************
@@ -49,7 +51,7 @@ public:
      *
      * @param fDelta Delta time between the last tick
      *****************************************************/
-    void Tick(float fDelta);
+    void Tick( float fDelta );
 
     /*****************************************************
      * Draw
@@ -58,7 +60,7 @@ public:
      *
      * @param fDelta Delta time between the last draw
      *****************************************************/
-    void Draw(float fDelta);
+    void Draw( float fDelta );
 
     /*****************************************************
      * GetRegistry
@@ -69,13 +71,14 @@ public:
      *         This might be null if Scene
      *         is no longer existent
      *****************************************************/
-    entt::registry *GetRegistry() {
+    entt::registry *GetRegistry()
+    {
         return &m_Registry;
     }
 
-private:
+  private:
     // We cannot store the system itself, as the type differs.
-    std::vector<ISystem *> m_vpSystems{};
+    std::vector<ISystem *> m_vpSystems {};
 
-    entt::registry m_Registry{};
+    entt::registry m_Registry {};
 };

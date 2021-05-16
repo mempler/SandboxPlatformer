@@ -27,8 +27,8 @@
 
 // OS helper
 #if PLATFORM_WIN32
-#define NOMINMAX
-#include <Windows.h>
+    #define NOMINMAX
+    #include <Windows.h>
 #endif
 
 // Graphics helper
@@ -50,10 +50,10 @@
 
 // Dumb X11
 #ifdef None
-#undef None
+    #undef None
 #endif
 #ifdef DestroyAll
-#undef DestroyAll
+    #undef DestroyAll
 #endif
 
 // Audio

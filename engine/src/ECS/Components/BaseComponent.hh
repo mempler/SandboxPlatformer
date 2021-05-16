@@ -4,11 +4,13 @@
 
 #include <entt.hpp>
 
-namespace Components {
-    struct BaseComponent {
+namespace Components
+{
+    struct BaseComponent
+    {
         Identifier m_Identifier;
 
         bool m_bIsDisabled;
         entt::entity m_iParent;
     };
-} // namespace Components
+}  // namespace Components

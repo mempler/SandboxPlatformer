@@ -14,8 +14,9 @@
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
 
-class Engine {
-public:
+class Engine
+{
+  public:
     Engine();
     ~Engine();
 
@@ -33,7 +34,7 @@ public:
 
     void Init();
 
-private:
+  private:
     // Graphics
     GameWindow m_GameWindow;
     Camera2D m_Camera;
@@ -59,28 +60,30 @@ private:
     IResourceMonitor m_IResourceMonitor;
     Profiler m_Profiler;
 
-private:
+  private:
 };
 
-class BaseApp {
-public:
+class BaseApp
+{
+  public:
     BaseApp();
     ~BaseApp();
 
     void Run();
 
-public:
-    Engine *GetEngine() const {
+  public:
+    Engine *GetEngine() const
+    {
         return m_pEngine;
     }
 
-protected:
+  protected:
     virtual void Init() = 0;
 
-    virtual void Tick(float fDelta) = 0;
-    virtual void Draw(float fDelta) = 0;
+    virtual void Tick( float fDelta ) = 0;
+    virtual void Draw( float fDelta ) = 0;
 
-protected:
+  protected:
     Engine *m_pEngine;
 };
 
@@ -88,6 +91,6 @@ extern BaseApp *GetApp();
 extern Engine *GetEngine();
 
 #if PLATFORM_ANDROID
-int SDL_main(int argc, char *argv[]);
-#define main SDL_main
+int SDL_main( int argc, char *argv [] );
+    #define main SDL_main
 #endif

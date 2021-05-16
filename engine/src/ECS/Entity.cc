@@ -5,8 +5,9 @@
 #include "Components/BaseComponent.hh"
 #include "Components/TransformComponent.hh"
 
-Entity &Entity::WithPosition(const glm::vec3 &v3Position) {
-    DefaultTransformation(); // Setup default transformation
+Entity &Entity::WithPosition( const glm::vec3 &v3Position )
+{
+    DefaultTransformation();  // Setup default transformation
 
     auto &transformComponent = GetComponent<Components::TransformComponent>();
 
@@ -16,8 +17,9 @@ Entity &Entity::WithPosition(const glm::vec3 &v3Position) {
     return *this;
 }
 
-Entity &Entity::WithScale(const glm::vec3 &v3Scale) {
-    DefaultTransformation(); // Setup default transformation
+Entity &Entity::WithScale( const glm::vec3 &v3Scale )
+{
+    DefaultTransformation();  // Setup default transformation
 
     auto &transformComponent = GetComponent<Components::TransformComponent>();
 
@@ -27,8 +29,9 @@ Entity &Entity::WithScale(const glm::vec3 &v3Scale) {
     return *this;
 }
 
-Entity &Entity::WithRotation(const float fDegrees) {
-    DefaultTransformation(); // Setup default transformation
+Entity &Entity::WithRotation( const float fDegrees )
+{
+    DefaultTransformation();  // Setup default transformation
 
     auto &transformComponent = GetComponent<Components::TransformComponent>();
 
@@ -38,11 +41,12 @@ Entity &Entity::WithRotation(const float fDegrees) {
     return *this;
 }
 
-Entity &Entity::DefaultTransformation() {
-    if (HasComponent<Components::TransformComponent>())
-        return *this;
+Entity &Entity::DefaultTransformation()
+{
+    if ( HasComponent<Components::TransformComponent>() ) return *this;
 
-    auto &transformComponent = AttachComponent<Components::TransformComponent>();
+    auto &transformComponent =
+        AttachComponent<Components::TransformComponent>();
 
     transformComponent.m_fRotation = 0.f;
     transformComponent.m_v3Position = { 0.f, 0.f, 0.f };

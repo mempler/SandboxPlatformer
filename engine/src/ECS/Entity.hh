@@ -9,24 +9,34 @@
 
 #include <entt.hpp>
 
-#define ENTITY_EXCEPTION(_FMT, ...) ::EntityException(fmt::format(_FMT, __VA_ARGS__), __FILE__, __LINE__)
+#define ENTITY_EXCEPTION( _FMT, ... )                                          \
+    ::EntityException( fmt::format( _FMT, __VA_ARGS__ ), __FILE__, __LINE__ )
 
-class EntityException final : public Kokoro::Exception::BaseException {
-public:
-    explicit EntityException(std::string_view svReason, const char *svWhere, size_t sLine) : BaseException("Entity", svReason, svWhere, sLine) {
+class EntityException final : public Kokoro::Exception::BaseException
+{
+  public:
+    explicit EntityException( std::string_view svReason, const char *svWhere,
+                              size_t sLine ) :
+        BaseException( "Entity", svReason, svWhere, sLine )
+    {
     }
 };
 
-class Entity final {
-public:
-    explicit Entity(entt::registry *wpRegistry) : m_pRegistry(wpRegistry) {
+class Entity final
+{
+  public:
+    explicit Entity( entt::registry *wpRegistry ) : m_pRegistry( wpRegistry )
+    {
         m_eHandle = wpRegistry->create();
     }
 
-    explicit Entity(entt::registry *wpRegistry, entt::entity ehRaw) : m_pRegistry(wpRegistry), m_eHandle(ehRaw) {
+    explicit Entity( entt::registry *wpRegistry, entt::entity ehRaw ) :
+        m_pRegistry( wpRegistry ), m_eHandle( ehRaw )
+    {
     }
 
-    explicit Entity() {
+    explicit Entity()
+    {
     }
 
     /*****************************************************
@@ -38,7 +48,8 @@ public:
      *
      * @return True if valid
      *****************************************************/
-    static bool IsValid(const Entity &eEntity) {
+    static bool IsValid( const Entity &eEntity )
+    {
         return eEntity.m_eHandle != entt::null;
     }
 
@@ -50,8 +61,9 @@ public:
      * @return True if has
      *****************************************************/
     template <typename T>
-    bool HasComponent() {
-        return m_pRegistry->has<T>(m_eHandle);
+    bool HasComponent()
+    {
+        return m_pRegistry->has<T>( m_eHandle );
     }
 
     /*****************************************************
@@ -63,11 +75,13 @@ public:
      * @return True if has
      *****************************************************/
     template <typename T>
-    T &GetComponent() {
-        if (!this->HasComponent<T>())
-            throw ENTITY_EXCEPTION("Can't get a component, Entity({}) is missing it!", m_eHandle);
+    T &GetComponent()
+    {
+        if ( !this->HasComponent<T>() )
+            throw ENTITY_EXCEPTION(
+                "Can't get a component, Entity({}) is missing it!", m_eHandle );
 
-        return m_pRegistry->get<T>(m_eHandle);
+        return m_pRegistry->get<T>( m_eHandle );
     }
 
     /*****************************************************
@@ -80,11 +94,15 @@ public:
      * @return Reference to the attached component
      *****************************************************/
     template <typename T, typename... Args>
-    T &AttachComponent(Args &&...tArgs) {
-        if (!this->HasComponent<T>())
-            throw ENTITY_EXCEPTION("Can't attach a component, Entity({}) has it already!", m_eHandle);
+    T &AttachComponent( Args &&...tArgs )
+    {
+        if ( !this->HasComponent<T>() )
+            throw ENTITY_EXCEPTION(
+                "Can't attach a component, Entity({}) has it already!",
+                m_eHandle );
 
-        return m_pRegistry->emplace<T>(m_eHandle, std::forward<Args>(tArgs)...);
+        return m_pRegistry->emplace<T>( m_eHandle,
+                                        std::forward<Args>( tArgs )... );
     }
 
     /*****************************************************
@@ -94,8 +112,9 @@ public:
      * it doesn't have it.
      *****************************************************/
     template <typename T>
-    void DetachComponent() {
-        m_pRegistry->remove_if_exists<T>(m_eHandle);
+    void DetachComponent()
+    {
+        m_pRegistry->remove_if_exists<T>( m_eHandle );
     }
 
     /*****************************************************
@@ -109,7 +128,7 @@ public:
      *
      * @return self
      *****************************************************/
-    Entity &WithPosition(const glm::vec3 &v3Position);
+    Entity &WithPosition( const glm::vec3 &v3Position );
 
     /*****************************************************
      * WithScale
@@ -122,7 +141,7 @@ public:
      *
      * @return self
      *****************************************************/
-    Entity &WithScale(const glm::vec3 &v3Scale);
+    Entity &WithScale( const glm::vec3 &v3Scale );
 
     /*****************************************************
      * WithRotation
@@ -135,7 +154,7 @@ public:
      *
      * @return self
      *****************************************************/
-    Entity &WithRotation(const float fDegrees);
+    Entity &WithRotation( const float fDegrees );
 
     /*****************************************************
      * DefaultTransformation
@@ -148,7 +167,7 @@ public:
      *****************************************************/
     Entity &DefaultTransformation();
 
-private:
+  private:
     entt::registry *m_pRegistry;
 
     entt::entity m_eHandle = entt::null;
