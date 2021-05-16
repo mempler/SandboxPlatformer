@@ -8,7 +8,7 @@
 #define GZIP_ENCODING 16
 #define CHUNK 0x400
 
-std::vector<uint8_t> CompressDataGZIP( tcb::span<uint8_t> vData )
+std::vector<uint8_t> CompressDataGZIP( Kokoro::Memory::Span<uint8_t> vData )
 {
     std::vector<uint8_t> compressed;
     compressed.resize( vData.size() );  // Yup
@@ -18,8 +18,8 @@ std::vector<uint8_t> CompressDataGZIP( tcb::span<uint8_t> vData )
     stream.zfree = nullptr;
     stream.opaque = nullptr;
 
-    if ( deflateInit2( &stream, Z_BEST_COMPRESSION, Z_DEFLATED,
-                       MAX_WBITS | GZIP_ENCODING, 8, Z_DEFAULT_STRATEGY )
+    if ( deflateInit2( &stream, Z_BEST_COMPRESSION, Z_DEFLATED, MAX_WBITS | GZIP_ENCODING,
+                       8, Z_DEFAULT_STRATEGY )
          != Z_OK )
     {
         std::cerr << "Compressing failed: " << stream.msg << std::endl;
@@ -35,8 +35,7 @@ std::vector<uint8_t> CompressDataGZIP( tcb::span<uint8_t> vData )
     deflateEnd( &stream );
 
     compressed.resize(
-        stream
-            .total_out );  // Resize the output vector to the given output size
+        stream.total_out );  // Resize the output vector to the given output size
 
     return compressed;
 }

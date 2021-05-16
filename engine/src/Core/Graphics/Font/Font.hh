@@ -5,8 +5,9 @@
 
 #include "Platform.hh"
 
+#include <Kokoro/Memory/Span.hh>
+
 #include <freetype-gl.h>
-#include <span.hpp>
 
 constexpr const char *g_szASCII = " !\"#$%&'()*+,-./"
                                   "0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ["
@@ -27,8 +28,8 @@ class Font
      *
      * @return FreeType font handle (Font)
      *****************************************************/
-    static void Load( Font *pDest, Identifier const &identifier,
-                      size_t sAtlasWidth, size_t sAtlasHeight, float fSizePX,
+    static void Load( Font *pDest, Identifier const &identifier, size_t sAtlasWidth,
+                      size_t sAtlasHeight, float fSizePX,
                       const char *szChars = g_szASCII );
 
     /*****************************************************
@@ -42,9 +43,9 @@ class Font
      *
      * @return FreeType font handle (Font)
      *****************************************************/
-    static void Load( Font *pDest, Identifier const &identifier,
-                      size_t sAtlasWidth, size_t sAtlasHeight, float fSizePX,
-                      tcb::span<uint8_t> const &vData,
+    static void Load( Font *pDest, Identifier const &identifier, size_t sAtlasWidth,
+                      size_t sAtlasHeight, float fSizePX,
+                      Kokoro::Memory::Span<uint8_t> const &vData,
                       const char *szChars = g_szASCII );
 
     ftgl::texture_glyph_t *GetGlyph( char cChar );

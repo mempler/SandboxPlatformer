@@ -10,7 +10,6 @@ set(GAME_LIBS
     GameNetworkingSockets
 )
 set(GAME_SERVER_LIBS
-    ${GAME_LIBS}
 )
 
 
@@ -38,7 +37,7 @@ else()
 
     # Server
     add_executable(${PROJECT_NAME}Server ${GAME_SOURCES} ${GAME_SERVER_SOURCES} src/main.cc)
-        target_link_libraries(${PROJECT_NAME}Server PRIVATE ${GAME_SERVER_LIBS})
+        target_link_libraries(${PROJECT_NAME}Server PRIVATE ${GAME_LIBS} ${GAME_SERVER_LIBS})
         target_include_directories(${PROJECT_NAME}Server PRIVATE src/)
         target_compile_definitions(${PROJECT_NAME}Server PRIVATE GAME_SERVER=1)
 

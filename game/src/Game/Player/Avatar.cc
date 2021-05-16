@@ -4,18 +4,17 @@
 #include "Core/Utils/Logger.hh"
 #include "Core/Utils/Math.hh"
 
-Avatar::Avatar( const glm::vec3 &v3Pos, const std::string &sName ) :
-    m_v3Position( v3Pos )
+Avatar::Avatar( const glm::vec3 &v3Pos, const std::string &sName ) : m_v3Position( v3Pos )
 {
 }
 
 void Avatar::OnUpdate( float fDelta )
 {
     // update movement
-    m_v2Velocity = { Math::Approach( m_v2TargetVelocity.x, m_v2Velocity.x,
-                                     fDelta * g_fAcceleration ),
-                     Math::Approach( m_v2TargetVelocity.y, m_v2Velocity.y,
-                                     fDelta * g_fAcceleration ) };
+    m_v2Velocity = {
+        Math::Approach( m_v2TargetVelocity.x, m_v2Velocity.x, fDelta * g_fAcceleration ),
+        Math::Approach( m_v2TargetVelocity.y, m_v2Velocity.y, fDelta * g_fAcceleration )
+    };
 
     glm::vec2 newPosition = glm::vec2( m_v3Position ) + m_v2Velocity * fDelta;
     SetPosition( { newPosition.x, newPosition.y, m_v3Position.z } );
@@ -23,6 +22,10 @@ void Avatar::OnUpdate( float fDelta )
 
 void Avatar::OnRender()
 {
+#if GAME_SERVER
+    return;
+#endif
+
     GetEngine()->GetBatcher().SubmitRectangle( 0, m_m4Transform );
 }
 

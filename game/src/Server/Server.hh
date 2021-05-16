@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Game/World/World.hh"
+
 #include <steam/steamnetworkingsockets.h>
 
 class Server
@@ -9,7 +11,16 @@ class Server
     void Tick( float fDeltaTime );
     void Run();
 
+  public:
+    ItemInfoManager &GetItemInfoMan()
+    {
+        return m_ItemInfoManager;
+    }
+
   private:
+    ItemInfoManager m_ItemInfoManager;
+    World m_World;
+
     ISteamNetworkingSockets *m_pSteamSockets;
 
     HSteamListenSocket m_hSocket;

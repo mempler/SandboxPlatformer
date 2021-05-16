@@ -80,9 +80,10 @@
 #include <implot.h>
 
 // Utils
+#include <Kokoro/Memory/Span.hh>
+
 #include <Tracy.hpp>
 #include <signals.hpp>
-#include <span.hpp>
 
 // Our own stuff
 // this is stuff that we wont change at all (or super rarely)

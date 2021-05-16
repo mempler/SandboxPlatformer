@@ -2,6 +2,8 @@
 
 #include <string_view>
 
+#include "Kokoro/Memory/Span.hh"
+
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -38,24 +40,20 @@ class Identifier
 
 #if _MSC_FULL_VER  // m$ft moment
         m_sProtocol = std::string_view( &*uri.begin(), proto_end );
-        m_sPath =
-            std::string_view( &*uri.begin() + proto_end + protoEnd.size() );
+        m_sPath = std::string_view( &*uri.begin() + proto_end + protoEnd.size() );
 #else
         m_sProtocol = std::string_view( uri.begin(), proto_end );
         m_sPath = std::string_view( uri.begin() + proto_end + protoEnd.size() );
 #endif
     }
 
-    constexpr Identifier( char *szUri ) :
-        Identifier( std::string_view( szUri ) )
+    constexpr Identifier( char *szUri ) : Identifier( std::string_view( szUri ) )
     {
     }
-    constexpr Identifier( const char *szUri ) :
-        Identifier( std::string_view( szUri ) )
+    constexpr Identifier( const char *szUri ) : Identifier( std::string_view( szUri ) )
     {
     }
-    Identifier( std::string const &szUri ) :
-        Identifier( std::string_view( szUri ) )
+    Identifier( std::string const &szUri ) : Identifier( std::string_view( szUri ) )
     {
     }
 
@@ -82,6 +80,13 @@ class Identifier
     constexpr operator std::string_view() const
     {
         return Raw();
+    }
+
+    // Dumb piece of shit
+    operator Kokoro::Memory::Span<uint8_t>() const
+    {
+        return Kokoro::Memory::Span<uint8_t> { (uint8_t *) m_vString.data(),
+                                               m_vString.size() };
     }
 
     constexpr bool operator==( const Identifier &other ) const
