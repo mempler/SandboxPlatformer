@@ -2,11 +2,10 @@
 
 #include <string_view>
 
-#include "steam/steamnetworkingtypes.h"
-
 #include "Packet.hh"
 
 #include <steam/isteamnetworkingsockets.h>
+#include <steam/steamnetworkingtypes.h>
 
 #include <signals.hpp>
 
@@ -47,26 +46,37 @@ class BaseClient
         return m_hConn != k_HSteamNetConnection_Invalid;
     }
 
-    bool IsConnected()
+    ConnectionState GetState()
     {
         SteamNetworkingQuickConnectionStatus *pStatus = nullptr;
-        if ( !m_pInstance->GetQuickConnectionStatus( m_hConn, pStatus ) ) return false;
-        if ( pStatus == nullptr ) return false;
+        if ( !m_pInstance->GetQuickConnectionStatus( m_hConn, pStatus ) )
+        {
+            return ConnectionState::Disconnected;
+        }
+        if ( pStatus == nullptr )
+        {
+            return ConnectionState::Disconnected;
+        }
 
-        return pStatus->m_eState == k_ESteamNetworkingConnectionState_Connected;
+        switch ( pStatus->m_eState )
+        {
+        case k_ESteamNetworkingConnectionState_Connected:
+            return ConnectionState::Connected;
+            break;
+        case k_ESteamNetworkingConnectionState_Connecting:
+            return ConnectionState::Connecting;
+            break;
+        case k_ESteamNetworkingConnectionState_ClosedByPeer:
+        case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
+            return ConnectionState::Disconnected;
+            break;
+        default: return ConnectionState::Disconnected;
+        }
     }
 
-    bool IsConnecting()
+    HSteamNetConnection Handle()
     {
-        SteamNetworkingQuickConnectionStatus *pStatus = nullptr;
-        if ( !m_pInstance->GetQuickConnectionStatus( m_hConn, pStatus ) ) return false;
-
-        return pStatus->m_eState == k_ESteamNetworkingConnectionState_Connecting;
-    }
-
-    bool IsDisconnected()
-    {
-        return !( IsConnecting() && IsConnected() );
+        return m_hConn;
     }
 
     signals::signal<void( BaseClientPtr, ConnectionState, const char * )> OnStateChange;

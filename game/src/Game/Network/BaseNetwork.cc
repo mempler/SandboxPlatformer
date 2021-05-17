@@ -26,6 +26,21 @@ BaseClientPtr BaseNetwork::ConnectTo( SteamNetworkingIPAddr &address )
     return AddConnection( hConn );
 }
 
+BaseServer BaseNetwork::CreateServer( SteamNetworkingIPAddr &address )
+{
+    SteamNetworkingConfigValue_t opt;
+    opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
+                (void *) &BaseNetwork::OnStatusChanged );
+
+    HSteamListenSocket hSocket = m_pInstance->CreateListenSocketIP( address, 1, &opt );
+    if ( hSocket == k_HSteamListenSocket_Invalid )
+    {
+        Console::Fatal( "Failed to listen on port {}", 27015 );
+    }
+
+    return BaseServer( m_pInstance, hSocket );
+}
+
 void BaseNetwork::Tick()
 {
     g_pActiveNetwork = this;
@@ -84,10 +99,9 @@ void BaseNetwork::OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pI
 
     case k_ESteamNetworkingConnectionState_Connecting:
     {
-        Console::Info( "We're trying to establish an connection! ({})",
-                       pInfo->m_info.m_szEndDebug );
-
         auto conn = g_pActiveNetwork->GetConnection( pInfo->m_hConn );
+        if ( conn == nullptr ) conn = g_pActiveNetwork->AddConnection( pInfo->m_hConn );
+
         conn->OnStateChange( conn, ConnectionState::Connecting,
                              (const char *) pInfo->m_info.m_szEndDebug );
 
@@ -99,8 +113,6 @@ void BaseNetwork::OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pI
 
     case k_ESteamNetworkingConnectionState_Connected:
     {
-        Console::Info( "We established an connection! ({})", pInfo->m_info.m_szEndDebug );
-
         auto conn = g_pActiveNetwork->GetConnection( pInfo->m_hConn );
         conn->OnStateChange( conn, ConnectionState::Connected,
                              (const char *) pInfo->m_info.m_szEndDebug );

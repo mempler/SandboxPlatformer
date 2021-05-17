@@ -9,6 +9,7 @@
 #include "Packet.hh"
 
 #include "BaseClient.hh"
+#include "BaseServer.hh"
 
 #include <steam/isteamnetworkingsockets.h>
 
@@ -23,6 +24,8 @@ class BaseNetwork
     // The resulting BaseClient can then be used to send
     // messages over the network
     BaseClientPtr ConnectTo( SteamNetworkingIPAddr &address );
+
+    BaseServer CreateServer( SteamNetworkingIPAddr &address );
 
     // This has to be called to send all remaining packets
     // towards the server (every tick preferable)

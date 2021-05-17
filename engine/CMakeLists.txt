@@ -8,6 +8,7 @@ set(ENGINE_LIBS
     Kokoro::FileSystem
     Kokoro::Exception
     Kokoro::Config
+    Kokoro::fmt
     lw
     SDL2-static
     zlib
@@ -16,7 +17,6 @@ set(ENGINE_LIBS
     imgui
     implot
     freetype-bgfx
-    fmt
     tracy
     spdlog
 )

@@ -22,29 +22,15 @@ void Server::Init()
     if ( !GameNetworkingSockets_Init( nullptr, errMsg ) )
         Console::Fatal( "GameNetworkingSockets_Init failed: {}", errMsg );
 
-    m_pSteamSockets = SteamNetworkingSockets();
+    // PREINIT
+    m_Network.OnStateChange.connect<&Server::OnStateChange>( this );
 
-    SteamNetworkingIPAddr serverLocalAddr;
-    serverLocalAddr.Clear();
-    serverLocalAddr.m_port = 27015;
+    SteamNetworkingIPAddr address;
+    address.Clear();
+    address.m_port = 27015;
 
-    SteamNetworkingConfigValue_t opt;
-    opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
-                (void *) &Server::OnStatusChanged );
-
-    m_hSocket = m_pSteamSockets->CreateListenSocketIP( serverLocalAddr, 1, &opt );
-    if ( m_hSocket == k_HSteamListenSocket_Invalid )
-    {
-        Console::Fatal( "Failed to listen on port {}", 27015 );
-    }
-
-    m_hPollGroup = m_pSteamSockets->CreatePollGroup();
-    if ( m_hPollGroup == k_HSteamNetPollGroup_Invalid )
-    {
-        Console::Fatal( "Failed to listen on port {}", 27015 );
-    }
-
-    Console::Info( "Server listening on port {}", 27015 );
+    m_Server = m_Network.CreateServer( address );
+    Console::Info( "Server listening on port {}", address.m_port );
 
     // TODO: actual world loading & items.dat
     Console::Info( "Loading items.dat..." );
@@ -102,60 +88,40 @@ void Server::Run()
 
 void Server::Tick( float fDeltaTime )
 {
-    m_pSteamSockets->RunCallbacks();
+    m_Network.Tick();
 }
 
-/* static */
-void Server::OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pInfo )
+void Server::OnStateChange( BaseClientPtr pClient, ConnectionState eState,
+                            const char *szMessage )
 {
-    Server *server = GetServer();
-
-    switch ( pInfo->m_info.m_eState )
+    switch ( eState )
     {
-    case k_ESteamNetworkingConnectionState_ClosedByPeer:
-    case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
-    {
-        Console::Info( "A peer disconnected... ({})", pInfo->m_info.m_szEndDebug );
-
-        server->m_pSteamSockets->CloseConnection( pInfo->m_hConn, 0, nullptr, false );
-        break;
-    }
-
-    case k_ESteamNetworkingConnectionState_Connecting:
-    {
-        Console::Info( "A new peer is connecting!" );
-
-        // A client is attempting to connect
-        // Try to accept the connection.
-        if ( server->m_pSteamSockets->AcceptConnection( pInfo->m_hConn ) != k_EResultOK )
-        {
-            server->m_pSteamSockets->CloseConnection( pInfo->m_hConn, 0, nullptr, false );
-
-            Console::Error( "Couldn't accept connection. (Why?)" );
-            break;
-        }
-
-        // Assign the poll group
-        if ( !server->m_pSteamSockets->SetConnectionPollGroup( pInfo->m_hConn,
-                                                               server->m_hPollGroup ) )
-        {
-            server->m_pSteamSockets->CloseConnection( pInfo->m_hConn, 0, nullptr, false );
-
-            Console::Error( "Couldn't set poll group?" );
-            break;
-        }
-
-        break;
-    }
-
-    case k_ESteamNetworkingConnectionState_Connected:
+    case ConnectionState::Connected:
     {
         Console::Info( "A peer has established a connection!" );
         Console::Trace( "World ({}) -> Peer", "test" );  // TODO: world name
 
         break;
     }
+    case ConnectionState::Connecting:
+    {
+        Console::Info( "A new peer is connecting!" );
 
-    default: break; /* Unhandled */
+        // A client is attempting to connect
+        // Try to accept the connection.
+        if ( m_Server.AcceptConnection( pClient ) )
+        {
+            pClient->Disconnect( "Unexpected closure!!" );
+            Console::Error( "Couldn't accept connection. (Why?)" );
+            break;
+        }
+
+        break;
+    }
+    case ConnectionState::Disconnected:
+    {
+        Console::Info( "A peer disconnected... ({})", szMessage );
+        break;
+    }
     }
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Game/Network/BaseNetwork.hh"
 #include "Game/World/World.hh"
 
 #include <steam/steamnetworkingsockets.h>
@@ -21,13 +22,11 @@ class Server
     ItemInfoManager m_ItemInfoManager;
     World m_World;
 
-    ISteamNetworkingSockets *m_pSteamSockets;
+    BaseServer m_Server;
+    BaseNetwork m_Network;
 
-    HSteamListenSocket m_hSocket;
-    HSteamNetPollGroup m_hPollGroup;
-
-    // Valve, what the fuck????
-    static void OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pStatus );
+    void OnStateChange( BaseClientPtr pClient, ConnectionState eState,
+                        const char *szMessage );
 };
 
 Server *GetServer();
