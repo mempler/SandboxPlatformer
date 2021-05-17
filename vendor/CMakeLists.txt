@@ -136,7 +136,7 @@ add_subdirectory(tracy)
 
 ###############################################################################################
 
-option(SPDLOG_FMT_EXTERNAL_HO "Use external fmt header-only library instead of bundled" ON)
+option(SPDLOG_FMT_EXTERNAL_HO "Use external fmt header-only library instead of bundled" OFF)
 add_subdirectory(spdlog)
 
 ###############################################################################################

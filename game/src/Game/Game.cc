@@ -41,66 +41,29 @@ void Game::Init()
     GetEngine()->GetWindow().AddView( 2 );  // World tile layer
     GetEngine()->GetWindow().ResetTransform();
 
-    // PREINIT NETWORK
-    SteamDatagramErrMsg errMsg;
-    if ( !GameNetworkingSockets_Init( nullptr, errMsg ) )
-        Console::Fatal( "GameNetworkingSockets_Init failed: {}", errMsg );
-
-    m_pSteamSockets = SteamNetworkingSockets();
-
     // CONNECT TO NETWORK
     SteamNetworkingIPAddr targetAddress;
     targetAddress.Clear();
-    targetAddress.ParseString( "127.0.0.1:27015" );
+    targetAddress.ParseString( "127.0.0.1:27015" );  // TODO: Don't hardcode this
 
-    SteamNetworkingConfigValue_t opt;
-    opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
-                (void *) &Game::OnStatusChanged );
-
-    m_hConnection = m_pSteamSockets->ConnectByIPAddress( targetAddress, 1, &opt );
-
-    // PRELOAD ITEMS, FOR NOW
-    /*
-    // Rock
-    m_ItemInfoManager.Preload( { 0., 0, 32, 32 },
-                               GetEngine()->GetTextureManager().CreateTextureFromFile(
-                                   "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
-    // Dirt
-    m_ItemInfoManager.Preload( { 32, 0, 32, 32 },
-                               GetEngine()->GetTextureManager().CreateTextureFromFile(
-                                   "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
-    // Grass
-    m_ItemInfoManager.Preload( { 64, 0, 32, 32 },
-                               GetEngine()->GetTextureManager().CreateTextureFromFile(
-                                   "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
-
-    m_World.Init( 100, 60 );
-
-    for ( uint16_t i = 0; i < 100; i++ ) m_World.PlaceFore( 2, i, 0 );
-
-    for ( uint16_t x = 0; x < 100; x++ )
-    {
-        for ( uint16_t y = 1; y < 60; y++ )
-        {
-            m_World.PlaceFore( 1, x, y );
-        }
-    }
-
-    m_World.OnPlayerEnter();
-    */
+    m_pFont = GetEngine()->GetFontManager().LoadFromFile( "file://Roboto-Regular.ttf",
+                                                          256, 256, 22.f );
+    m_pNetworkClient = m_Network.ConnectTo( targetAddress );
+    m_pNetworkClient->OnStateChange.connect<&Game::OnStateChange>( this );
 }
 
 void Game::Tick( float fDeltaTime )
 {
-    m_pSteamSockets->RunCallbacks();
-
     m_World.Tick( fDeltaTime );
+    m_Network.Tick();
 }
 
 void Game::Draw()
 {
 #if !GAME_SERVER
     m_World.Draw();
+
+    if ( m_pNetworkClient ) m_lConnectionStatus.Render();
 #endif
 }
 
@@ -119,35 +82,32 @@ Player &Game::GetLocalPlayer()
     return m_Player;
 }
 
-/* static */
-void Game::OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pInfo )
+void Game::OnStateChange( BaseClientPtr pClient, ConnectionState eState,
+                          const char *szMessage )
 {
-    Game *game = GetGame();
-
-    switch ( pInfo->m_info.m_eState )
+    switch ( eState )
     {
-    case k_ESteamNetworkingConnectionState_ClosedByPeer:
-    case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
-    {
-        Console::Error( "We disconnected... ({})", pInfo->m_info.m_szEndDebug );
+    case ConnectionState::Disconnected:
+        m_lConnectionStatus.SetText( { 0, 0, 999.f },
+                                     "Network: Not Connected... Retrying", m_pFont );
+        m_lConnectionStatus.SetColor( { 1, .3, .3, 1 } );
 
-        game->m_pSteamSockets->CloseConnection( pInfo->m_hConn, 0, nullptr, false );
+        SteamNetworkingIPAddr targetAddress;
+        targetAddress.Clear();
+        targetAddress.ParseString( "127.0.0.1:27015" );  // TODO: Don't hardcode this
+
+        m_pNetworkClient = m_Network.ConnectTo( targetAddress );
+        m_pNetworkClient->OnStateChange.connect<&Game::OnStateChange>( this );
         break;
-    }
-
-    case k_ESteamNetworkingConnectionState_Connecting:
-    {
-        Console::Info( "We're trying to establish an connection! ({})",
-                       pInfo->m_info.m_szEndDebug );
+    case ConnectionState::Connected:
+        m_lConnectionStatus.SetText( { 0, 0, 999.f }, "Network: Connected!", m_pFont );
+        m_lConnectionStatus.SetColor( { .3, 1, .3, 1 } );
         break;
-    }
 
-    case k_ESteamNetworkingConnectionState_Connected:
-    {
-        Console::Info( "We established an connection! ({})", pInfo->m_info.m_szEndDebug );
+    case ConnectionState::Connecting:
+        m_lConnectionStatus.SetText( { 0, 0, 999.f }, "Network: Connecting...", m_pFont );
+        m_lConnectionStatus.SetColor( { 1, 1, .3, 1 } );
         break;
-    }
-
-    default: break; /* Unhandled */
+    default: break;
     }
 }

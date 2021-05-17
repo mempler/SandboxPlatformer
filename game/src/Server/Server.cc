@@ -6,6 +6,8 @@
 #include "Core/Utils/Logger.hh"
 #include "Core/Utils/Timer.hh"
 
+#include "Kokoro/Memory/Buffer.hh"
+
 #define TICK_SPEED 60
 
 void Server::Init()
