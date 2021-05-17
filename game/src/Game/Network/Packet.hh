@@ -23,13 +23,13 @@ enum class PacketFlags : uint16_t
 
 struct PacketHeader
 {
-    PacketType m_uType;
+    PacketType m_eType;
     PacketFlags m_eFlags;
     uint8_t m_vPadding [ 28 ];  // In case we want to add smth in the header
 
     bool Pack( Kokoro::Memory::Buffer &buffer )
     {
-        buffer.Push( m_uType );
+        buffer.Push( m_eType );
         buffer.Push( m_eFlags );
         buffer.Append( m_vPadding );
 
@@ -43,7 +43,7 @@ struct PacketHeader
             return false;
         }
 
-        m_uType = buffer.Pop<PacketType>( 2 );
+        m_eType = buffer.Pop<PacketType>( 2 );
         m_eFlags = buffer.Pop<PacketFlags>( 2 );
 
         // Nasty hack
@@ -61,20 +61,20 @@ template <PacketType eType, typename T>
 struct IBasePacket
 {
     PacketHeader m_Header { eType, PacketFlags::None };
-    T m_Object {};
+    T *m_Object = nullptr;
 
     bool Pack( Kokoro::Memory::Buffer &buffer )
     {
         m_Header.Pack( buffer );
 
-        return m_Object.Pack( buffer );
+        return m_Object->Pack( buffer );
     }
 
     bool Unpack( Kokoro::Memory::Buffer &buffer )
     {
-        m_Header.Unpack( buffer );
+        // m_Header.Unpack( buffer );
 
-        return m_Object.Unpack( buffer );
+        return m_Object->Unpack( buffer );
     }
 
     size_t SendTo( ISteamNetworkingSockets *pSteamSockets, HSteamNetConnection &hConn )

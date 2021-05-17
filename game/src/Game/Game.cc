@@ -5,6 +5,7 @@
 #include "Core/Engine.hh"
 
 #include "Game/Debug/NetworkInspector.hh"
+#include "Game/Network/Packets/ItemDBPacket.hh"
 #include "Game/Network/Packets/WorldPacket.hh"
 
 #if !GAME_SERVER
@@ -58,6 +59,7 @@ void Game::Init()
                                                           256, 256, 22.f );
     m_pNetworkClient = m_Network.ConnectTo( targetAddress );
     m_pNetworkClient->OnStateChange.connect<&Game::OnStateChange>( this );
+    m_pNetworkClient->OnPacket.connect<&Game::OnPacket>( this );
 }
 
 void Game::Tick( float fDeltaTime )
@@ -97,11 +99,23 @@ void Game::RequestWorld( const std::string_view &svName )
     data.m_sName = svName;
 
     Packets::REQ_World packet {};
-    packet.m_Object = data;
+    packet.m_Object = &data;
 
     auto size = m_pNetworkClient->Send( packet );
 
-    m_pNetworkInspector->HookSendPacket( packet.m_Header.m_uType, size );
+    m_pNetworkInspector->HookSendPacket( packet.m_Header.m_eType, size );
+}
+
+void Game::RequestItemDB()
+{
+    Packets::ItemDBRequestData data;
+
+    Packets::REQ_ItemDB packet {};
+    packet.m_Object = &data;
+
+    auto size = m_pNetworkClient->Send( packet );
+
+    m_pNetworkInspector->HookSendPacket( packet.m_Header.m_eType, size );
 }
 
 void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
@@ -126,6 +140,9 @@ void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
         m_lConnectionStatus.SetText( { 0, 0, 999.f }, "Network: Connected!", m_pFont );
         m_lConnectionStatus.SetColor( { .3, 1, .3, 1 } );
 
+        // Before we can request any worlds, we gotta get an ItemDB
+        RequestItemDB();
+
         // Request world
         RequestWorld( "START" );
         break;
@@ -140,4 +157,39 @@ void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
 #if ENGINE_DEBUG
     m_pNetworkInspector->HookConnectionState( eState );
 #endif
+}
+
+void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
+                     Kokoro::Memory::Buffer buffer )
+{
+    m_pNetworkInspector->HookRecievePacket( header.m_eType, buffer.size() );
+
+    switch ( header.m_eType )
+    {
+    case PacketType::SRV_SendItemDB:
+    {
+        if ( !m_ItemInfoManager.Unpack( buffer ) )
+        {
+            Console::Error( "Failed to unpack ItemDB!" );
+        }
+
+        break;
+    }
+
+    case PacketType::SRV_SendWorld:
+    {
+        if ( !m_World.Unpack( buffer ) )
+        {
+            Console::Error( "Failed to unpack World!" );
+        }
+
+        break;
+    }
+
+    default:
+    {
+        Console::Warn( "Unimplemented Packet: {}!", (int) header.m_eType );
+        break;
+    }
+    }
 }

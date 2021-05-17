@@ -13,7 +13,7 @@ Item *ItemInfoManager::GetItem( uint16_t uID )
     return &m_vItems [ uID ];
 }
 
-void ItemInfoManager::Pack( Kokoro::Memory::Buffer &buffer )
+bool ItemInfoManager::Pack( Kokoro::Memory::Buffer &buffer )
 {
     m_iVersion = ITEMDB_VERSION;
 
@@ -24,10 +24,17 @@ void ItemInfoManager::Pack( Kokoro::Memory::Buffer &buffer )
     {
         item.Pack( buffer );
     }
+
+    return true;
 }
 
-void ItemInfoManager::Unpack( Kokoro::Memory::Buffer &buffer )
+bool ItemInfoManager::Unpack( Kokoro::Memory::Buffer &buffer )
 {
+    if ( !buffer.can_read( 6 ) )
+    {
+        return false;
+    }
+
     m_iVersion = buffer.Pop<uint32_t>( 4 );
 
     auto itemAmount = buffer.Pop<uint16_t>( 2 );
@@ -35,6 +42,8 @@ void ItemInfoManager::Unpack( Kokoro::Memory::Buffer &buffer )
 
     for ( auto &item : m_vItems )
     {
-        item.Unpack( m_iVersion, buffer );
+        if ( !item.Unpack( m_iVersion, buffer ) ) return false;
     }
+
+    return true;
 }

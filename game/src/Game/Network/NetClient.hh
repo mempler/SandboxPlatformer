@@ -94,6 +94,7 @@ class NetClient
     }
 
     signals::signal<void( NetClientPtr, ConnectionState, const char * )> OnStateChange;
+    signals::signal<void( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer )> OnPacket;
 
   private:
     HSteamNetConnection m_hConn = 0;

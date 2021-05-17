@@ -1,8 +1,14 @@
 #include "Network.hh"
 
+#include "steam/isteamnetworkingmessages.h"
+#include "steam/isteamnetworkingutils.h"
+#include "steam/steamnetworkingsockets_flat.h"
+
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/steamnetworkingsockets.h>
 #include <steam/steamnetworkingtypes.h>
+
+#include <array>
 
 static Network *g_pActiveNetwork;
 
@@ -13,6 +19,8 @@ Network::Network()
         Console::Fatal( "GameNetworkingSockets_Init failed: {}", errMsg );
 
     m_pInstance = SteamNetworkingSockets();
+
+    m_hPollGroup = m_pInstance->CreatePollGroup();
 }
 
 NetClientPtr Network::ConnectTo( SteamNetworkingIPAddr &address )
@@ -38,17 +46,48 @@ NetListener Network::CreateListener( SteamNetworkingIPAddr &address )
         Console::Fatal( "Failed to listen on port {}", 27015 );
     }
 
+    m_pInstance->SetConnectionPollGroup( hSocket, m_hPollGroup );
+
     return NetListener( m_pInstance, hSocket );
 }
 
 void Network::Tick()
 {
+    // Accept messages
+    ISteamNetworkingMessage *pIncomingMsg = nullptr;
+    m_pInstance->ReceiveMessagesOnPollGroup( m_hPollGroup, &pIncomingMsg, 1 );
+
+    if ( pIncomingMsg != nullptr )
+    {
+        Kokoro::Memory::Buffer buffer( (uint8_t *) pIncomingMsg->GetData(),
+                                       pIncomingMsg->GetSize() );
+
+        PacketHeader header;
+        if ( !header.Unpack( buffer ) )
+        {
+            Console::Error( "Invalid message! skipping..." );
+        }
+        else
+        {
+            NetClientPtr client = GetConnection( pIncomingMsg->GetConnection() );
+
+            pIncomingMsg->Release();  // Release resources we dont need it anymore
+
+            OnPacket( client, header,
+                      buffer );  // Let our signal subscriber handle all this.
+            client->OnPacket( client, header, buffer );
+        }
+    }
+
     g_pActiveNetwork = this;
     m_pInstance->RunCallbacks();
 }
 
 NetClientPtr Network::AddConnection( HSteamNetConnection hConn )
 {
+
+    m_pInstance->SetConnectionPollGroup( hConn, m_hPollGroup );
+
     m_umConnectedClients.emplace( hConn,
                                   std::make_shared<NetClient>( m_pInstance, hConn ) );
 

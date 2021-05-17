@@ -31,7 +31,7 @@ class Network
     void Tick();
 
     signals::signal<void( NetClientPtr, ConnectionState, const char * )> OnStateChange;
-    signals::signal<void( NetClientPtr, Kokoro::Memory::Buffer & )> OnPacket;
+    signals::signal<void( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer )> OnPacket;
 
   private:
     NetClientPtr AddConnection( HSteamNetConnection hConn );
@@ -41,6 +41,7 @@ class Network
     std::unordered_map<HSteamNetConnection, NetClientPtr> m_umConnectedClients {};
 
     ISteamNetworkingSockets *m_pInstance = nullptr;
+
     HSteamNetPollGroup m_hPollGroup = k_HSteamNetPollGroup_Invalid;
 
     static void OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pInfo );

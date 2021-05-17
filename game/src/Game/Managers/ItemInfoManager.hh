@@ -20,24 +20,40 @@ struct Item
     Identifier Atlas = EmptyIdentifier;
 
     // Network stuff
-    void Pack( Kokoro::Memory::Buffer &buffer )
+    bool Pack( Kokoro::Memory::Buffer &buffer )
     {
         buffer.Push( uID );
         buffer.Push( uItemX );
         buffer.Push( uItemY );
 
         buffer.Push<uint32_t>( Atlas.Raw().size() );
-        buffer.Append( Atlas );
+        buffer.Push<const char *>( Atlas.Raw().data() );
+
+        return true;
     }
 
-    void Unpack( uint32_t iItemDBVersion, Kokoro::Memory::Buffer &buffer )
+    bool Unpack( uint32_t iItemDBVersion, Kokoro::Memory::Buffer &buffer )
     {
+        if ( !buffer.can_read( 10 ) )
+        {
+            return false;
+        }
+
         uID = buffer.Pop<uint16_t>( 2 );
         uItemX = buffer.Pop<uint16_t>( 2 );
         uItemY = buffer.Pop<uint16_t>( 2 );
 
         size_t atlasSize = buffer.Pop<uint32_t>( 4 );
-        Atlas = (const char *) ( buffer.current() + atlasSize ).base();
+        if ( !buffer.can_read( atlasSize ) )
+        {
+            return false;
+        }
+
+        auto heapStr = buffer.Pop<const char *>( atlasSize );
+        Atlas = heapStr;
+        delete [] heapStr;
+
+        return true;
     }
 };
 
@@ -51,8 +67,8 @@ class ItemInfoManager
     Item *GetItem( uint16_t uID );
 
     // Network stuff
-    void Pack( Kokoro::Memory::Buffer &buffer );
-    void Unpack( Kokoro::Memory::Buffer &buffer );
+    bool Pack( Kokoro::Memory::Buffer &buffer );
+    bool Unpack( Kokoro::Memory::Buffer &buffer );
 
   private:
     uint32_t m_iVersion = ITEMDB_VERSION;

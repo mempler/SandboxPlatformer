@@ -6,6 +6,10 @@
 #include "Core/Utils/Logger.hh"
 #include "Core/Utils/Timer.hh"
 
+#include "Game/Network/Packet.hh"
+#include "Game/Network/Packets/ItemDBPacket.hh"
+#include "Game/Network/Packets/WorldPacket.hh"
+
 #include "Kokoro/Memory/Buffer.hh"
 
 #define TICK_SPEED 60
@@ -24,6 +28,7 @@ void Server::Init()
 
     // PREINIT
     m_Network.OnStateChange.connect<&Server::OnStateChange>( this );
+    m_Network.OnPacket.connect<&Server::OnPacket>( this );
 
     SteamNetworkingIPAddr address;
     address.Clear();
@@ -88,6 +93,8 @@ void Server::Run()
 
 void Server::Tick( float fDeltaTime )
 {
+    // Poll messages
+
     m_Network.Tick();
 }
 
@@ -99,7 +106,6 @@ void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState,
     case ConnectionState::Connected:
     {
         Console::Info( "A peer has established a connection!" );
-        Console::Trace( "World ({}) -> Peer", "test" );  // TODO: world name
 
         break;
     }
@@ -121,6 +127,43 @@ void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState,
     case ConnectionState::Disconnected:
     {
         Console::Info( "A peer disconnected... ({})", szMessage );
+        break;
+    }
+    }
+}
+
+void Server::OnPacket( NetClientPtr pClient, PacketHeader header,
+                       Kokoro::Memory::Buffer buffer )
+{
+    switch ( header.m_eType )
+    {
+    case PacketType::CLN_RequestItemDB:
+    {
+        Console::Trace( "A peer requested the ItemDB to be send" );
+
+        // TODO: load itemdb from a file
+        Packets::SND_ItemDB packet;
+        packet.m_Object = &m_ItemInfoManager;
+
+        pClient->Send( packet );
+        break;
+    }
+
+    case PacketType::CLN_RequestWorld:
+    {
+        Console::Trace( "A peer requested the world to be send" );
+
+        // TODO: load worlds from a file
+        Packets::SND_World packet;
+        packet.m_Object = &m_World;
+
+        pClient->Send( packet );
+        break;
+    }
+
+    default:
+    {
+        Console::Warn( "Unimplemented Packet: {}!", (int) header.m_eType );
         break;
     }
     }

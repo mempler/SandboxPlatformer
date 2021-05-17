@@ -34,6 +34,7 @@ class Game
 
     // Networking
     void RequestWorld( std::string_view const &svName );
+    void RequestItemDB();
 
     ConnectionState GetNetClientState()
     {
@@ -60,6 +61,7 @@ class Game
 #endif
 
     void OnStateChange( NetClientPtr, ConnectionState, const char * );
+    void OnPacket( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer );
 };
 
 extern Game *GetGame();
