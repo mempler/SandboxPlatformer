@@ -24,6 +24,6 @@ struct Tile
 #endif
 
     // Network stuff
-    void Pack( Kokoro::Memory::Buffer &buffer );
-    void Unpack( uint32_t iWorldVersion, Kokoro::Memory::Buffer &buffer );
+    bool Pack( Kokoro::Memory::Buffer &buffer );
+    bool Unpack( uint32_t iWorldVersion, Kokoro::Memory::Buffer &buffer );
 };

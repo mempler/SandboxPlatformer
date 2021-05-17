@@ -16,6 +16,18 @@ enum class ConnectionState
     Connected
 };
 
+constexpr const char *ConnectionState_ToString( ConnectionState eState )
+{
+    switch ( eState )
+    {
+    case ConnectionState::Disconnected: return "Disconnected";
+    case ConnectionState::Connected: return "Connected";
+    case ConnectionState::Connecting: return "Connecting";
+    }
+
+    return "Unknown";
+}
+
 class NetClient
 {
   public:
@@ -29,8 +41,10 @@ class NetClient
     {
     }
 
-    void Send( IBasePacket *pPacket )
+    template <class P>
+    size_t Send( P &packet )
     {
+        return packet.SendTo( m_pInstance, m_hConn );
     }
 
     void Disconnect( std::string_view const &svReason )

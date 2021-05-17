@@ -37,17 +37,24 @@ void Tile::RenderTileShadow()
 }
 #endif
 
-void Tile::Pack( Kokoro::Memory::Buffer &buffer )
+bool Tile::Pack( Kokoro::Memory::Buffer &buffer )
 {
     buffer.Push<uint16_t>( pFore == nullptr ? 0 : pFore->uID );
     buffer.Push<uint16_t>( pBack == nullptr ? 0 : pBack->uID );
 
     buffer.Push( iPosX );
     buffer.Push( iPosY );
+
+    return true;
 }
 
-void Tile::Unpack( uint32_t iWorldVersion, Kokoro::Memory::Buffer &buffer )
+bool Tile::Unpack( uint32_t iWorldVersion, Kokoro::Memory::Buffer &buffer )
 {
+    if ( !buffer.can_read( 8 ) )
+    {
+        return false;
+    }
+
     auto fgId = buffer.Pop<uint16_t>( 2 );
     auto bgId = buffer.Pop<uint16_t>( 2 );
 
@@ -59,4 +66,6 @@ void Tile::Unpack( uint32_t iWorldVersion, Kokoro::Memory::Buffer &buffer )
 
     iPosX = posX;
     iPosY = posY;
+
+    return true;
 }

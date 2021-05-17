@@ -4,6 +4,7 @@
 
 #include "Core/Audio/AudioSystem.hh"
 #include "Core/Debug/DefaultLayout.hh"
+#include "Core/Debug/IResourceMonitor.hh"
 #include "Core/Managers/InputManager.hh"
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
@@ -28,10 +29,7 @@ Engine *GetEngine()
 Engine::Engine() 
   : m_GameWindow(), 
     m_Camera({ 0.f, 0.f }, { (float)m_GameWindow.Width(), (float)m_GameWindow.Height() }),
-    m_VertexBatcher(), 
-    m_IResourceMonitor(this), 
-    m_GameView(this),
-    m_Profiler(this)
+    m_VertexBatcher()
 {
         ZoneScoped;
     m_Camera.SetUniformTransform(0);
@@ -96,10 +94,11 @@ void Engine::Init()
 
     m_VertexBatcher.Init( m_TextureManager );
 
-    // Show by default
-    m_IResourceMonitor.SetShowing( true );
-    m_GameView.SetShowing( true );
-    m_Profiler.SetShowing( false );
+#if ENGINE_DEBUG
+    RegisterDebugUtil<IResourceMonitor>( true );
+    RegisterDebugUtil<GameView>( true );
+    RegisterDebugUtil<Profiler>( true );
+#endif
 }
 
 void Engine::BeginFrame()
@@ -115,21 +114,18 @@ void Engine::BeginFrame()
     {
         m_bShowDebugUtils = !m_bShowDebugUtils;
 
-        if ( !m_bShowDebugUtils && m_GameView.IsShowing() )
-            bgfx::setViewFrameBuffer(
-                0, BGFX_INVALID_HANDLE );  // Reset framebuffer
+        bgfx::setViewFrameBuffer( 0, BGFX_INVALID_HANDLE );  // Reset framebuffer
     }
 
     if ( m_bShowDebugUtils )
     {
         ImGuiWindowFlags window_flags =
             ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-        window_flags |= ImGuiWindowFlags_NoTitleBar
-                        | ImGuiWindowFlags_NoCollapse
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse
                         | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        window_flags |=
-            ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus
-            | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus
+                        | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoScrollbar
+                        | ImGuiWindowFlags_NoScrollWithMouse;
 
         const ImGuiViewport *viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos( viewport->WorkPos );
@@ -146,44 +142,28 @@ void Engine::BeginFrame()
 
         if ( ImGui::BeginMenuBar() )
         {
-            if ( ImGui::BeginMenu( "Engine" ) )
+            for ( auto &[ tab, dbgUtil ] : m_vDebugUtils )
             {
-                if ( ImGui::MenuItem( "IResource Monitor" ) )
-                {  // Toggle
-                    m_IResourceMonitor.SetShowing(
-                        !m_IResourceMonitor.IsShowing() );
+                if ( ImGui::BeginMenu( tab ) )
+                {
+                    if ( ImGui::MenuItem( dbgUtil->Name() ) )
+                    {  // Toggle
+                        dbgUtil->SetShowing( !dbgUtil->IsShowing() );
+                    }
+
+                    ImGui::EndMenu();
                 }
-
-                if ( ImGui::MenuItem( "Game View" ) )
-                {  // Toggle
-                    m_GameView.SetShowing( !m_GameView.IsShowing() );
-
-                    m_GameView.Draw();  // Draw one more time
-                }
-
-                if ( ImGui::MenuItem( "Profiler" ) )
-                {  // Toggle
-                    m_Profiler.SetShowing( !m_Profiler.IsShowing() );
-                }
-
-                ImGui::EndMenu();
             }
+
             ImGui::EndMenuBar();
         }
 
-        if ( m_IResourceMonitor.IsShowing() )
+        for ( auto &[ tab, dbgUtil ] : m_vDebugUtils )
         {
-            m_IResourceMonitor.Draw();
-        }
-
-        if ( m_GameView.IsShowing() )
-        {
-            m_GameView.Draw();
-        }
-
-        if ( m_Profiler.IsShowing() )
-        {
-            m_Profiler.Draw();
+            if ( dbgUtil->IsShowing() )
+            {
+                dbgUtil->Draw();
+            }
         }
 
         ImGui::End();

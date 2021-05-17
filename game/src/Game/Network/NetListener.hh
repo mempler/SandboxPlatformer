@@ -19,7 +19,8 @@ class NetListener
     {
     }
 
-    void Broadcast( IBasePacket *pPacket )
+    template <class P>
+    void Broadcast( P &packet )
     {
     }
 

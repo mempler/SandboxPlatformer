@@ -11,5 +11,10 @@ class IResourceMonitor : public IDebugUtil
     {
     }
 
+    const char *Name() override
+    {
+        return "IResource Monitor";
+    }
+
     void Draw() override;
 };

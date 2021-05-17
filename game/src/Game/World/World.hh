@@ -10,7 +10,7 @@
 
 #define WORLD_VERSION 0
 
-enum class eWorldState
+enum class eWorldState : uint32_t
 {
     None = 0,
     IsValid = 1 << 1,
@@ -39,35 +39,9 @@ class World
 #endif
 
     // Network stuff
-    void Pack( Kokoro::Memory::Buffer &buffer )
-    {
-        m_iWorldVersion = WORLD_VERSION;
-        buffer.Push( m_iWorldVersion );
+    bool Pack( Kokoro::Memory::Buffer &buffer );
 
-        buffer.Push( m_uWidth );
-        buffer.Push( m_uHeight );
-        buffer.Push( m_eState );
-
-        for ( auto &tile : m_vTiles )
-        {
-            tile.Pack( buffer );
-        }
-    }
-
-    void Unpack( Kokoro::Memory::Buffer &buffer )
-    {
-        m_iWorldVersion = buffer.Pop<uint16_t>( 2 );
-
-        m_uWidth = buffer.Pop<uint16_t>( 2 );
-        m_uHeight = buffer.Pop<uint16_t>( 2 );
-
-        m_vTiles.resize( m_uWidth * m_uHeight );
-
-        for ( auto &tile : m_vTiles )
-        {
-            tile.Unpack( m_iWorldVersion, buffer );
-        }
-    }
+    bool Unpack( Kokoro::Memory::Buffer &buffer );
 
   public:
     bool IsValid()

@@ -9,7 +9,6 @@
 #include "Game/Player/Avatar.hh"
 #include "Game/World/WorldRenderer.hh"
 
-
 #define XYTV( x, y ) ( x + ( y * m_uWidth ) )
 
 void World::Init( uint16_t uWidth, uint16_t uHeight )
@@ -108,3 +107,43 @@ void World::OnPlayerEnter()
     GetGame()->GetLocalPlayer().InitAvatar( AddAvatar( avatar ) );
 }
 #endif
+
+bool World::Pack( Kokoro::Memory::Buffer &buffer )
+{
+    m_iWorldVersion = WORLD_VERSION;
+    buffer.Push( m_iWorldVersion );
+
+    buffer.Push( m_uWidth );
+    buffer.Push( m_uHeight );
+    buffer.Push( m_eState );
+
+    for ( auto &tile : m_vTiles )
+    {
+        tile.Pack( buffer );
+    }
+
+    return true;
+}
+
+bool World::Unpack( Kokoro::Memory::Buffer &buffer )
+{
+    if ( !buffer.can_read( 10 ) )
+    {
+        return false;
+    }
+
+    m_iWorldVersion = buffer.Pop<uint16_t>( 2 );
+
+    m_uWidth = buffer.Pop<uint16_t>( 2 );
+    m_uHeight = buffer.Pop<uint16_t>( 2 );
+    m_eState = buffer.Pop<eWorldState>( 4 );
+
+    m_vTiles.resize( m_uWidth * m_uHeight );
+
+    for ( auto &tile : m_vTiles )
+    {
+        if ( !tile.Unpack( m_iWorldVersion, buffer ) ) return false;
+    }
+
+    return true;
+}

@@ -4,6 +4,9 @@
 
 #include "Core/Engine.hh"
 
+#include "Game/Debug/NetworkInspector.hh"
+#include "Game/Network/Packets/WorldPacket.hh"
+
 #if !GAME_SERVER
 void Game::OnGameResize( GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight )
 {
@@ -29,12 +32,17 @@ Game::~Game()
 
 void Game::Init()
 {
-    // PREINIT EVENTS
 #if !GAME_SERVER
+    // PREINIT EVENTS
     GetEngine()->GetWindow().OnResize.connect<&Game::OnGameResize>( this );
     GetEngine()->GetInputManager().OnKeyDown.connect<&Player::OnKeyDown>( &m_Player );
     GetEngine()->GetInputManager().OnKeyRelease.connect<&Player::OnKeyRelease>(
         &m_Player );
+#endif
+
+#if ENGINE_DEBUG
+    m_pNetworkInspector =
+        GetEngine()->RegisterDebugUtil<NetworkInspector>( true, "Network" );
 #endif
 
     // PREINIT VIEWS
@@ -82,6 +90,20 @@ Player &Game::GetLocalPlayer()
     return m_Player;
 }
 
+// Network stuff
+void Game::RequestWorld( const std::string_view &svName )
+{
+    Packets::WorldRequestData data;
+    data.m_sName = svName;
+
+    Packets::REQ_World packet {};
+    packet.m_Object = data;
+
+    auto size = m_pNetworkClient->Send( packet );
+
+    m_pNetworkInspector->HookSendPacket( packet.m_Header.m_uType, size );
+}
+
 void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
                           const char *szMessage )
 {
@@ -99,9 +121,13 @@ void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
         m_pNetworkClient = m_Network.ConnectTo( targetAddress );
         m_pNetworkClient->OnStateChange.connect<&Game::OnStateChange>( this );
         break;
+
     case ConnectionState::Connected:
         m_lConnectionStatus.SetText( { 0, 0, 999.f }, "Network: Connected!", m_pFont );
         m_lConnectionStatus.SetColor( { .3, 1, .3, 1 } );
+
+        // Request world
+        RequestWorld( "START" );
         break;
 
     case ConnectionState::Connecting:
@@ -110,4 +136,8 @@ void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
         break;
     default: break;
     }
+
+#if ENGINE_DEBUG
+    m_pNetworkInspector->HookConnectionState( eState );
+#endif
 }

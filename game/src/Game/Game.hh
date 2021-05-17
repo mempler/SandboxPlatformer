@@ -2,6 +2,7 @@
 
 #include "Core/Graphics/Font/Label.hh"
 
+#include "Game/Debug/NetworkInspector.hh"
 #include "Game/Managers/ItemInfoManager.hh"
 #include "Game/Network/Network.hh"
 #include "Game/Player/Player.hh"
@@ -29,9 +30,15 @@ class Game
     void Tick( float fDeltaTime );
     void Draw();
 
-#if !GAME_SERVER
     void OnGameResize( GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight );
-#endif
+
+    // Networking
+    void RequestWorld( std::string_view const &svName );
+
+    ConnectionState GetNetClientState()
+    {
+        return m_pNetworkClient->GetState();
+    }
 
   private:
     // Item utilites
@@ -47,6 +54,10 @@ class Game
 
     Network m_Network;
     NetClientPtr m_pNetworkClient;
+
+#if ENGINE_DEBUG
+    NetworkInspector *m_pNetworkInspector;
+#endif
 
     void OnStateChange( NetClientPtr, ConnectionState, const char * );
 };
