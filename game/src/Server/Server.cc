@@ -29,7 +29,7 @@ void Server::Init()
     address.Clear();
     address.m_port = 27015;
 
-    m_Server = m_Network.CreateServer( address );
+    m_Listener = m_Network.CreateListener( address );
     Console::Info( "Server listening on port {}", address.m_port );
 
     // TODO: actual world loading & items.dat
@@ -91,7 +91,7 @@ void Server::Tick( float fDeltaTime )
     m_Network.Tick();
 }
 
-void Server::OnStateChange( BaseClientPtr pClient, ConnectionState eState,
+void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState,
                             const char *szMessage )
 {
     switch ( eState )
@@ -109,7 +109,7 @@ void Server::OnStateChange( BaseClientPtr pClient, ConnectionState eState,
 
         // A client is attempting to connect
         // Try to accept the connection.
-        if ( m_Server.AcceptConnection( pClient ) )
+        if ( m_Listener.AcceptConnection( pClient ) )
         {
             pClient->Disconnect( "Unexpected closure!!" );
             Console::Error( "Couldn't accept connection. (Why?)" );

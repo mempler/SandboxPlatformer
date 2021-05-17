@@ -6,40 +6,39 @@
 
 #include "Core/Utils/Logger.hh"
 
-#include "Packet.hh"
-
-#include "BaseClient.hh"
-#include "BaseServer.hh"
+#include "Game/Network/NetClient.hh"
+#include "Game/Network/NetListener.hh"
+#include "Game/Network/Packet.hh"
 
 #include <steam/isteamnetworkingsockets.h>
 
 #include <signals.hpp>
 
-class BaseNetwork
+class Network
 {
   public:
-    BaseNetwork();
+    Network();
 
     // Connect to a remote server using it's IP
     // The resulting BaseClient can then be used to send
     // messages over the network
-    BaseClientPtr ConnectTo( SteamNetworkingIPAddr &address );
+    NetClientPtr ConnectTo( SteamNetworkingIPAddr &address );
 
-    BaseServer CreateServer( SteamNetworkingIPAddr &address );
+    NetListener CreateListener( SteamNetworkingIPAddr &address );
 
     // This has to be called to send all remaining packets
     // towards the server (every tick preferable)
     void Tick();
 
-    signals::signal<void( BaseClientPtr, ConnectionState, const char * )> OnStateChange;
-    signals::signal<void( BaseClientPtr, Kokoro::Memory::Buffer & )> OnPacket;
+    signals::signal<void( NetClientPtr, ConnectionState, const char * )> OnStateChange;
+    signals::signal<void( NetClientPtr, Kokoro::Memory::Buffer & )> OnPacket;
 
   private:
-    BaseClientPtr AddConnection( HSteamNetConnection hConn );
+    NetClientPtr AddConnection( HSteamNetConnection hConn );
     void DestroyConnection( HSteamNetConnection hConn );
-    BaseClientPtr GetConnection( HSteamNetConnection hConn );
+    NetClientPtr GetConnection( HSteamNetConnection hConn );
 
-    std::unordered_map<HSteamNetConnection, BaseClientPtr> m_umConnectedClients {};
+    std::unordered_map<HSteamNetConnection, NetClientPtr> m_umConnectedClients {};
 
     ISteamNetworkingSockets *m_pInstance = nullptr;
     HSteamNetPollGroup m_hPollGroup = k_HSteamNetPollGroup_Invalid;

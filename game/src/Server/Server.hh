@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Game/Network/BaseNetwork.hh"
+#include "Game/Network/Network.hh"
 #include "Game/World/World.hh"
 
 #include <steam/steamnetworkingsockets.h>
@@ -22,10 +22,10 @@ class Server
     ItemInfoManager m_ItemInfoManager;
     World m_World;
 
-    BaseServer m_Server;
-    BaseNetwork m_Network;
+    NetListener m_Listener;
+    Network m_Network;
 
-    void OnStateChange( BaseClientPtr pClient, ConnectionState eState,
+    void OnStateChange( NetClientPtr pClient, ConnectionState eState,
                         const char *szMessage );
 };
 

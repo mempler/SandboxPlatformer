@@ -16,15 +16,15 @@ enum class ConnectionState
     Connected
 };
 
-class BaseClient
+class NetClient
 {
   public:
-    typedef std::shared_ptr<BaseClient> BaseClientPtr;
+    typedef std::shared_ptr<NetClient> NetClientPtr;
 
-    BaseClient()
+    NetClient()
     {
     }
-    BaseClient( ISteamNetworkingSockets *pInstance, HSteamNetConnection hConn ) :
+    NetClient( ISteamNetworkingSockets *pInstance, HSteamNetConnection hConn ) :
         m_pInstance( pInstance ), m_hConn( hConn )
     {
     }
@@ -79,11 +79,11 @@ class BaseClient
         return m_hConn;
     }
 
-    signals::signal<void( BaseClientPtr, ConnectionState, const char * )> OnStateChange;
+    signals::signal<void( NetClientPtr, ConnectionState, const char * )> OnStateChange;
 
   private:
     HSteamNetConnection m_hConn = 0;
     ISteamNetworkingSockets *m_pInstance = nullptr;
 };
 
-using BaseClientPtr = BaseClient::BaseClientPtr;
+using NetClientPtr = NetClient::NetClientPtr;

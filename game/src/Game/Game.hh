@@ -3,10 +3,9 @@
 #include "Core/Graphics/Font/Label.hh"
 
 #include "Game/Managers/ItemInfoManager.hh"
+#include "Game/Network/Network.hh"
 #include "Game/Player/Player.hh"
 #include "Game/World/World.hh"
-
-#include "Network/BaseNetwork.hh"
 
 #include <steam/steamnetworkingsockets.h>
 
@@ -46,10 +45,10 @@ class Game
     Font *m_pFont;
     Label m_lConnectionStatus;
 
-    BaseNetwork m_Network;
-    BaseClientPtr m_pNetworkClient;
+    Network m_Network;
+    NetClientPtr m_pNetworkClient;
 
-    void OnStateChange( BaseClientPtr, ConnectionState, const char * );
+    void OnStateChange( NetClientPtr, ConnectionState, const char * );
 };
 
 extern Game *GetGame();

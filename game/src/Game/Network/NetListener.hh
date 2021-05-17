@@ -2,19 +2,19 @@
 
 #include "Packet.hh"
 
-#include "BaseClient.hh"
+#include "NetClient.hh"
 
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/steamnetworkingtypes.h>
 
-class BaseServer
+class NetListener
 {
   public:
-    BaseServer()
+    NetListener()
     {
     }
 
-    BaseServer( ISteamNetworkingSockets *pInstance, HSteamListenSocket hSocket ) :
+    NetListener( ISteamNetworkingSockets *pInstance, HSteamListenSocket hSocket ) :
         m_pInstance( pInstance ), m_hConn( hSocket )
     {
     }
@@ -23,7 +23,7 @@ class BaseServer
     {
     }
 
-    bool AcceptConnection( BaseClientPtr pClient )
+    bool AcceptConnection( NetClientPtr pClient )
     {
         return m_pInstance->AcceptConnection( pClient->Handle() ) != k_EResultOK;
     }

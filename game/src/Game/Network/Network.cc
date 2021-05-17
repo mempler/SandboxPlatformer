@@ -1,12 +1,12 @@
-#include "BaseNetwork.hh"
+#include "Network.hh"
 
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/steamnetworkingsockets.h>
 #include <steam/steamnetworkingtypes.h>
 
-static BaseNetwork *g_pActiveNetwork;
+static Network *g_pActiveNetwork;
 
-BaseNetwork::BaseNetwork()
+Network::Network()
 {
     SteamDatagramErrMsg errMsg;
     if ( !GameNetworkingSockets_Init( nullptr, errMsg ) )
@@ -15,22 +15,22 @@ BaseNetwork::BaseNetwork()
     m_pInstance = SteamNetworkingSockets();
 }
 
-BaseClientPtr BaseNetwork::ConnectTo( SteamNetworkingIPAddr &address )
+NetClientPtr Network::ConnectTo( SteamNetworkingIPAddr &address )
 {
     SteamNetworkingConfigValue_t opt;
     opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
-                (void *) &BaseNetwork::OnStatusChanged );
+                (void *) &Network::OnStatusChanged );
 
     HSteamNetConnection hConn = m_pInstance->ConnectByIPAddress( address, 1, &opt );
 
     return AddConnection( hConn );
 }
 
-BaseServer BaseNetwork::CreateServer( SteamNetworkingIPAddr &address )
+NetListener Network::CreateListener( SteamNetworkingIPAddr &address )
 {
     SteamNetworkingConfigValue_t opt;
     opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
-                (void *) &BaseNetwork::OnStatusChanged );
+                (void *) &Network::OnStatusChanged );
 
     HSteamListenSocket hSocket = m_pInstance->CreateListenSocketIP( address, 1, &opt );
     if ( hSocket == k_HSteamListenSocket_Invalid )
@@ -38,24 +38,24 @@ BaseServer BaseNetwork::CreateServer( SteamNetworkingIPAddr &address )
         Console::Fatal( "Failed to listen on port {}", 27015 );
     }
 
-    return BaseServer( m_pInstance, hSocket );
+    return NetListener( m_pInstance, hSocket );
 }
 
-void BaseNetwork::Tick()
+void Network::Tick()
 {
     g_pActiveNetwork = this;
     m_pInstance->RunCallbacks();
 }
 
-BaseClientPtr BaseNetwork::AddConnection( HSteamNetConnection hConn )
+NetClientPtr Network::AddConnection( HSteamNetConnection hConn )
 {
     m_umConnectedClients.emplace( hConn,
-                                  std::make_shared<BaseClient>( m_pInstance, hConn ) );
+                                  std::make_shared<NetClient>( m_pInstance, hConn ) );
 
     return m_umConnectedClients.at( hConn );
 }
 
-BaseClientPtr BaseNetwork::GetConnection( HSteamNetConnection hConn )
+NetClientPtr Network::GetConnection( HSteamNetConnection hConn )
 {
     auto it = m_umConnectedClients.find( hConn );
     if ( it != m_umConnectedClients.end() )
@@ -66,9 +66,9 @@ BaseClientPtr BaseNetwork::GetConnection( HSteamNetConnection hConn )
     return nullptr;
 }
 
-void BaseNetwork::DestroyConnection( HSteamNetConnection hConn )
+void Network::DestroyConnection( HSteamNetConnection hConn )
 {
-    BaseClientPtr client = GetConnection( hConn );
+    NetClientPtr client = GetConnection( hConn );
     if ( client == nullptr || !client->IsValid() ) return;
 
     // We cannot destroy connections
@@ -78,7 +78,7 @@ void BaseNetwork::DestroyConnection( HSteamNetConnection hConn )
 }
 
 /* static */
-void BaseNetwork::OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pInfo )
+void Network::OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pInfo )
 {
     switch ( pInfo->m_info.m_eState )
     {

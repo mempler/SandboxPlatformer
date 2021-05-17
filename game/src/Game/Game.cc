@@ -82,7 +82,7 @@ Player &Game::GetLocalPlayer()
     return m_Player;
 }
 
-void Game::OnStateChange( BaseClientPtr pClient, ConnectionState eState,
+void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
                           const char *szMessage )
 {
     switch ( eState )
