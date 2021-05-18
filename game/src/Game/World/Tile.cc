@@ -29,7 +29,7 @@ void Tile::RenderForeground()
     }
 
     GetEngine()->GetBatcher().SubmitWithUV(
-        pAtlasFore, m4Transform, { 0 * pFore->uItemX, 0 * pFore->uItemY, 32, 32 } );
+        pAtlasFore, m4Transform, { 32 * pFore->uItemX, 32 * pFore->uItemY, 32, 32 } );
 }
 
 void Tile::RenderBackground()
@@ -44,7 +44,7 @@ void Tile::RenderBackground()
     }
 
     GetEngine()->GetBatcher().SubmitWithUV(
-        pAtlasBack, m4Transform, { 0 * pBack->uItemX, 0 * pBack->uItemY, 32, 32 } );
+        pAtlasBack, m4Transform, { 32 * pBack->uItemX, 32 * pBack->uItemY, 32, 32 } );
 }
 
 void Tile::RenderTileShadow()
