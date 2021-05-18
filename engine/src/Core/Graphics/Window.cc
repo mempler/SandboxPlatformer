@@ -18,8 +18,8 @@
 
 #include <SDL_events.h>
 
-GameWindow::GameWindow( const int32_t iWidth, const int32_t iHeight,
-                        const char *szTitle, const Flags eFlags )
+GameWindow::GameWindow( const int32_t iWidth, const int32_t iHeight, const char *szTitle,
+                        const Flags eFlags )
 {
     ZoneScoped;
 
@@ -43,9 +43,9 @@ GameWindow::GameWindow( const int32_t iWidth, const int32_t iHeight,
     if ( ( eFlags & Flags::Fullscreen ) > 0 ) flags = SDL_WINDOW_FULLSCREEN;
 
     Console::Info( "Creating SDL2 Window for PC..." );
-    m_SDLWindow = SDL_CreateWindow( szTitle, SDL_WINDOWPOS_UNDEFINED,
-                                    SDL_WINDOWPOS_UNDEFINED, iWidth, iHeight,
-                                    flags | SDL_WINDOW_RESIZABLE );
+    m_SDLWindow =
+        SDL_CreateWindow( szTitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                          iWidth, iHeight, flags | SDL_WINDOW_RESIZABLE );
 #endif
 
     if ( m_SDLWindow == nullptr )
@@ -186,8 +186,7 @@ bool GameWindow::ShouldExit()
 void GameWindow::AddView( bgfx::ViewId viID )
 {
     ZoneScoped;
-    bgfx::setViewClear( viID, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x0000000FF,
-                        1.0f, 0 );
+    bgfx::setViewClear( viID, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x0000000FF, 1.0f, 0 );
     bgfx::setViewRect( viID, 0, 0, bgfx::BackbufferRatio::Equal );
 
     m_vViews.push_back( viID );
@@ -241,13 +240,13 @@ void GameWindow::InitBGFX()
     bgfx::Init bgfxInit;
     // bgfxInit.debug = true; // This slows down the renderer quite a bit
 
-    bgfxInit.type =
-        bgfx::RendererType::Count;  // Automatically choose a renderer. OpenGL
-                                    // for RENDERDOC.
+    bgfxInit.type = bgfx::RendererType::Count;  // Automatically choose a renderer. OpenGL
+                                                // for RENDERDOC.
     bgfxInit.platformData = platformData;
     bgfxInit.resolution.width = m_iWidth;
     bgfxInit.resolution.height = m_iHeight;
     bgfxInit.resolution.reset = BGFX_RESET_VSYNC;
+    bgfxInit.limits.transientVbSize = 134217728;
 
     Console::Info( "Initializing BGFX..." );
     if ( !bgfx::init( bgfxInit ) )
@@ -270,8 +269,7 @@ void GameWindow::InitBGFX()
     m_iWidth = static_cast<uint32_t>( displayMode.w );
     m_iHeight = static_cast<uint32_t>( displayMode.h );
 
-    bgfx::reset( m_iWidth, m_iHeight,
-                 BGFX_RESET_VSYNC | BGFX_RESET_FULLSCREEN );
+    bgfx::reset( m_iWidth, m_iHeight, BGFX_RESET_VSYNC | BGFX_RESET_FULLSCREEN );
     bgfx::setViewRect( 0, 0, 0, bgfx::BackbufferRatio::Equal );
 #endif
 
@@ -281,11 +279,9 @@ void GameWindow::InitBGFX()
 
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
-    io.ConfigFlags |=
-        ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-    io.ConfigFlags |=
-        ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;  // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;      // Enable Docking
 
     #if PLATFORM_ANDROID
     ImGui::GetCurrentContext()->CurrentDpiScale = 5;
