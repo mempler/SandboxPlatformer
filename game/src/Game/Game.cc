@@ -8,9 +8,13 @@
 #include "Game/Network/Packets/ItemDBPacket.hh"
 #include "Game/Network/Packets/WorldPacket.hh"
 
+#include <Tracy.hpp>
+
 #if !GAME_SERVER
 void Game::OnGameResize( GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight )
 {
+    ZoneScoped;
+
     if ( m_World.IsValid() )
     {
         if ( bgfx::isValid( m_World.GetFrameBuffer() ) )
@@ -33,6 +37,8 @@ Game::~Game()
 
 void Game::Init()
 {
+    ZoneScoped;
+
 #if !GAME_SERVER
     // PREINIT EVENTS
     GetEngine()->GetWindow().OnResize.connect<&Game::OnGameResize>( this );
@@ -64,12 +70,16 @@ void Game::Init()
 
 void Game::Tick( float fDeltaTime )
 {
+    ZoneScoped;
+
     m_World.Tick( fDeltaTime );
     m_Network.Tick();
 }
 
 void Game::Draw()
 {
+    ZoneScoped;
+
 #if !GAME_SERVER
     m_World.Draw();
 
@@ -95,6 +105,8 @@ Player &Game::GetLocalPlayer()
 // Network stuff
 void Game::RequestWorld( const std::string_view &svName )
 {
+    ZoneScoped;
+
     Packets::WorldRequestData data;
     data.m_sName = svName;
 
@@ -108,6 +120,8 @@ void Game::RequestWorld( const std::string_view &svName )
 
 void Game::RequestItemDB()
 {
+    ZoneScoped;
+
     Packets::ItemDBRequestData data;
 
     Packets::REQ_ItemDB packet {};
@@ -121,6 +135,8 @@ void Game::RequestItemDB()
 void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
                           const char *szMessage )
 {
+    ZoneScoped;
+
     switch ( eState )
     {
     case ConnectionState::Disconnected:
@@ -142,9 +158,6 @@ void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
 
         // Before we can request any worlds, we gotta get an ItemDB
         RequestItemDB();
-
-        // Request world
-        RequestWorld( "START" );
         break;
 
     case ConnectionState::Connecting:
@@ -162,6 +175,8 @@ void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
 void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
                      Kokoro::Memory::Buffer buffer )
 {
+    ZoneScoped;
+
     m_pNetworkInspector->HookRecievePacket( header.m_eType, buffer.size() );
 
     switch ( header.m_eType )
@@ -172,6 +187,10 @@ void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
         {
             Console::Error( "Failed to unpack ItemDB!" );
         }
+
+        // TODO: Move this somewhere else
+        // Request the world "START"
+        RequestWorld( "START" );
 
         break;
     }

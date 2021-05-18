@@ -9,10 +9,14 @@
 #include "Game/Player/Avatar.hh"
 #include "Game/World/WorldRenderer.hh"
 
+#include <Tracy.hpp>
+
 #define XYTV( x, y ) ( x + ( y * m_uWidth ) )
 
 void World::Init( uint16_t uWidth, uint16_t uHeight )
 {
+    ZoneScoped;
+
     m_uWidth = uWidth;
     m_uHeight = uHeight;
 
@@ -34,6 +38,8 @@ void World::Init( uint16_t uWidth, uint16_t uHeight )
 
 void World::Tick( float fDeltaTime )
 {
+    ZoneScoped;
+
     if ( !IsValid() ) return;
 
     for ( auto &&i : m_vAvatars ) i->OnUpdate( fDeltaTime );
@@ -42,6 +48,8 @@ void World::Tick( float fDeltaTime )
 #if !GAME_SERVER
 void World::Draw()
 {
+    ZoneScoped;
+
     if ( !IsValid() ) return;
 
     GameWindow &window = GetEngine()->GetWindow();
@@ -67,12 +75,16 @@ void World::Draw()
 
 void World::RenderAvatars()
 {
+    ZoneScoped;
+
     for ( auto &&i : m_vAvatars ) i->OnRender();
 }
 #endif
 
 void World::PlaceFore( uint16_t uID, uint16_t x, uint16_t y )
 {
+    ZoneScoped;
+
     Tile *tile = &m_vTiles [ XYTV( x, y ) ];
 
     tile->iPosX = x;
@@ -91,10 +103,13 @@ void World::PlaceFore( uint16_t uID, uint16_t x, uint16_t y )
 
 void World::PlaceBack( uint16_t uID, uint16_t x, uint16_t y )
 {
+    ZoneScoped;
 }
 
 Avatar *World::AddAvatar( Avatar *avatar )
 {
+    ZoneScoped;
+
     m_vAvatars.push_back( avatar );
 
     return avatar;
@@ -103,6 +118,8 @@ Avatar *World::AddAvatar( Avatar *avatar )
 #if !GAME_SERVER
 void World::OnPlayerEnter()
 {
+    ZoneScoped;
+
     Avatar *avatar = new Avatar( { 100.f, 100.f, 7 }, "None" );
     GetGame()->GetLocalPlayer().InitAvatar( AddAvatar( avatar ) );
 }
@@ -110,6 +127,8 @@ void World::OnPlayerEnter()
 
 bool World::Pack( Kokoro::Memory::Buffer &buffer )
 {
+    ZoneScoped;
+
     m_iWorldVersion = WORLD_VERSION;
     buffer.Push( m_iWorldVersion );
 
@@ -127,10 +146,14 @@ bool World::Pack( Kokoro::Memory::Buffer &buffer )
 
 bool World::Unpack( Kokoro::Memory::Buffer &buffer )
 {
+    ZoneScoped;
+
     if ( !buffer.can_read( 10 ) )
     {
         return false;
     }
+
+    Init( 0, 0 );  // Init ourself
 
     m_iWorldVersion = buffer.Pop<uint16_t>( 2 );
 

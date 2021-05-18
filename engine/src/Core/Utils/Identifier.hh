@@ -34,17 +34,11 @@ class Identifier
         auto proto_end = uri.find_first_of( protoEnd );
         if ( proto_end == std::string_view::npos )
         {
-            m_sProtocol = uri;
             return;
         }
 
-#if _MSC_FULL_VER  // m$ft moment
-        m_sProtocol = std::string_view( &*uri.begin(), proto_end );
-        m_sPath = std::string_view( &*uri.begin() + proto_end + protoEnd.size() );
-#else
-        m_sProtocol = std::string_view( uri.begin(), proto_end );
-        m_sPath = std::string_view( uri.begin() + proto_end + protoEnd.size() );
-#endif
+        m_iProtoEnd = proto_end;
+        m_iProtoSize = protoEnd.size();
     }
 
     constexpr Identifier( char *szUri ) : Identifier( std::string_view( szUri ) )
@@ -57,17 +51,17 @@ class Identifier
     {
     }
 
-    constexpr std::string_view const &Protocol() const
+    constexpr std::string_view const Protocol() const
     {
-        return m_sProtocol;
+        return std::string_view( m_vString.data(), m_iProtoEnd );
     }
 
-    constexpr std::string_view const &Path() const
+    constexpr std::string_view const Path() const
     {
-        return m_sPath;
+        return std::string_view( m_vString.data() + m_iProtoEnd + m_iProtoSize );
     }
 
-    constexpr std::string_view Raw() const
+    constexpr std::string_view const Raw() const
     {
         return std::string_view( m_vString.data() );
     }
@@ -97,7 +91,8 @@ class Identifier
   private:
     std::array<char, 64> m_vString {};
 
-    std::string_view m_sProtocol = "", m_sPath = "";
+    uint32_t m_iProtoEnd = 0;
+    uint32_t m_iProtoSize = 0;
 };
 
 static constexpr Identifier EmptyIdentifier = Identifier( "engine://empty" );

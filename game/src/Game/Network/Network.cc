@@ -1,12 +1,13 @@
 #include "Network.hh"
 
-#include "steam/isteamnetworkingmessages.h"
-#include "steam/isteamnetworkingutils.h"
-#include "steam/steamnetworkingsockets_flat.h"
-
+#include <steam/isteamnetworkingmessages.h>
 #include <steam/isteamnetworkingsockets.h>
+#include <steam/isteamnetworkingutils.h>
 #include <steam/steamnetworkingsockets.h>
+#include <steam/steamnetworkingsockets_flat.h>
 #include <steam/steamnetworkingtypes.h>
+
+#include <Tracy.hpp>
 
 #include <array>
 
@@ -14,6 +15,8 @@ static Network *g_pActiveNetwork;
 
 Network::Network()
 {
+    ZoneScoped;
+
     SteamDatagramErrMsg errMsg;
     if ( !GameNetworkingSockets_Init( nullptr, errMsg ) )
         Console::Fatal( "GameNetworkingSockets_Init failed: {}", errMsg );
@@ -25,6 +28,8 @@ Network::Network()
 
 NetClientPtr Network::ConnectTo( SteamNetworkingIPAddr &address )
 {
+    ZoneScoped;
+
     SteamNetworkingConfigValue_t opt;
     opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
                 (void *) &Network::OnStatusChanged );
@@ -36,6 +41,8 @@ NetClientPtr Network::ConnectTo( SteamNetworkingIPAddr &address )
 
 NetListener Network::CreateListener( SteamNetworkingIPAddr &address )
 {
+    ZoneScoped;
+
     SteamNetworkingConfigValue_t opt;
     opt.SetPtr( k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged,
                 (void *) &Network::OnStatusChanged );
@@ -53,6 +60,8 @@ NetListener Network::CreateListener( SteamNetworkingIPAddr &address )
 
 void Network::Tick()
 {
+    ZoneScoped;
+
     // Accept messages
     ISteamNetworkingMessage *pIncomingMsg = nullptr;
     m_pInstance->ReceiveMessagesOnPollGroup( m_hPollGroup, &pIncomingMsg, 1 );
@@ -85,6 +94,7 @@ void Network::Tick()
 
 NetClientPtr Network::AddConnection( HSteamNetConnection hConn )
 {
+    ZoneScoped;
 
     m_pInstance->SetConnectionPollGroup( hConn, m_hPollGroup );
 
@@ -96,6 +106,8 @@ NetClientPtr Network::AddConnection( HSteamNetConnection hConn )
 
 NetClientPtr Network::GetConnection( HSteamNetConnection hConn )
 {
+    ZoneScoped;
+
     auto it = m_umConnectedClients.find( hConn );
     if ( it != m_umConnectedClients.end() )
     {
@@ -107,6 +119,8 @@ NetClientPtr Network::GetConnection( HSteamNetConnection hConn )
 
 void Network::DestroyConnection( HSteamNetConnection hConn )
 {
+    ZoneScoped;
+
     NetClientPtr client = GetConnection( hConn );
     if ( client == nullptr || !client->IsValid() ) return;
 
@@ -119,11 +133,15 @@ void Network::DestroyConnection( HSteamNetConnection hConn )
 /* static */
 void Network::OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pInfo )
 {
+    ZoneScoped;
+
     switch ( pInfo->m_info.m_eState )
     {
     case k_ESteamNetworkingConnectionState_ClosedByPeer:
     case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
     {
+        ZoneScoped;
+
         auto conn = g_pActiveNetwork->GetConnection( pInfo->m_hConn );
         conn->OnStateChange( conn, ConnectionState::Disconnected,
                              (const char *) pInfo->m_info.m_szEndDebug );
@@ -138,6 +156,8 @@ void Network::OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pInfo 
 
     case k_ESteamNetworkingConnectionState_Connecting:
     {
+        ZoneScoped;
+
         auto conn = g_pActiveNetwork->GetConnection( pInfo->m_hConn );
         if ( conn == nullptr ) conn = g_pActiveNetwork->AddConnection( pInfo->m_hConn );
 
@@ -152,6 +172,8 @@ void Network::OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pInfo 
 
     case k_ESteamNetworkingConnectionState_Connected:
     {
+        ZoneScoped;
+
         auto conn = g_pActiveNetwork->GetConnection( pInfo->m_hConn );
         conn->OnStateChange( conn, ConnectionState::Connected,
                              (const char *) pInfo->m_info.m_szEndDebug );

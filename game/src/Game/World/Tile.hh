@@ -14,6 +14,9 @@ struct Tile
     uint16_t iPosY = 0;
 
 #if !GAME_SERVER
+    Texture2D *pAtlasFore;
+    Texture2D *pAtlasBack;
+
     glm::mat4 m4Transform {};
 
     void UpdateTransform();

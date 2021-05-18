@@ -5,6 +5,8 @@
 #include <Kokoro/Memory/Buffer.hh>
 #include <steam/isteamnetworkingsockets.h>
 
+#include <Tracy.hpp>
+
 #include <cstdint>
 
 enum class PacketType : uint16_t
@@ -29,6 +31,8 @@ struct PacketHeader
 
     bool Pack( Kokoro::Memory::Buffer &buffer )
     {
+        ZoneScoped;
+
         buffer.Push( m_eType );
         buffer.Push( m_eFlags );
         buffer.Append( m_vPadding );
@@ -38,6 +42,8 @@ struct PacketHeader
 
     bool Unpack( Kokoro::Memory::Buffer &buffer )
     {
+        ZoneScoped;
+
         if ( !buffer.can_read( sizeof( PacketHeader ) ) )
         {
             return false;
@@ -65,6 +71,8 @@ struct IBasePacket
 
     bool Pack( Kokoro::Memory::Buffer &buffer )
     {
+        ZoneScoped;
+
         m_Header.Pack( buffer );
 
         return m_Object->Pack( buffer );
@@ -72,6 +80,8 @@ struct IBasePacket
 
     bool Unpack( Kokoro::Memory::Buffer &buffer )
     {
+        ZoneScoped;
+
         // m_Header.Unpack( buffer );
 
         return m_Object->Unpack( buffer );
@@ -79,6 +89,8 @@ struct IBasePacket
 
     size_t SendTo( ISteamNetworkingSockets *pSteamSockets, HSteamNetConnection &hConn )
     {
+        ZoneScoped;
+
         Kokoro::Memory::Buffer buffer;
 
         if ( !Pack( buffer ) )

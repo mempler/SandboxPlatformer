@@ -7,6 +7,8 @@
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/steamnetworkingtypes.h>
 
+#include <Tracy.hpp>
+
 class NetListener
 {
   public:
@@ -26,6 +28,8 @@ class NetListener
 
     bool AcceptConnection( NetClientPtr pClient )
     {
+        ZoneScoped;
+
         return m_pInstance->AcceptConnection( pClient->Handle() ) != k_EResultOK;
     }
 

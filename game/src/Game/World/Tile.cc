@@ -6,29 +6,45 @@
 
 #include "Game/Game.hh"
 
+#include <Tracy.hpp>
+
 #if !GAME_SERVER
 void Tile::UpdateTransform()
 {
+    ZoneScoped;
+
     m4Transform =
         Math::CalcTransform( { iPosX * 32.f, iPosY * 32.f, 5 }, { 32.f, 32.f } );
 }
 
 void Tile::RenderForeground()
 {
+    ZoneScoped;
+
     if ( !pFore ) return;
 
-    auto *atlas = GetEngine()->GetTextureManager().Load( pFore->Atlas );
+    if ( !pAtlasFore )
+    {
+        pAtlasFore = GetEngine()->GetTextureManager().Load( pFore->Atlas );
+    }
+
     GetEngine()->GetBatcher().SubmitWithUV(
-        atlas, m4Transform, { 0 * pFore->uItemX, 0 * pFore->uItemY, 32, 32 } );
+        pAtlasFore, m4Transform, { 0 * pFore->uItemX, 0 * pFore->uItemY, 32, 32 } );
 }
 
 void Tile::RenderBackground()
 {
+    ZoneScoped;
+
     if ( !pBack ) return;
 
-    auto *atlas = GetEngine()->GetTextureManager().Load( pBack->Atlas );
+    if ( !pAtlasBack )
+    {
+        pAtlasBack = GetEngine()->GetTextureManager().Load( pBack->Atlas );
+    }
+
     GetEngine()->GetBatcher().SubmitWithUV(
-        atlas, m4Transform, { 0 * pBack->uItemX, 0 * pBack->uItemY, 32, 32 } );
+        pAtlasBack, m4Transform, { 0 * pBack->uItemX, 0 * pBack->uItemY, 32, 32 } );
 }
 
 void Tile::RenderTileShadow()
@@ -39,6 +55,8 @@ void Tile::RenderTileShadow()
 
 bool Tile::Pack( Kokoro::Memory::Buffer &buffer )
 {
+    ZoneScoped;
+
     buffer.Push<uint16_t>( pFore == nullptr ? 0 : pFore->uID );
     buffer.Push<uint16_t>( pBack == nullptr ? 0 : pBack->uID );
 
@@ -50,6 +68,8 @@ bool Tile::Pack( Kokoro::Memory::Buffer &buffer )
 
 bool Tile::Unpack( uint32_t iWorldVersion, Kokoro::Memory::Buffer &buffer )
 {
+    ZoneScoped;
+
     if ( !buffer.can_read( 8 ) )
     {
         return false;

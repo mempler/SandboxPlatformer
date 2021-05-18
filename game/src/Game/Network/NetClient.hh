@@ -7,6 +7,7 @@
 #include <steam/isteamnetworkingsockets.h>
 #include <steam/steamnetworkingtypes.h>
 
+#include <Tracy.hpp>
 #include <signals.hpp>
 
 enum class ConnectionState
@@ -44,11 +45,15 @@ class NetClient
     template <class P>
     size_t Send( P &packet )
     {
+        ZoneScoped;
+
         return packet.SendTo( m_pInstance, m_hConn );
     }
 
     void Disconnect( std::string_view const &svReason )
     {
+        ZoneScoped;
+
         m_pInstance->CloseConnection( m_hConn, k_ESteamNetConnectionEnd_App_Generic,
                                       svReason.data(), true );
 
@@ -57,11 +62,15 @@ class NetClient
 
     bool IsValid()
     {
+        ZoneScoped;
+
         return m_hConn != k_HSteamNetConnection_Invalid;
     }
 
     ConnectionState GetState()
     {
+        ZoneScoped;
+
         SteamNetworkingQuickConnectionStatus *pStatus = nullptr;
         if ( !m_pInstance->GetQuickConnectionStatus( m_hConn, pStatus ) )
         {
@@ -90,6 +99,8 @@ class NetClient
 
     HSteamNetConnection Handle()
     {
+        ZoneScoped;
+
         return m_hConn;
     }
 

@@ -6,6 +6,8 @@
 #include <Kokoro/Memory/Buffer.hh>
 #include <glm/glm.hpp>
 
+#include <Tracy.hpp>
+
 #define ITEMDB_VERSION 0
 
 struct Item
@@ -22,6 +24,8 @@ struct Item
     // Network stuff
     bool Pack( Kokoro::Memory::Buffer &buffer )
     {
+        ZoneScoped;
+
         buffer.Push( uID );
         buffer.Push( uItemX );
         buffer.Push( uItemY );
@@ -34,6 +38,8 @@ struct Item
 
     bool Unpack( uint32_t iItemDBVersion, Kokoro::Memory::Buffer &buffer )
     {
+        ZoneScoped;
+
         if ( !buffer.can_read( 10 ) )
         {
             return false;
