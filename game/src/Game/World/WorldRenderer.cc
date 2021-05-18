@@ -12,11 +12,13 @@ void WorldRenderer::Draw( World *pWorld )
     for ( auto &tile : pWorld->m_vTiles )
     {
         if ( tile.pFore == nullptr && tile.pBack == nullptr ) continue;
+
         if ( tile.pFore != nullptr )
         {
             tile.RenderForeground();
         }
-        if ( tile.pFore == nullptr )
+
+        if ( tile.pBack != nullptr )
         {
             tile.RenderBackground();
         }
