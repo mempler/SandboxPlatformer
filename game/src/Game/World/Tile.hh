@@ -13,18 +13,11 @@ struct Tile
     uint16_t iPosX = 0;
     uint16_t iPosY = 0;
 
-#if !GAME_SERVER
-    Texture2D *pAtlasFore;
-    Texture2D *pAtlasBack;
-
+    // Game stuff
     glm::mat4 m4Transform {};
 
     void UpdateTransform();
-
-    void RenderForeground();
-    void RenderBackground();
-    void RenderTileShadow();
-#endif
+    void Draw();
 
     // Network stuff
     bool Pack( Kokoro::Memory::Buffer &buffer );

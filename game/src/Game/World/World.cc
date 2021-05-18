@@ -7,7 +7,6 @@
 
 #include "Game/Game.hh"
 #include "Game/Player/Avatar.hh"
-#include "Game/World/WorldRenderer.hh"
 
 #include <Tracy.hpp>
 
@@ -42,10 +41,9 @@ void World::Tick( float fDeltaTime )
 
     if ( !IsValid() ) return;
 
-    for ( auto &&i : m_vAvatars ) i->OnUpdate( fDeltaTime );
+    for ( auto &avatar : m_vAvatars ) avatar.Tick( fDeltaTime );
 }
 
-#if !GAME_SERVER
 void World::Draw()
 {
     ZoneScoped;
@@ -62,7 +60,13 @@ void World::Draw()
         2,
         m_hWorldFrameBuffer );  // tell bgfx that we are using this framebuffer
 
-    WorldRenderer::Draw( this );  // WorldRenderer will handle what we want
+    // Render out the world
+    for ( auto &tile : m_vTiles )
+    {
+        if ( tile.pFore == nullptr && tile.pBack == nullptr ) continue;
+
+        tile.Draw();
+    }
 
     RenderAvatars();
 
@@ -73,14 +77,6 @@ void World::Draw()
     GetEngine()->GetBatcher().SetCurrentView( 0 );  // back to default view
 }
 
-void World::RenderAvatars()
-{
-    ZoneScoped;
-
-    for ( auto &&i : m_vAvatars ) i->OnRender();
-}
-#endif
-
 void World::PlaceFore( uint16_t uID, uint16_t x, uint16_t y )
 {
     ZoneScoped;
@@ -90,15 +86,11 @@ void World::PlaceFore( uint16_t uID, uint16_t x, uint16_t y )
     tile->iPosX = x;
     tile->iPosX = y;
 
-#if !GAME_SERVER
+#if !GAME_SERVER  // This is too expensive for the server
     tile->UpdateTransform();
 #endif
 
-#if !GAME_SERVER
-    tile->pFore = GetGame()->GetItemInfoMan().GetItem( uID );
-#else
-    tile->pFore = GetServer()->GetItemInfoMan().GetItem( uID );
-#endif
+    tile->pFore = GAME->GetItemInfoMan().GetItem( uID );
 }
 
 void World::PlaceBack( uint16_t uID, uint16_t x, uint16_t y )
@@ -106,24 +98,12 @@ void World::PlaceBack( uint16_t uID, uint16_t x, uint16_t y )
     ZoneScoped;
 }
 
-Avatar *World::AddAvatar( Avatar *avatar )
+Avatar *World::CreateAvatar()
 {
     ZoneScoped;
 
-    m_vAvatars.push_back( avatar );
-
-    return avatar;
+    return &m_vAvatars.emplace_back();
 }
-
-#if !GAME_SERVER
-void World::OnPlayerEnter()
-{
-    ZoneScoped;
-
-    Avatar *avatar = new Avatar( { 100.f, 100.f, 7 }, "None" );
-    GetGame()->GetLocalPlayer().InitAvatar( AddAvatar( avatar ) );
-}
-#endif
 
 bool World::Pack( Kokoro::Memory::Buffer &buffer )
 {
@@ -169,4 +149,11 @@ bool World::Unpack( Kokoro::Memory::Buffer &buffer )
     }
 
     return true;
+}
+
+void World::RenderAvatars()
+{
+    ZoneScoped;
+
+    for ( auto &avatar : m_vAvatars ) avatar.Draw();
 }

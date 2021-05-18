@@ -8,7 +8,6 @@
 
 #include <Tracy.hpp>
 
-#if !GAME_SERVER
 void Tile::UpdateTransform()
 {
     ZoneScoped;
@@ -17,41 +16,24 @@ void Tile::UpdateTransform()
         Math::CalcTransform( { iPosX * 32.f, iPosY * 32.f, 5 }, { 32.f, 32.f } );
 }
 
-void Tile::RenderForeground()
+void Tile::Draw()
 {
     ZoneScoped;
 
-    if ( !pFore ) return;
-
-    if ( !pAtlasFore )
+    if ( pFore )
     {
-        pAtlasFore = GetEngine()->GetTextureManager().Load( pFore->Atlas );
+        GetEngine()->GetBatcher().SubmitWithUV(
+            pFore->pAtlasTexture, m4Transform,
+            { 32 * pFore->uItemX, 32 * pFore->uItemY, 32, 32 } );
     }
 
-    GetEngine()->GetBatcher().SubmitWithUV(
-        pAtlasFore, m4Transform, { 32 * pFore->uItemX, 32 * pFore->uItemY, 32, 32 } );
-}
-
-void Tile::RenderBackground()
-{
-    ZoneScoped;
-
-    if ( !pBack ) return;
-
-    if ( !pAtlasBack )
+    if ( pBack )
     {
-        pAtlasBack = GetEngine()->GetTextureManager().Load( pBack->Atlas );
+        GetEngine()->GetBatcher().SubmitWithUV(
+            pBack->pAtlasTexture, m4Transform,
+            { 32 * pBack->uItemX, 32 * pBack->uItemY, 32, 32 } );
     }
-
-    GetEngine()->GetBatcher().SubmitWithUV(
-        pAtlasBack, m4Transform, { 32 * pBack->uItemX, 32 * pBack->uItemY, 32, 32 } );
 }
-
-void Tile::RenderTileShadow()
-{
-    // TODO: do stuff
-}
-#endif
 
 bool Tile::Pack( Kokoro::Memory::Buffer &buffer )
 {
@@ -81,11 +63,15 @@ bool Tile::Unpack( uint32_t iWorldVersion, Kokoro::Memory::Buffer &buffer )
     auto posX = buffer.Pop<uint16_t>( 2 );
     auto posY = buffer.Pop<uint16_t>( 2 );
 
-    pFore = GetGame()->GetItemInfoMan().GetItem( fgId );
-    pBack = GetGame()->GetItemInfoMan().GetItem( bgId );
+    pFore = GAME->GetItemInfoMan().GetItem( fgId );
+    pBack = GAME->GetItemInfoMan().GetItem( bgId );
 
     iPosX = posX;
     iPosY = posY;
+
+#if !GAME_SERVER
+    UpdateTransform();
+#endif
 
     return true;
 }

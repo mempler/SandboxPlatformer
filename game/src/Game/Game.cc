@@ -10,7 +10,6 @@
 
 #include <Tracy.hpp>
 
-#if !GAME_SERVER
 void Game::OnGameResize( GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight )
 {
     ZoneScoped;
@@ -25,7 +24,6 @@ void Game::OnGameResize( GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHei
                                      bgfx::TextureFormat::RGBA8, g_uFrameBufferFlags );
     }
 }
-#endif
 
 Game::Game() : m_ItemInfoManager(), m_World(), m_Player()
 {
@@ -39,13 +37,11 @@ void Game::Init()
 {
     ZoneScoped;
 
-#if !GAME_SERVER
     // PREINIT EVENTS
     GetEngine()->GetWindow().OnResize.connect<&Game::OnGameResize>( this );
     GetEngine()->GetInputManager().OnKeyDown.connect<&Player::OnKeyDown>( &m_Player );
     GetEngine()->GetInputManager().OnKeyRelease.connect<&Player::OnKeyRelease>(
         &m_Player );
-#endif
 
 #if ENGINE_DEBUG
     m_pNetworkInspector =
@@ -80,11 +76,9 @@ void Game::Draw()
 {
     ZoneScoped;
 
-#if !GAME_SERVER
     m_World.Draw();
 
     if ( m_pNetworkClient ) m_lConnectionStatus.Render();
-#endif
 }
 
 ItemInfoManager &Game ::GetItemInfoMan()

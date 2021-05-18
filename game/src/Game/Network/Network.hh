@@ -6,9 +6,10 @@
 
 #include "Core/Utils/Logger.hh"
 
-#include "Game/Network/NetClient.hh"
-#include "Game/Network/NetListener.hh"
-#include "Game/Network/Packet.hh"
+#include "Packet.hh"
+
+#include "NetClient.hh"
+#include "NetListener.hh"
 
 #include <steam/isteamnetworkingsockets.h>
 

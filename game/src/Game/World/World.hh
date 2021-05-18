@@ -4,8 +4,6 @@
 
 #include "Game/Player/Avatar.hh"
 
-#include "WorldRenderer.hh"
-
 #include <Kokoro/Memory/Buffer.hh>
 
 #define WORLD_VERSION 0
@@ -31,12 +29,7 @@ class World
     void PlaceFore( uint16_t uID, uint16_t x, uint16_t y );
     void PlaceBack( uint16_t uID, uint16_t x, uint16_t y );
 
-    // Events
-    Avatar *AddAvatar( Avatar *avatar );
-
-#if !GAME_SERVER
-    void OnPlayerEnter();
-#endif
+    Avatar *CreateAvatar();
 
     // Network stuff
     bool Pack( Kokoro::Memory::Buffer &buffer );
@@ -49,20 +42,16 @@ class World
         return ( m_eState & eWorldState::IsValid );
     }
 
-#if !GAME_SERVER
     bgfx::FrameBufferHandle &GetFrameBuffer()
     {
         return m_hWorldFrameBuffer;
     }
-#endif
 
   private:
-#if !GAME_SERVER
     void RenderAvatars();
-#endif
 
   private:
-    std::vector<Avatar *> m_vAvatars;
+    std::vector<Avatar> m_vAvatars;
 
     uint16_t m_iWorldVersion = WORLD_VERSION;
 
@@ -71,12 +60,8 @@ class World
 
     eWorldState m_eState = eWorldState::None;
 
-#if !GAME_SERVER
     bgfx::FrameBufferHandle m_hWorldFrameBuffer = BGFX_INVALID_HANDLE;
-#endif
 
   protected:
     std::vector<Tile> m_vTiles;
-
-    friend class WorldRenderer;
 };

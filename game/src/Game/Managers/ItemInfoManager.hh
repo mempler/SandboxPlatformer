@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Engine.hh"
 #include "Core/Graphics/Texture2D.hh"
 #include "Core/Utils/Identifier.hh"
 
@@ -17,9 +18,10 @@ struct Item
     uint16_t uItemX;
     uint16_t uItemY;
 
-    // We cannot store a pointer towards the texture
-    // in an Item Database
     Identifier Atlas = EmptyIdentifier;
+
+    // Game stuff
+    Texture2D *pAtlasTexture = nullptr;
 
     // Network stuff
     bool Pack( Kokoro::Memory::Buffer &buffer )
@@ -58,6 +60,10 @@ struct Item
         auto heapStr = buffer.Pop<const char *>( atlasSize );
         Atlas = heapStr;
         delete [] heapStr;
+
+#if !GAME_SERVER
+        pAtlasTexture = GetEngine()->GetTextureManager().Load( Atlas );
+#endif
 
         return true;
     }

@@ -18,6 +18,23 @@ enum class PacketType : uint16_t
     SRV_SendWorld,
 };
 
+constexpr const char *PacketType_ToString( PacketType eType )
+{
+    const char *Type = "";
+    switch ( eType )
+    {
+    case PacketType::CLN_RequestItemDB: Type = "RequestItemDB"; break;
+    case PacketType::SRV_SendItemDB: Type = "SendItemDB"; break;
+
+    case PacketType::CLN_RequestWorld: Type = "RequestWorld"; break;
+    case PacketType::SRV_SendWorld: Type = "SendWorld"; break;
+
+    default: Type = "Unknown"; break;
+    }
+
+    return Type;
+}
+
 enum class PacketFlags : uint16_t
 {
     None = 0
@@ -63,7 +80,6 @@ struct PacketHeader
 };
 
 template <PacketType eType, typename T>
-
 struct IBasePacket
 {
     PacketHeader m_Header { eType, PacketFlags::None };
@@ -109,21 +125,3 @@ struct IBasePacket
         return size;
     }
 };
-
-// Helper function for getting the packet type as a string
-constexpr const char *PacketType_ToString( PacketType eType )
-{
-    const char *Type = "";
-    switch ( eType )
-    {
-    case PacketType::CLN_RequestItemDB: Type = "RequestItemDB"; break;
-    case PacketType::SRV_SendItemDB: Type = "SendItemDB"; break;
-
-    case PacketType::CLN_RequestWorld: Type = "RequestWorld"; break;
-    case PacketType::SRV_SendWorld: Type = "SendWorld"; break;
-
-    default: Type = "Unknown"; break;
-    }
-
-    return Type;
-}

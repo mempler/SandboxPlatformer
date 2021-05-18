@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Server/Server.hh"
+
 #include "Core/Graphics/Font/Label.hh"
 
 #include "Game/Debug/NetworkInspector.hh"
@@ -14,6 +16,12 @@
 constexpr uintptr_t g_uFrameBufferFlags =
     BGFX_TEXTURE_RT | BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT
     | BGFX_SAMPLER_MIP_POINT | BGFX_SAMPLER_U_CLAMP | BGFX_SAMPLER_V_CLAMP;
+
+#if GAME_SERVER
+    #define GAME GetServer()
+#else
+    #define GAME GetGame()
+#endif
 
 class Game
 {
