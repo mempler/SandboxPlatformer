@@ -142,7 +142,23 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
     {
         glm::ivec2 scl = { LOWORD( lParam ), HIWORD( lParam ) };
         GetEngine()->GetSurface()->SetResolution( scl );
-        
+
+        if ( wParam > 0 )
+        {
+            GetEngine()->GetSurface()->OnResolutionChanged( GetEngine()->GetSurface(),
+                                                            scl.x, scl.y );
+            bgfx::reset( scl.x, scl.y, BGFX_RESET_VSYNC );
+            GetEngine()->ResetTransform();
+            Console::Info( "Window size changed to {}, {}.", scl.x, scl.y );
+        }
+
+        break;
+    }
+
+    case WM_EXITSIZEMOVE:
+    {
+        BaseSurface *surf = GetEngine()->GetSurface();
+        glm::ivec2 scl = { surf->GetWidth(), surf->GetHeight() };
         GetEngine()->GetSurface()->OnResolutionChanged( GetEngine()->GetSurface(), scl.x,
                                                         scl.y );
         bgfx::reset( scl.x, scl.y, BGFX_RESET_VSYNC );
