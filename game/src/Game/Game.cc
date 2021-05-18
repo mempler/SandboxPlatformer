@@ -115,7 +115,9 @@ void Game::RequestWorld( const std::string_view &svName )
 
     auto size = m_pNetworkClient->Send( packet );
 
+#if ENGINE_DEBUG
     m_pNetworkInspector->HookSendPacket( packet.m_Header.m_eType, size );
+#endif
 }
 
 void Game::RequestItemDB()
@@ -129,7 +131,9 @@ void Game::RequestItemDB()
 
     auto size = m_pNetworkClient->Send( packet );
 
+#if ENGINE_DEBUG
     m_pNetworkInspector->HookSendPacket( packet.m_Header.m_eType, size );
+#endif
 }
 
 void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
@@ -177,7 +181,9 @@ void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
 {
     ZoneScoped;
 
+#if ENGINE_DEBUG
     m_pNetworkInspector->HookRecievePacket( header.m_eType, buffer.size() );
+#endif
 
     switch ( header.m_eType )
     {
