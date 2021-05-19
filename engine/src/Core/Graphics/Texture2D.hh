@@ -4,13 +4,12 @@
 
 #include "Platform.hh"
 
+#include <Kokoro/Memory/Span.hh>
 #include <bgfx/bgfx.h>
 
-#include <span.hpp>
 #include <stdint.h>
 
-#define TEXTURE_FORMAT_NEAREST                                                 \
-    ( BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT )
+#define TEXTURE_FORMAT_NEAREST ( BGFX_SAMPLER_MIN_POINT | BGFX_SAMPLER_MAG_POINT )
 
 // Low level texture wrapper
 class ENGINE_EXPORT Texture2D
@@ -40,8 +39,8 @@ class ENGINE_EXPORT Texture2D
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static void Load( Texture2D *pDest, Identifier const &identifier,
-                      uint64_t u64Filters, tcb::span<uint8_t> const &vData );
+    static void Load( Texture2D *pDest, Identifier const &identifier, uint64_t u64Filters,
+                      Kokoro::Memory::Span<uint8_t> const &vData );
 
     /*****************************************************
      * LoadRaw
@@ -57,10 +56,10 @@ class ENGINE_EXPORT Texture2D
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static void LoadRaw( Texture2D *pDest, Identifier const &identifier,
-                         int32_t iWidth, int32_t iHeight,
-                         bgfx::TextureFormat::Enum eTextureFormat,
-                         uint64_t u64Filters, tcb::span<uint8_t> const &vData );
+    static void LoadRaw( Texture2D *pDest, Identifier const &identifier, int32_t iWidth,
+                         int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat,
+                         uint64_t u64Filters,
+                         Kokoro::Memory::Span<uint8_t> const &vData );
 
     /*****************************************************
      * Create
@@ -75,9 +74,8 @@ class ENGINE_EXPORT Texture2D
      *
      * @return GPU Texture wrapper (Texture2D)
      *****************************************************/
-    static void Create( Texture2D *pDest, Identifier const &identifier,
-                        int32_t iWidth, int32_t iHeight,
-                        bgfx::TextureFormat::Enum eTextureFormat );
+    static void Create( Texture2D *pDest, Identifier const &identifier, int32_t iWidth,
+                        int32_t iHeight, bgfx::TextureFormat::Enum eTextureFormat );
 
     /*****************************************************
      * Modify
@@ -94,7 +92,7 @@ class ENGINE_EXPORT Texture2D
      *****************************************************/
     void Modify( int32_t iPosX, int32_t iPosY, int32_t iWidth, int32_t iHeight,
                  bgfx::TextureFormat::Enum eTextureFormat,
-                 tcb::span<uint8_t> const &vData );
+                 Kokoro::Memory::Span<uint8_t> const &vData );
 
   public:
     /*****************************************************

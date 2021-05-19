@@ -6,13 +6,13 @@
 
 #include "WorldRenderer.hh"
 
-enum class eWorldState
+enum class WorldState
 {
     None = 0,
     IsValid = 1 << 1,
 };
 
-EnumFlags( eWorldState );
+BitFlags( WorldState );
 
 class World
 {
@@ -34,7 +34,7 @@ class World
   public:
     bool IsValid()
     {
-        return ( m_eState & eWorldState::IsValid );
+        return ( m_eState & WorldState::IsValid );
     }
 
     bgfx::FrameBufferHandle &GetFrameBuffer()
@@ -51,7 +51,7 @@ class World
     uint16_t m_uWidth;
     uint16_t m_uHeight;
 
-    eWorldState m_eState = eWorldState::None;
+    WorldState m_eState = WorldState::None;
 
     bgfx::FrameBufferHandle m_hWorldFrameBuffer = BGFX_INVALID_HANDLE;
 

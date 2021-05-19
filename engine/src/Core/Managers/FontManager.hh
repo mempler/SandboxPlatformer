@@ -29,11 +29,11 @@ class FontManager : public IResourceManager<Font, FontLoader>
         if ( Has( identifier ) ) return Load( identifier );
 
         // Otherwise we create it
-        tcb::span<uint8_t> dataPtr = tcb::span( pData, uDataSize );
+        Kokoro::Memory::Span<uint8_t> dataPtr = Kokoro::Memory::Span( pData, uDataSize );
 
         Font *resource = new Font;
-        Font::Load( resource, identifier, sAtlasWidth, sAtlasHeight, fSizePX,
-                    dataPtr, szChars );
+        Font::Load( resource, identifier, sAtlasWidth, sAtlasHeight, fSizePX, dataPtr,
+                    szChars );
 
         return resource;
     }
@@ -48,8 +48,7 @@ class FontManager : public IResourceManager<Font, FontLoader>
         if ( Has( identifier ) ) return Load( identifier );
 
         Font *resource = new Font;
-        Font::Load( resource, identifier, sAtlasWidth, sAtlasHeight, fSizePX,
-                    szChars );
+        Font::Load( resource, identifier, sAtlasWidth, sAtlasHeight, fSizePX, szChars );
 
         return resource;
     }

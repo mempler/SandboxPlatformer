@@ -26,17 +26,21 @@ bool BaseSurface::ShouldExit()
     return m_bExit;
 }
 
-void BaseSurface::TranslateEvent( eOSEventType eType, uintptr_t uLVal, intptr_t iRVal )
+void BaseSurface::TranslateEvent( OSEventType eType, uintptr_t uLVal, intptr_t iRVal )
 {
     switch ( eType )
     {
-    case eOSEventType::QUIT: m_bExit = true; break;
-    case eOSEventType::GAIN_FOCUS: OnGainFocus(); break;
-    case eOSEventType::LOSE_FOCUS: OnLoseFocus(); break;
-    case eOSEventType::LBUTTONCLICK:
-    case eOSEventType::RBUTTONCLICK:
-    case eOSEventType::LBUTTONDOWN:
-    case eOSEventType::RBUTTONDOWN: break;
+    case OSEventType::QUIT: m_bExit = true; break;
+    case OSEventType::GAIN_FOCUS: OnGainFocus(); break;
+    case OSEventType::LOSE_FOCUS: OnLoseFocus(); break;
+
+    // Not possible to implement (maybe)
+    // or we'll let the Surface translate Key / Button to an uintptr
+    // and post this here
+    case OSEventType::LBUTTONCLICK:
+    case OSEventType::RBUTTONCLICK:
+    case OSEventType::LBUTTONDOWN:
+    case OSEventType::RBUTTONDOWN: break;
     // {
     //     bool button [ 2 ];
     //     button [ 0 ] = ( wParam & MK_LBUTTON ) != 0;
@@ -55,7 +59,7 @@ void BaseSurface::TranslateEvent( eOSEventType eType, uintptr_t uLVal, intptr_t 
     //     }
     //     break;
     // }
-    case eOSEventType::SIZE:
+    case OSEventType::SIZE:
     {
         glm::ivec2 scl = { ULVALUE( uLVal ), URVALUE( uLVal ) };
         SetResolution( scl );

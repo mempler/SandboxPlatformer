@@ -1,12 +1,16 @@
 #pragma once
 
+#include <cstdint>
+
+#include <Kokoro/Utility/BitFlags.hh>
+
 enum class ButtonState
 {
     Pressed,
     Released
 };
 
-enum KeyMod : uint8_t
+enum class KeyMod : uint8_t
 {
     None = 0,
     SHIFT = 1 << 0,
@@ -16,6 +20,7 @@ enum KeyMod : uint8_t
     CAPS_LOCK = 1 << 4,
     NUM_LOCK = 1 << 5,
 };
+BitFlags( KeyMod );
 
 enum class Key
 {
@@ -154,9 +159,7 @@ enum class MouseButton
     BTN_5 = 4,
     BTN_6 = 5,
     BTN_7 = 6,
-    BTN_8 = 7,
-    BTN_LAST = BTN_1,
-    BTN_LEFT = BTN_2,
-    BTN_RIGHT = BTN_3,
-    BTN_MIDDLE = BTN_4,
+    BTN_LEFT = BTN_1,
+    BTN_RIGHT = BTN_2,
+    BTN_MIDDLE = BTN_3,
 };

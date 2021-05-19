@@ -133,26 +133,21 @@ void Engine::InitBGFX()
 {
     ZoneScoped;
 
-    bgfx::PlatformData platformData;
+    /*
+    #if PLATFORM_WIN32
+        platformData.nwh = m_BaseSurface->GetHandle();
+    #elif PLATFORM_ANDROID
+        platformData.ndt = 0;
+        platformData.nwh = (void *) wmInfo.info.android.window;
 
-#if PLATFORM_WIN32
-    platformData.nwh = m_BaseSurface->GetHandle();
-#elif PLATFORM_ANDROID
-    platformData.ndt = 0;
-    platformData.nwh = (void *) wmInfo.info.android.window;
-
-    // Delete existing surface
-    // TODO: use EGL for Wayland on Linux
-    eglDestroySurface( eglGetDisplay( EGL_DEFAULT_DISPLAY ),
-                       wmInfo.info.android.surface );
-#elif PLATFORM_EMSCRIPTEN
-    platformData.nwh = (void *) "#canvas";
-#elif PLATFORM_LINUX
-    platformData.ndt = wmInfo.info.x11.display;
-    platformData.nwh = (void *) (uintptr_t) wmInfo.info.x11.window;
-#else
-    #error "Platform not implemented!"
-#endif
+        // Delete existing surface
+        // TODO: use EGL for Wayland on Linux
+        eglDestroySurface( eglGetDisplay( EGL_DEFAULT_DISPLAY ),
+                           wmInfo.info.android.surface );
+    #elif PLATFORM_EMSCRIPTEN
+        platformData.nwh = (void *) "#canvas";
+    #endif
+    */
 
     // Initialize BGFX using our Platform data
     bgfx::Init bgfxInit;
@@ -160,7 +155,7 @@ void Engine::InitBGFX()
 
     bgfxInit.type = bgfx::RendererType::Count;  // Automatically choose a renderer. OpenGL
                                                 // for RENDERDOC.
-    bgfxInit.platformData = platformData;
+    bgfxInit.platformData = GetSurface()->GetPlatformData();
     bgfxInit.resolution.width = GetSurface()->GetWidth();
     bgfxInit.resolution.height = GetSurface()->GetHeight();
     bgfxInit.resolution.reset = GetResetFlags();
@@ -182,7 +177,7 @@ void Engine::InitBGFX()
     // SDL_GetDesktopDisplayMode( 0, &displayMode );
 
     m_uResetFlags = BGFX_RESET_VSYNC | BGFX_RESET_FULLSCREEN;
-    
+
     // m_iWidth = static_cast<uint32_t>( displayMode.w );
     // m_iHeight = static_cast<uint32_t>( displayMode.h );
 
@@ -326,7 +321,6 @@ void Engine::EndFrame()
 void Engine::OnResolutionChanged( BaseSurface *pSurface, uint32_t uWidth,
                                   uint32_t uHeight )
 {
-    
 }
 
 //////////////////

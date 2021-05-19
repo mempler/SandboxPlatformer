@@ -129,24 +129,22 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
     switch ( msg )
     {
     case WM_DESTROY:
-    case WM_CLOSE: pSurf->TranslateEvent( eOSEventType::QUIT, 0, 0 ); break;
-    case WM_KILLFOCUS: pSurf->TranslateEvent( eOSEventType::LOSE_FOCUS, 0, 0 ); break;
-    case WM_ACTIVATEAPP: pSurf->TranslateEvent( eOSEventType::GAIN_FOCUS, 0, 0 ); break;
+    case WM_CLOSE: pSurf->TranslateEvent( OSEventType::QUIT, 0, 0 ); break;
+    case WM_KILLFOCUS: pSurf->TranslateEvent( OSEventType::LOSE_FOCUS, 0, 0 ); break;
+    case WM_ACTIVATEAPP: pSurf->TranslateEvent( OSEventType::GAIN_FOCUS, 0, 0 ); break;
     case WM_LBUTTONDOWN:
-        pSurf->TranslateEvent( eOSEventType::LBUTTONDOWN, lParam, wParam );
+        pSurf->TranslateEvent( OSEventType::LBUTTONDOWN, lParam, wParam );
         break;
     case WM_LBUTTONDBLCLK:
-        pSurf->TranslateEvent( eOSEventType::LBUTTONCLICK, lParam, wParam );
+        pSurf->TranslateEvent( OSEventType::LBUTTONCLICK, lParam, wParam );
         break;
     case WM_RBUTTONDOWN:
-        pSurf->TranslateEvent( eOSEventType::RBUTTONDOWN, lParam, wParam );
+        pSurf->TranslateEvent( OSEventType::RBUTTONDOWN, lParam, wParam );
         break;
     case WM_RBUTTONDBLCLK:
-        pSurf->TranslateEvent( eOSEventType::RBUTTONCLICK, lParam, wParam );
+        pSurf->TranslateEvent( OSEventType::RBUTTONCLICK, lParam, wParam );
         break;
-    case WM_SIZE:
-        pSurf->TranslateEvent( eOSEventType::SIZE, lParam, wParam );
-        break;
+    case WM_SIZE: pSurf->TranslateEvent( OSEventType::SIZE, lParam, wParam ); break;
 
     default: return DefWindowProc( hwnd, msg, wParam, lParam );
     }

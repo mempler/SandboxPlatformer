@@ -1,9 +1,18 @@
 #pragma once
 
+#include <cstdint>
+#include <string>
+
 #include "Core/Managers/InputHelper.hh"
 
-#include <vadefs.h>
-#include <vcruntime.h>
+#include "glm/fwd.hpp"
+
+#include <Kokoro/Utility/BitFlags.hh>
+#include <bgfx/bgfx.h>
+#include <glm/glm.hpp>
+
+#include <signals.hpp>
+
 
 // Cross platform windowing/surface implementation
 // and specific OS/platform abstraction tool and utility
@@ -17,7 +26,7 @@ enum class eWindowFlags
     Centered = 1 << 2,  // Desktop dist. specific
     Resizable = 1 << 3
 };
-EnumFlags( eWindowFlags );
+BitFlags( eWindowFlags );
 
 struct SurfaceDesc
 {
@@ -31,12 +40,9 @@ struct SurfaceDesc
     glm::ivec2 ivRes;
 };
 
-// oh
-#if PLATFORM_WIN32
-typedef HWND SurfaceHandle;
-#endif
+typedef intptr_t SurfaceHandle;
 
-enum class eOSEventType
+enum class OSEventType
 {
     QUIT,
     GAIN_FOCUS,
@@ -83,7 +89,7 @@ class BaseSurface
 
     bool ShouldExit();
 
-    void TranslateEvent( eOSEventType eType, uintptr_t uLVal, intptr_t iRVal );
+    void TranslateEvent( OSEventType eType, uintptr_t uLVal, intptr_t iRVal );
 
     virtual void Poll() = 0;
 
@@ -97,10 +103,15 @@ class BaseSurface
     virtual int GetMonitorWidth() = 0;
     virtual int GetMonitorHeight() = 0;
 
+    virtual bgfx::PlatformData GetPlatformData() = 0;
+
   public:
+    KeyMod m_iLastMod = KeyMod::None;
+
     signals::signal<void( BaseSurface *, uint32_t, uint32_t )> OnResolutionChanged;
     signals::signal<void( Key, ButtonState, KeyMod )> OnSetKeyState;
-    signals::signal<void( MouseButton, ButtonState, KeyMod )> OnSetMouseState;
+    signals::signal<void( MouseButton, ButtonState )> OnSetMouseState;
+    signals::signal<void( glm::ivec2 )> OnSetMousePosition;
     signals::signal<void()> OnLoseFocus;
     signals::signal<void()> OnGainFocus;
 

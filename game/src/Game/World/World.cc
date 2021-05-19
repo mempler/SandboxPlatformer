@@ -16,7 +16,7 @@ void World::Init( uint16_t uWidth, uint16_t uHeight )
 
     m_vTiles.resize( uWidth * uHeight );
 
-    m_eState |= eWorldState::IsValid;  // testing purposes
+    m_eState |= WorldState::IsValid;  // testing purposes
 
     BaseSurface *surface = GetEngine()->GetSurface();
 

@@ -1,6 +1,12 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "InputHelper.hh"
+
+#include <glm/glm.hpp>
+
+#include <signals.hpp>
 
 class InputManager
 {
@@ -18,9 +24,7 @@ class InputManager
 
     bool IsKeyModActive( KeyMod eMod )
     {
-        uint8_t mod = (uint8_t) eMod;
-
-        return m_iKeyMods & eMod;
+        return m_eKeyMods & eMod;
     }
 
     bool IsMouseBtnDown( MouseButton eBtn )
@@ -65,8 +69,8 @@ class InputManager
     glm::vec2 m_v2MouseScrollAxis;
     glm::vec2 m_v2MouseMoveDelta;
 
-    uint8_t m_iKeyMods;
+    KeyMod m_eKeyMods;
 
   private:
-    void UpdateKeyboardState( float fDelta );
+    void OnSetKeyState( Key, ButtonState, KeyMod );
 };
