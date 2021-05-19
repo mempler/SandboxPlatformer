@@ -22,6 +22,7 @@ struct Item
 
     // Game stuff
     Texture2D *pAtlasTexture = nullptr;
+    glm::vec4 v4UVs = { 0, 0, 32, 32 };
 
     // Network stuff
     bool Pack( Kokoro::Memory::Buffer &buffer )
@@ -63,6 +64,8 @@ struct Item
 
 #if !GAME_SERVER
         pAtlasTexture = GetEngine()->GetTextureManager().Load( Atlas );
+
+        v4UVs = { 32 * uItemX, 32 * uItemY, 32, 32 };
 #endif
 
         return true;

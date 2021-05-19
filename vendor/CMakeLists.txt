@@ -15,7 +15,7 @@ add_subdirectory(bgfx.cmake)
 
 ###############################################################################################
 
-add_definitions(-DGLM_FORCE_PURE) # FIXME: glm crashes using SSE because of some alignment issues
+add_definitions(-DGLM_FORCE_SSE3) # FIXME: glm crashes using SSE because of some alignment issues
 add_definitions(-DGLM_ENABLE_EXPERIMENTAL) # Quaternions
 
 add_subdirectory(glm)

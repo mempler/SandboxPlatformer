@@ -19,6 +19,7 @@ set(ENGINE_LIBS
     freetype-bgfx
     tracy
     spdlog
+    sse3
 )
 
 file(GLOB_RECURSE ENGINE_SOURCES 
@@ -29,3 +30,10 @@ add_library(${PROJECT_NAME}Engine STATIC ${ENGINE_SOURCES})
     target_precompile_headers(${PROJECT_NAME}Engine PUBLIC src/pch.hh)
     target_link_libraries(${PROJECT_NAME}Engine PUBLIC ${ENGINE_LIBS})
     target_include_directories(${PROJECT_NAME}Engine PUBLIC src/)
+
+add_library(sse3 INTERFACE IMPORTED)
+if(MSVC)
+    target_compile_options(sse3 INTERFACE /arch:SSE3)
+else()
+    target_compile_options(sse3 INTERFACE -msse3)
+endif()

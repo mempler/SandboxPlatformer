@@ -215,3 +215,21 @@ void BaseApp::Run()
         FrameMark;
     }
 }
+
+#if TRACY_ENABLE
+void *operator new( size_t s )
+{
+    void *p = malloc( s );
+
+    TracySecureAlloc( p, s );
+
+    return p;
+}
+
+void operator delete( void *p ) noexcept
+{
+    TracySecureFree( p );
+
+    free( p );
+}
+#endif

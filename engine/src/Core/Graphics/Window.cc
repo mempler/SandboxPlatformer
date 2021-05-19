@@ -115,7 +115,7 @@ double GameWindow::BeginFrame()
 
                 OnResize( this, m_iWidth, m_iHeight );
 
-                bgfx::reset( m_iWidth, m_iHeight, BGFX_RESET_VSYNC );
+                bgfx::reset( m_iWidth, m_iHeight, BGFX_RESET_NONE );
 
                 ResetTransform();
             }
@@ -245,7 +245,7 @@ void GameWindow::InitBGFX()
     bgfxInit.platformData = platformData;
     bgfxInit.resolution.width = m_iWidth;
     bgfxInit.resolution.height = m_iHeight;
-    bgfxInit.resolution.reset = BGFX_RESET_VSYNC;
+    bgfxInit.resolution.reset = BGFX_RESET_NONE;
     bgfxInit.limits.transientVbSize = 134217728;
 
     Console::Info( "Initializing BGFX..." );
@@ -269,7 +269,7 @@ void GameWindow::InitBGFX()
     m_iWidth = static_cast<uint32_t>( displayMode.w );
     m_iHeight = static_cast<uint32_t>( displayMode.h );
 
-    bgfx::reset( m_iWidth, m_iHeight, BGFX_RESET_VSYNC | BGFX_RESET_FULLSCREEN );
+    bgfx::reset( m_iWidth, m_iHeight, BGFX_RESET_NONE | BGFX_RESET_FULLSCREEN );
     bgfx::setViewRect( 0, 0, 0, bgfx::BackbufferRatio::Equal );
 #endif
 

@@ -22,16 +22,14 @@ void Tile::Draw()
 
     if ( pFore )
     {
-        GetEngine()->GetBatcher().SubmitWithUV(
-            pFore->pAtlasTexture, m4Transform,
-            { 32 * pFore->uItemX, 32 * pFore->uItemY, 32, 32 } );
+        GetEngine()->GetBatcher().SubmitWithUV( pFore->pAtlasTexture, m4Transform,
+                                                pFore->v4UVs );
     }
 
     if ( pBack )
     {
-        GetEngine()->GetBatcher().SubmitWithUV(
-            pBack->pAtlasTexture, m4Transform,
-            { 32 * pBack->uItemX, 32 * pBack->uItemY, 32, 32 } );
+        GetEngine()->GetBatcher().SubmitWithUV( pBack->pAtlasTexture, m4Transform,
+                                                pFore->v4UVs );
     }
 }
 
