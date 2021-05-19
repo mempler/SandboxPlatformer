@@ -62,9 +62,9 @@ void Server::Init()
 
     m_World.Init( 100, 60 );
 
-    for ( uint16_t i = 0; i < 100; i++ ) m_World.PlaceFore( 2, i, 0 );
     for ( uint16_t x = 0; x < 100; x++ )
     {
+        m_World.PlaceFore( 2, x, 0 );
         for ( uint16_t y = 1; y < 60; y++ )
         {
             m_World.PlaceFore( 1, x, y );

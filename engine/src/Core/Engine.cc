@@ -2,6 +2,8 @@
 
 #include "Engine.hh"
 
+#include "Tracy.hpp"
+
 #include "Core/Audio/AudioSystem.hh"
 #include "Core/Debug/DefaultLayout.hh"
 #include "Core/Debug/IResourceMonitor.hh"
@@ -31,7 +33,7 @@ Engine::Engine()
     m_Camera({ 0.f, 0.f }, { (float)m_GameWindow.Width(), (float)m_GameWindow.Height() }),
     m_VertexBatcher()
 {
-        ZoneScoped;
+    ZoneScoped;
     m_Camera.SetUniformTransform(0);
 }
 // clang-format on
@@ -103,8 +105,6 @@ void Engine::Init()
 
 void Engine::BeginFrame()
 {
-    FrameMarkStart( "Engine Frame" );
-
     ZoneScoped;
     m_GameWindow.BeginFrame();
     m_VertexBatcher.BeginFrame();
@@ -176,8 +176,6 @@ void Engine::EndFrame()
     ZoneScoped;
     m_VertexBatcher.EndFrame();
     m_GameWindow.EndFrame();
-
-    FrameMarkEnd( "Engine Frame" );
 }
 
 //////////////////
@@ -213,5 +211,7 @@ void BaseApp::Run()
         Draw( elapsed );
 
         m_pEngine->EndFrame();
+
+        FrameMark;
     }
 }
