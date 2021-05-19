@@ -1,5 +1,10 @@
 #pragma once
 
+#include "Core/Managers/InputHelper.hh"
+
+#include <vadefs.h>
+#include <vcruntime.h>
+
 // Cross platform windowing/surface implementation
 // and specific OS/platform abstraction tool and utility
 // damn, feel like doing professional stuff now. hire me valve
@@ -31,6 +36,40 @@ struct SurfaceDesc
 typedef HWND SurfaceHandle;
 #endif
 
+enum class eOSEventType
+{
+    QUIT,
+    GAIN_FOCUS,
+    LOSE_FOCUS,
+    LBUTTONDOWN,
+    LBUTTONCLICK,
+    RBUTTONDOWN,
+    RBUTTONCLICK,
+    SIZE,
+};
+
+//
+// macro mess fuck to combine integer types
+//
+// uint16_t from left 2 bytes
+#define ULVALUE( x ) ( (uint16_t) ( (uintptr_t) x & 0xffff ) )
+// uint16_t from right 2 bytes
+#define URVALUE( x ) ( (uint16_t) ( (uintptr_t) x >> 16 & 0xffff ) )
+// combine 2 uint16_t into uint32_t
+#define COMBINEUSHORT( a, b ) ( (uintptr_t) ( ULVALUE( a ) | ULVALUE( b ) << 16 ) )
+
+// int16_t from left 2 bytes
+#define SLVALUE( x ) ( (int16_t) ( (uintptr_t) x & 0xffff ) )
+// int16_t from right 2 bytes
+#define SRVALUE( x ) ( (int16_t) ( (uintptr_t) x >> 16 & 0xffff ) )
+// combine 2 int16_t into int32_t
+#define COMBINESSHORT( a, b ) ( (uintptr_t) ( SLVALUE( a ) | SLVALUE( b ) << 16 ) )
+
+// left = signed, right = unsigned
+#define COMBINESUSHORT( a, b ) ( (uintptr_t) ( SLVALUE( a ) | ULVALUE( b ) << 16 ) )
+// left = unsigned, right = signed
+#define COMBINEUSSHORT( a, b ) ( (uintptr_t) ( ULVALUE( a ) | SLVALUE( b ) << 16 ) )
+
 class BaseSurface
 {
   public:
@@ -43,6 +82,8 @@ class BaseSurface
     uint32_t GetHeight();
 
     bool ShouldExit();
+
+    void TranslateEvent( eOSEventType eType, uintptr_t uLVal, intptr_t iRVal );
 
     virtual void Poll() = 0;
 
@@ -58,8 +99,8 @@ class BaseSurface
 
   public:
     signals::signal<void( BaseSurface *, uint32_t, uint32_t )> OnResolutionChanged;
-    signals::signal<void( int, int, int, int )> OnSetKeyState;
-    signals::signal<void( int, int, int )> OnSetMouseState;
+    signals::signal<void( Key, ButtonState, KeyMod )> OnSetKeyState;
+    signals::signal<void( MouseButton, ButtonState, KeyMod )> OnSetMouseState;
     signals::signal<void()> OnLoseFocus;
     signals::signal<void()> OnGainFocus;
 

@@ -14,6 +14,8 @@
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
 
+#include <stdint.h>
+
 class Engine
 {
   public:
@@ -36,6 +38,17 @@ class Engine
     void EndFrame();
 
     void Init();
+
+  public:
+    uint32_t GetResetFlags()
+    {
+        return m_uResetFlags;
+    }
+
+    void SetResetFlags( uint32_t uFlags )
+    {
+        m_uResetFlags = uFlags;
+    }
 
   private:
     // Graphics
@@ -66,6 +79,8 @@ class Engine
     GameView m_GameView;
     IResourceMonitor m_IResourceMonitor;
     Profiler m_Profiler;
+
+    uint32_t m_uResetFlags = 0;
 
     bool m_bIsBGFXInitialized = false;
 

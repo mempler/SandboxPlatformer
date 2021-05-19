@@ -1,8 +1,7 @@
 #include "Win32Surface.hh"
 
 #include "Core/Engine.hh"
-
-#include "glm/fwd.hpp"
+#include "Core/Graphics/Surface/Surface.hh"
 
 #if PLATFORM_WIN32
 
@@ -101,12 +100,6 @@ void Win32Surface::Poll()
     MSG msg;
     while ( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
     {
-        if ( msg.message == WM_QUIT )
-        {
-            m_bExit = true;
-            return;
-        }
-
         TranslateMessage( &msg );
         DispatchMessage( &msg );
     }
@@ -131,41 +124,29 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
     if ( !GetApp() || !GetEngine() || !GetEngine()->GetSurface() )
         return DefWindowProc( hwnd, msg, wParam, lParam );
 
+    BaseSurface *pSurf = GetEngine()->GetSurface();
+
     switch ( msg )
     {
     case WM_DESTROY:
-    case WM_CLOSE:  // i guess this will go to peekmessage?
-        PostQuitMessage( 0 );
+    case WM_CLOSE: pSurf->TranslateEvent( eOSEventType::QUIT, 0, 0 ); break;
+    case WM_KILLFOCUS: pSurf->TranslateEvent( eOSEventType::LOSE_FOCUS, 0, 0 ); break;
+    case WM_ACTIVATEAPP: pSurf->TranslateEvent( eOSEventType::GAIN_FOCUS, 0, 0 ); break;
+    case WM_LBUTTONDOWN:
+        pSurf->TranslateEvent( eOSEventType::LBUTTONDOWN, lParam, wParam );
         break;
-
+    case WM_LBUTTONDBLCLK:
+        pSurf->TranslateEvent( eOSEventType::LBUTTONCLICK, lParam, wParam );
+        break;
+    case WM_RBUTTONDOWN:
+        pSurf->TranslateEvent( eOSEventType::RBUTTONDOWN, lParam, wParam );
+        break;
+    case WM_RBUTTONDBLCLK:
+        pSurf->TranslateEvent( eOSEventType::RBUTTONCLICK, lParam, wParam );
+        break;
     case WM_SIZE:
-    {
-        glm::ivec2 scl = { LOWORD( lParam ), HIWORD( lParam ) };
-        GetEngine()->GetSurface()->SetResolution( scl );
-
-        if ( wParam > 0 )
-        {
-            GetEngine()->GetSurface()->OnResolutionChanged( GetEngine()->GetSurface(),
-                                                            scl.x, scl.y );
-            bgfx::reset( scl.x, scl.y, BGFX_RESET_VSYNC );
-            GetEngine()->ResetTransform();
-            Console::Info( "Window size changed to {}, {}.", scl.x, scl.y );
-        }
-
+        pSurf->TranslateEvent( eOSEventType::SIZE, lParam, wParam );
         break;
-    }
-
-    case WM_EXITSIZEMOVE:
-    {
-        BaseSurface *surf = GetEngine()->GetSurface();
-        glm::ivec2 scl = { surf->GetWidth(), surf->GetHeight() };
-        GetEngine()->GetSurface()->OnResolutionChanged( GetEngine()->GetSurface(), scl.x,
-                                                        scl.y );
-        bgfx::reset( scl.x, scl.y, BGFX_RESET_VSYNC );
-        GetEngine()->ResetTransform();
-        Console::Info( "Window size changed to {}, {}.", scl.x, scl.y );
-        break;
-    }
 
     default: return DefWindowProc( hwnd, msg, wParam, lParam );
     }

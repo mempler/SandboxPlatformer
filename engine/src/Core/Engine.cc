@@ -163,7 +163,7 @@ void Engine::InitBGFX()
     bgfxInit.platformData = platformData;
     bgfxInit.resolution.width = GetSurface()->GetWidth();
     bgfxInit.resolution.height = GetSurface()->GetHeight();
-    bgfxInit.resolution.reset = BGFX_RESET_VSYNC;
+    bgfxInit.resolution.reset = GetResetFlags();
     bgfxInit.limits.transientVbSize = 134217728;
 
     Console::Info( "Initializing BGFX..." );
@@ -181,10 +181,12 @@ void Engine::InitBGFX()
     // SDL_DisplayMode displayMode;
     // SDL_GetDesktopDisplayMode( 0, &displayMode );
 
+    m_uResetFlags = BGFX_RESET_VSYNC | BGFX_RESET_FULLSCREEN;
+    
     // m_iWidth = static_cast<uint32_t>( displayMode.w );
     // m_iHeight = static_cast<uint32_t>( displayMode.h );
 
-    bgfx::reset( m_iWidth, m_iHeight, BGFX_RESET_VSYNC | BGFX_RESET_FULLSCREEN );
+    bgfx::reset( m_iWidth, m_iHeight, GetResetFlags() );
     bgfx::setViewRect( 0, 0, 0, bgfx::BackbufferRatio::Equal );
 #endif
 
