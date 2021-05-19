@@ -12,23 +12,25 @@ void Tile::UpdateTransform()
 {
     ZoneScoped;
 
-    m4Transform =
-        Math::CalcTransform( { iPosX * 32.f, iPosY * 32.f, 5 }, { 32.f, 32.f } );
+    m4Transform = Math::CalcTransform( { iPos * 32, 5 }, { 32.f, 32.f } );
 }
 
 void Tile::Draw()
 {
     ZoneScoped;
 
-    if ( pFore )
+    if ( pBack && !pFore )
     {
-        GetEngine()->GetBatcher().SubmitWithUV( pFore->pAtlasTexture, m4Transform,
-                                                pFore->v4UVs );
-    }
-
-    if ( pBack )
-    {
+        ZoneScopedN( "pBack->Draw()" );
+        ZoneValue( pBack->uID );
         GetEngine()->GetBatcher().SubmitWithUV( pBack->pAtlasTexture, m4Transform,
+                                                pBack->v4UVs );
+    }
+    else if ( pFore )
+    {
+        ZoneScopedN( "pFore->Draw()" );
+        ZoneValue( pFore->uID );
+        GetEngine()->GetBatcher().SubmitWithUV( pFore->pAtlasTexture, m4Transform,
                                                 pFore->v4UVs );
     }
 }
@@ -40,8 +42,8 @@ bool Tile::Pack( Kokoro::Memory::Buffer &buffer )
     buffer.Push<uint16_t>( pFore == nullptr ? 0 : pFore->uID );
     buffer.Push<uint16_t>( pBack == nullptr ? 0 : pBack->uID );
 
-    buffer.Push( iPosX );
-    buffer.Push( iPosY );
+    buffer.Push<uint16_t>( iPos.x );
+    buffer.Push<uint16_t>( iPos.y );
 
     return true;
 }
@@ -64,8 +66,8 @@ bool Tile::Unpack( uint32_t iWorldVersion, Kokoro::Memory::Buffer &buffer )
     pFore = GAME->GetItemInfoMan().GetItem( fgId );
     pBack = GAME->GetItemInfoMan().GetItem( bgId );
 
-    iPosX = posX;
-    iPosY = posY;
+    iPos.x = posX;
+    iPos.y = posY;
 
 #if !GAME_SERVER
     UpdateTransform();

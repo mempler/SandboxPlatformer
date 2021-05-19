@@ -168,12 +168,15 @@ void VertexBatcher::Submit( Texture2D *pTexture, const glm::mat4 &m4Transform,
     ZoneScoped;
 
     BatchEvent &event = GetVertexData( pTexture );
+
     event.vertices.resize( event.vertices.size() + 4 );
 
     VertexInfo *info = &event.vertices [ event.vertices.size() - 4 ];
 
     for ( size_t i = 0; i < 4; i++ )
     {
+        ZoneScoped;
+
         info->pos = m4Transform * g_m4DefPos [ i ];
         info->uv = m4UV [ i ];
         info->color = v4Color;

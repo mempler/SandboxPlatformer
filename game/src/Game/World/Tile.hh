@@ -10,8 +10,7 @@ struct Tile
     Item *pFore = 0;  // pointer because they are already loaded
     Item *pBack = 0;  // no need to create them again, check iteminfoman
 
-    uint16_t iPosX = 0;
-    uint16_t iPosY = 0;
+    glm::ivec2 iPos = { 0, 0 };
 
     // Game stuff
     glm::mat4 m4Transform {};

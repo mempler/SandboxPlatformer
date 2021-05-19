@@ -22,7 +22,6 @@
 //////////////////
 Engine *GetEngine()
 {
-    ZoneScoped;
     return GetApp()->GetEngine();
 }
 

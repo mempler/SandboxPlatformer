@@ -51,30 +51,31 @@ void World::Draw()
     if ( !IsValid() ) return;
 
     GameWindow &window = GetEngine()->GetWindow();
+    Camera2D &cam = GetEngine()->GetCamera();
+    VertexBatcher &batcher = GetEngine()->GetBatcher();
 
-    GetEngine()
-        ->GetBatcher()
-        .Reset();  // reset what we've drawn, we will be switching views
-    GetEngine()->GetBatcher().SetCurrentView( 2 );
-    bgfx::setViewFrameBuffer(
-        2,
-        m_hWorldFrameBuffer );  // tell bgfx that we are using this framebuffer
+    // reset what we've drawn, we will go flat earthlers.
+    batcher.Reset();
+    batcher.SetCurrentView( 2 );
+
+    // tell bgfx that we are using this framebuffer
+    bgfx::setViewFrameBuffer( 2, m_hWorldFrameBuffer );
 
     // Render out the world
     for ( auto &tile : m_vTiles )
     {
-        if ( tile.pFore == nullptr && tile.pBack == nullptr ) continue;
+        if ( !cam.IsInsideDrawArea( tile.iPos * 32 ) ) continue;
 
         tile.Draw();
     }
 
     RenderAvatars();
 
-    GetEngine()->GetBatcher().Reset();  // we are done
-    GetEngine()->GetBatcher().SubmitRectangleRawHandle(
+    batcher.Reset();  // we are done
+    batcher.SubmitRectangleRawHandle(
         bgfx::getTexture( m_hWorldFrameBuffer ),
         Math::CalcTransform( { 0, 0, 1 }, { window.Width(), window.Height() } ) );
-    GetEngine()->GetBatcher().SetCurrentView( 0 );  // back to default view
+    batcher.SetCurrentView( 0 );  // back to default view
 }
 
 void World::PlaceFore( uint16_t uID, uint16_t x, uint16_t y )
@@ -83,8 +84,10 @@ void World::PlaceFore( uint16_t uID, uint16_t x, uint16_t y )
 
     Tile *tile = &m_vTiles [ XYTV( x, y ) ];
 
-    tile->iPosX = x;
-    tile->iPosX = y;
+    tile->iPos = {
+        x,
+        y,
+    };
 
 #if !GAME_SERVER  // This is too expensive for the server
     tile->UpdateTransform();
