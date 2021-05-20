@@ -86,8 +86,11 @@ bool Camera2D::IsInsideDrawArea( const glm::vec2 &v2Point ) noexcept
     auto &b = m_v2Pos;
     auto b2 = b + m_v2Scale;
 
-    if ( v2Point.x > b.x && v2Point.x < b2.x && v2Point.y > b.y && v2Point.y < b2.y )
+    /* clang-format off */
+    if ( v2Point.x >= b.x && v2Point.x <= b2.x
+      && v2Point.y >= b.y && v2Point.y <= b2.y )
         return true;
+    /* clang-format on */
 
     return false;
 }

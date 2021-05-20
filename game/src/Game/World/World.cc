@@ -112,8 +112,8 @@ bool World::Pack( Kokoro::Memory::Buffer &buffer )
 {
     ZoneScoped;
 
-    m_iWorldVersion = WORLD_VERSION;
-    buffer.Push( m_iWorldVersion );
+    m_uVersion = WORLD_VERSION;
+    buffer.Push( m_uVersion );
 
     buffer.Push( m_uWidth );
     buffer.Push( m_uHeight );
@@ -138,7 +138,7 @@ bool World::Unpack( Kokoro::Memory::Buffer &buffer )
 
     Init( 0, 0 );  // Init ourself
 
-    m_iWorldVersion = buffer.Pop<uint16_t>( 2 );
+    m_uVersion = buffer.Pop<uint16_t>( 2 );
 
     m_uWidth = buffer.Pop<uint16_t>( 2 );
     m_uHeight = buffer.Pop<uint16_t>( 2 );
@@ -148,7 +148,7 @@ bool World::Unpack( Kokoro::Memory::Buffer &buffer )
 
     for ( auto &tile : m_vTiles )
     {
-        if ( !tile.Unpack( m_iWorldVersion, buffer ) ) return false;
+        if ( !tile.Unpack( m_uVersion, buffer ) ) return false;
     }
 
     return true;

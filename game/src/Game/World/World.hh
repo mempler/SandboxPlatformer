@@ -53,7 +53,7 @@ class World
   private:
     std::vector<Avatar> m_vAvatars;
 
-    uint16_t m_iWorldVersion = WORLD_VERSION;
+    uint16_t m_uVersion = WORLD_VERSION;
 
     uint16_t m_uWidth;
     uint16_t m_uHeight;

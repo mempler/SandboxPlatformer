@@ -4,7 +4,7 @@ void ItemInfoManager::AddItem( Item &item )
 {
     ZoneScoped;
 
-    item.uID = m_vItems.size();
+    item.uID = m_vItems.size() + 1;  // 0 is reserved for "Air"
     m_vItems.push_back( item );
 }
 
@@ -12,9 +12,10 @@ Item *ItemInfoManager::GetItem( uint16_t uID )
 {
     ZoneScoped;
 
-    if ( uID > m_vItems.size() + 1 ) return 0;
+    if ( uID > m_vItems.size() ) return 0;
+    if ( uID <= 0 ) return 0;
 
-    return &m_vItems [ uID ];
+    return &m_vItems [ uID - 1 ];
 }
 
 bool ItemInfoManager::Pack( Kokoro::Memory::Buffer &buffer )
