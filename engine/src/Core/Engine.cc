@@ -31,7 +31,6 @@ Engine::Engine(SurfaceDesc &surfaceDesc)
     m_VertexBatcher()
 {
     ZoneScoped;
-    m_Camera.SetUniformTransform(0);
 }
 // clang-format on
 
