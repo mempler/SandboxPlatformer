@@ -13,12 +13,11 @@
 
 #include <signals.hpp>
 
-
 // Cross platform windowing/surface implementation
 // and specific OS/platform abstraction tool and utility
 // damn, feel like doing professional stuff now. hire me valve
 
-enum class eWindowFlags
+enum class WindowFlags
 {
     None,
     Fullscreen = 1 << 0,
@@ -26,7 +25,7 @@ enum class eWindowFlags
     Centered = 1 << 2,  // Desktop dist. specific
     Resizable = 1 << 3
 };
-BitFlags( eWindowFlags );
+BitFlags( WindowFlags );
 
 struct SurfaceDesc
 {
@@ -34,7 +33,7 @@ struct SurfaceDesc
     std::string sName = "IceApp";
     std::string sIcon = "";
 
-    eWindowFlags eFlags = eWindowFlags::None;
+    WindowFlags eFlags = WindowFlags::None;
 
     glm::ivec2 ivPos;
     glm::ivec2 ivRes;

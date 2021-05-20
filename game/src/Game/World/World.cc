@@ -24,13 +24,13 @@ void World::Init( uint16_t uWidth, uint16_t uHeight )
     m_eState |= WorldState::IsValid;  // testing purposes
 
 #if !GAME_SERVER
-    GameWindow &window = GetEngine()->GetWindow();
+    BaseSurface *surface = GetEngine()->GetSurface();
 
     // TODO: MOVE THIS TO A BETTER PLACE
     if ( bgfx::isValid( m_hWorldFrameBuffer ) ) bgfx::destroy( m_hWorldFrameBuffer );
 
     m_hWorldFrameBuffer =
-        bgfx::createFrameBuffer( window.Width(), window.Height(),
+        bgfx::createFrameBuffer( surface->GetWidth(), surface->GetHeight(),
                                  bgfx::TextureFormat::RGBA8, g_uFrameBufferFlags );
 #endif
 }

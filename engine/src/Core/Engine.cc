@@ -310,7 +310,7 @@ BaseApp::BaseApp()
     SurfaceDesc desc;
     desc.sTitle = "Sandbox Platformer: Game Surface";
     desc.ivRes = { 1280, 720 };
-    desc.eFlags |= eWindowFlags::Centered | eWindowFlags::Resizable;
+    desc.eFlags |= WindowFlags::Centered | WindowFlags::Resizable;
     m_pEngine = new Engine( desc );
 }
 

@@ -95,10 +95,6 @@ class Engine
     // Callback utils
     void OnResolutionChanged( BaseSurface *pSurface, uint32_t uWidth, uint32_t uHeight );
 
-    GameView m_GameView;
-    IResourceMonitor m_IResourceMonitor;
-    Profiler m_Profiler;
-
     uint32_t m_uResetFlags = 0;
 
     bool m_bIsBGFXInitialized = false;
