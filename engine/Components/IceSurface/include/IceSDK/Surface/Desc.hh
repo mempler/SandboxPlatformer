@@ -11,9 +11,8 @@ namespace IceSDK
     {
         None,
         Fullscreen = 1 << 0,
-        VSync = 1 << 1,
-        Centered = 1 << 2,  // Desktop dist. specific
-        Resizable = 1 << 3
+        Centered = 1 << 1,  // Desktop dist. specific
+        Resizable = 1 << 2
     };
     BitFlags( SurfaceFlags );
 

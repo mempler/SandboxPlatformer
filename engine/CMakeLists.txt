@@ -2,7 +2,9 @@
 # Variables
 
 set(IceSDKComponents
+    IceCore
     IceSurface
+    IceUtils
 )
 
 ##############################
