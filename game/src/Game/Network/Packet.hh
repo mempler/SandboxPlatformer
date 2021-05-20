@@ -1,9 +1,10 @@
 #pragma once
 
+#include "enet.h"
+
 #include "Core/Utils/Logger.hh"
 
 #include <Kokoro/Memory/Buffer.hh>
-#include <steam/isteamnetworkingsockets.h>
 
 #include <Tracy.hpp>
 
@@ -103,7 +104,7 @@ struct IBasePacket
         return m_Object->Unpack( buffer );
     }
 
-    size_t SendTo( ISteamNetworkingSockets *pSteamSockets, HSteamNetConnection &hConn )
+    size_t SendTo( ENetPeer *hConn, bool bReliable = true )
     {
         ZoneScoped;
 
@@ -118,9 +119,11 @@ struct IBasePacket
         auto size = buffer.size();
 
         // Send buffer to client
-        pSteamSockets->SendMessageToConnection( hConn, buffer.data(), buffer.size(),
-                                                k_nSteamNetworkingSend_Reliable,
-                                                nullptr );
+        ENetPacket *packet = enet_packet_create(
+            data, size,
+            ( bReliable ) ? ENET_PACKET_FLAG_RELIABLE : ENET_PACKET_FLAG_UNSEQUENCED );
+            
+        enet_peer_send( hConn, 0, packet );
 
         return size;
     }

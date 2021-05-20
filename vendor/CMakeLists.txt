@@ -26,6 +26,7 @@ add_subdirectory(Kokoro)
 
 ###############################################################################################
 
+add_definitions(-DENET_IMPLEMENTATION)
 add_subdirectory(lw)
 
 ###############################################################################################
@@ -138,10 +139,6 @@ add_subdirectory(tracy)
 
 option(SPDLOG_FMT_EXTERNAL_HO "Use external fmt header-only library instead of bundled" OFF)
 add_subdirectory(spdlog)
-
-###############################################################################################
-
-add_subdirectory(GameNetworkingSockets)
 
 ###############################################################################################
 

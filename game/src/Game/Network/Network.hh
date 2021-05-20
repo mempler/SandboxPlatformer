@@ -2,17 +2,14 @@
 
 #include <unordered_map>
 
-#include "steam/steamnetworkingtypes.h"
-
 #include "Core/Utils/Logger.hh"
 
-#include "Packet.hh"
-
-#include "NetClient.hh"
-#include "NetListener.hh"
+#include "Game/Network/NetClient.hh"
+#include "Game/Network/Packet.hh"
 
 #include <steam/isteamnetworkingsockets.h>
 
+#include <enet.h>
 #include <signals.hpp>
 
 class Network
@@ -23,9 +20,7 @@ class Network
     // Connect to a remote server using it's IP
     // The resulting BaseClient can then be used to send
     // messages over the network
-    NetClientPtr ConnectTo( SteamNetworkingIPAddr &address );
-
-    NetListener CreateListener( SteamNetworkingIPAddr &address );
+    NetClientPtr ConnectTo( ENetAddress &address );
 
     // This has to be called to send all remaining packets
     // towards the server (every tick preferable)
@@ -35,15 +30,7 @@ class Network
     signals::signal<void( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer )> OnPacket;
 
   private:
-    NetClientPtr AddConnection( HSteamNetConnection hConn );
-    void DestroyConnection( HSteamNetConnection hConn );
-    NetClientPtr GetConnection( HSteamNetConnection hConn );
+    ENetHost *m_pInstance = nullptr;
 
-    std::unordered_map<HSteamNetConnection, NetClientPtr> m_umConnectedClients {};
-
-    ISteamNetworkingSockets *m_pInstance = nullptr;
-
-    HSteamNetPollGroup m_hPollGroup = k_HSteamNetPollGroup_Invalid;
-
-    static void OnStatusChanged( SteamNetConnectionStatusChangedCallback_t *pInfo );
+    static void OnStatusChanged();
 };

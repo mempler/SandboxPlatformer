@@ -4,10 +4,8 @@
 
 #include "Packet.hh"
 
-#include <steam/isteamnetworkingsockets.h>
-#include <steam/steamnetworkingtypes.h>
-
 #include <Tracy.hpp>
+#include <enet.h>
 #include <signals.hpp>
 
 enum class ConnectionState
@@ -37,7 +35,7 @@ class NetClient
     NetClient()
     {
     }
-    NetClient( ISteamNetworkingSockets *pInstance, HSteamNetConnection hConn ) :
+    NetClient( ENetHost *pInstance, ENetPeer *hConn ) :
         m_pInstance( pInstance ), m_hConn( hConn )
     {
     }
@@ -54,50 +52,31 @@ class NetClient
     {
         ZoneScoped;
 
-        m_pInstance->CloseConnection( m_hConn, k_ESteamNetConnectionEnd_App_Generic,
-                                      svReason.data(), true );
-
-        m_hConn = k_HSteamNetConnection_Invalid;
+        enet_host_destroy( m_pInstance );
+        enet_peer_reset( m_hConn );
     }
 
     bool IsValid()
     {
         ZoneScoped;
 
-        return m_hConn != k_HSteamNetConnection_Invalid;
+        return m_hConn->state == ENET_PEER_STATE_CONNECTED;
     }
 
     ConnectionState GetState()
     {
         ZoneScoped;
 
-        SteamNetworkingQuickConnectionStatus *pStatus = nullptr;
-        if ( !m_pInstance->GetQuickConnectionStatus( m_hConn, pStatus ) )
+        switch ( m_hConn->state )
         {
-            return ConnectionState::Disconnected;
-        }
-        if ( pStatus == nullptr )
-        {
-            return ConnectionState::Disconnected;
-        }
-
-        switch ( pStatus->m_eState )
-        {
-        case k_ESteamNetworkingConnectionState_Connected:
-            return ConnectionState::Connected;
-            break;
-        case k_ESteamNetworkingConnectionState_Connecting:
-            return ConnectionState::Connecting;
-            break;
-        case k_ESteamNetworkingConnectionState_ClosedByPeer:
-        case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
-            return ConnectionState::Disconnected;
-            break;
+        case ENET_PEER_STATE_CONNECTED: return ConnectionState::Connected; break;
+        case ENET_PEER_STATE_CONNECTING: return ConnectionState::Connecting; break;
+        case ENET_PEER_STATE_DISCONNECTED: return ConnectionState::Disconnected; break;
         default: return ConnectionState::Disconnected;
         }
     }
 
-    HSteamNetConnection Handle()
+    ENetPeer *Handle()
     {
         ZoneScoped;
 
@@ -108,8 +87,8 @@ class NetClient
     signals::signal<void( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer )> OnPacket;
 
   private:
-    HSteamNetConnection m_hConn = 0;
-    ISteamNetworkingSockets *m_pInstance = nullptr;
+    ENetPeer *m_hConn = 0;
+    ENetHost *m_pInstance = 0;
 };
 
 using NetClientPtr = NetClient::NetClientPtr;

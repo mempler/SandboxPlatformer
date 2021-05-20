@@ -6,8 +6,6 @@ set(GAME_LIBS
     Kokoro::FileSystem
     Kokoro::Exception
     Kokoro::Config
-
-    GameNetworkingSockets
 )
 set(GAME_SERVER_LIBS
 )
