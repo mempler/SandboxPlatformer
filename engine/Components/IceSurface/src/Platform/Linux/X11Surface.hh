@@ -17,7 +17,12 @@ namespace IceSDK::_internal
         X11Surface( const SurfaceDesc &desc );
         ~X11Surface();
 
-        bgfx::PlatformData GetPlatformData() override;
+        SurfacePlatformData GetPlatformData() override;
+
+        void SetTitle( const std::string_view &svName ) override;
+        void SetPosition( const int32_t iX, const int32_t iY ) override;
+        void SetResolution( const uint32_t uWidth, const uint32_t uHeight ) override;
+        std::pair<uint32_t, uint32_t> GetMonitorResolution() override;
 
       protected:
         void PollEvents() override;

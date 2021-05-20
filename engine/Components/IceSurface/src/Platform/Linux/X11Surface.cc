@@ -1,5 +1,6 @@
 #include "X11Surface.hh"
 
+#include <IceSDK/Surface/Exception.hh>
 #include <IceSDK/Surface/ISurface.hh>
 #include <IceSDK/Surface/KeyTable.hh>
 
@@ -30,7 +31,7 @@
 
     #define SET_PROP( W, S )                                                             \
         XChangeProperty( DISPLAY, WINDOW, W, UTF8_STRING, 8, PropModeReplace,            \
-                         (uint8_t *) S.c_str(), (int) S.size() );
+                         (uint8_t *) S.data(), (int) S.size() );
 
     #define Button6 6
     #define Button7 7
@@ -213,7 +214,7 @@ X11Surface::X11Surface( const IceSDK::SurfaceDesc &desc ) : IceSDK::IBaseSurface
     Display *display = XOpenDisplay( NULL );
     if ( display == nullptr )
     {
-        // Console::Fatal( "Failed open X11 Display!" );
+        throw SURFACE_EXCEPTION( "Failed open X11 Display!" );
     }
 
     m_hDisplay = (uintptr_t) display;
@@ -272,7 +273,7 @@ X11Surface::X11Surface( const IceSDK::SurfaceDesc &desc ) : IceSDK::IBaseSurface
     Atom events [] = { WM_DELETE_WINDOW };
     XSetWMProtocols( display, m_hWindow, events, sizeof( events ) / sizeof( Atom ) );
 
-    // SetTitle( desc.sTitle );
+    SetTitle( desc.Title );
 }
 
 X11Surface::~X11Surface()
@@ -411,43 +412,41 @@ void X11Surface::PollEvents()
     }
 }
 
-/*
-void X11Surface::SetTitle( const std::string &sTitle )
+void X11Surface::SetTitle( const std::string_view &sTitle )
 {
+    m_Desc.Title = sTitle;
+
     SET_PROP( WM_NAME, sTitle );
     SET_PROP( WM_ICON_NAME, sTitle );
 }
 
-void X11Surface::SetPosition( const glm::ivec2 &ivPos )
+void X11Surface::SetPosition( const int32_t iX, const int32_t iY )
 {
-    XMoveWindow( DISPLAY, WINDOW, ivPos.x, ivPos.y );
+    m_Desc.X = iX;
+    m_Desc.Y = iY;
+
+    XMoveWindow( DISPLAY, WINDOW, iX, iY );
 }
 
-void X11Surface::SetResolution( const glm::ivec2 &ivRes )
+void X11Surface::SetResolution( const uint32_t uWidth, const uint32_t uHeight )
 {
-    XResizeWindow( DISPLAY, WINDOW, ivRes.x, ivRes.y );
+    m_Desc.Width = uWidth;
+    m_Desc.Height = uHeight;
+
+    XResizeWindow( DISPLAY, WINDOW, uWidth, uHeight );
 }
 
-int X11Surface::GetMonitorWidth()
+std::pair<uint32_t, uint32_t> X11Surface::GetMonitorResolution()
 {
     XWindowAttributes attributes;
     XGetWindowAttributes( DISPLAY, RootWindow( DISPLAY, SCREEN ), &attributes );
 
-    return attributes.width;
+    return std::make_pair( attributes.width, attributes.height );
 }
 
-int X11Surface::GetMonitorHeight()
+SurfacePlatformData X11Surface::GetPlatformData()
 {
-    XWindowAttributes attributes;
-    XGetWindowAttributes( DISPLAY, RootWindow( DISPLAY, SCREEN ), &attributes );
-
-    return attributes.height;
-}
-*/
-
-bgfx::PlatformData X11Surface::GetPlatformData()
-{
-    bgfx::PlatformData platformData;
+    SurfacePlatformData platformData;
     platformData.ndt = (void *) DISPLAY;
     platformData.nwh = (void *) WINDOW;
 

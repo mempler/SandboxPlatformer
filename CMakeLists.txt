@@ -9,11 +9,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_definitions(-DNOMINMAX) # Fuck you windows
-if (MSVC)
-    add_definitions("/MP")
-endif()
-
 option(ENGINE_TRACING_ENABLED "Enable Tracing" OFF)
 if (ENGINE_TRACING_ENABLED)
     add_definitions(-DTRACY_ENABLE) # Enable tracing solution wide.
