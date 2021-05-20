@@ -1,3 +1,6 @@
 .cache/
 build/
 .vscode/
+
+__engine/
+__game/
