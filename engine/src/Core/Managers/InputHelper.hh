@@ -25,7 +25,7 @@ BitFlags( KeyMod );
 enum class Key
 {
     Key_UNKNOWN = 0,
-
+    
     Key_SPACE = 32,
     Key_APOSTROPHE = 39, /* ' */
     Key_COMMA = 44,      /* , */
@@ -152,14 +152,19 @@ enum class Key
 
 enum class MouseButton
 {
-    BTN_1 = 0,
-    BTN_2 = 1,
-    BTN_3 = 2,
-    BTN_4 = 3,
-    BTN_5 = 4,
-    BTN_6 = 5,
-    BTN_7 = 6,
-    BTN_LEFT = BTN_1,
-    BTN_RIGHT = BTN_2,
-    BTN_MIDDLE = BTN_3,
+    NONE,
+    BTN_1,
+    BTN_2,
+    BTN_3,
+    BTN_4,
+    BTN_5,
+    BTN_6,
+    BTN_7,
+    BTN_8,
+    BTN_LAST = BTN_1,
+    BTN_LEFT = BTN_2,
+    BTN_RIGHT = BTN_3,
+    BTN_MIDDLE = BTN_4,
 };
+
+BitFlags( MouseButton );

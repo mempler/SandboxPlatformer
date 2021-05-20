@@ -3,8 +3,6 @@
 #include "Game/Network/Network.hh"
 #include "Game/World/World.hh"
 
-#include <steam/steamnetworkingsockets.h>
-
 class Server
 {
   public:

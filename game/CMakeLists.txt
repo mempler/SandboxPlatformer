@@ -7,7 +7,7 @@ set(GAME_LIBS
     Kokoro::Exception
     Kokoro::Config
 
-    enet_static
+    enet
 )
 set(GAME_SERVER_LIBS
 )

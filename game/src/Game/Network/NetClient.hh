@@ -5,6 +5,7 @@
 #include "Packet.hh"
 
 #include <Tracy.hpp>
+#define ENET_IMPLEMENTATION
 #include <enet.h>
 #include <signals.hpp>
 

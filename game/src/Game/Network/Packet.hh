@@ -1,14 +1,14 @@
 #pragma once
 
-#include <enet.h>
+#include <cstdint>
 
 #include "Core/Utils/Logger.hh"
 
 #include <Kokoro/Memory/Buffer.hh>
 
 #include <Tracy.hpp>
-
-#include <cstdint>
+#define ENET_IMPLEMENTATION
+#include <enet.h>
 
 enum class PacketType : uint16_t
 {
@@ -122,7 +122,7 @@ struct IBasePacket
         ENetPacket *packet = enet_packet_create(
             data, size,
             ( bReliable ) ? ENET_PACKET_FLAG_RELIABLE : ENET_PACKET_FLAG_UNSEQUENCED );
-            
+
         enet_peer_send( hConn, 0, packet );
 
         return size;

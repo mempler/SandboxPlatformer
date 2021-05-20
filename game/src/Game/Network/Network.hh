@@ -7,8 +7,6 @@
 #include "Game/Network/NetClient.hh"
 #include "Game/Network/Packet.hh"
 
-#include <steam/isteamnetworkingsockets.h>
-
 #include <enet.h>
 #include <signals.hpp>
 

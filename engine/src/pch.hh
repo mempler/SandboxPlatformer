@@ -22,6 +22,8 @@
 
 // OS helper
 #if PLATFORM_WIN32
+    #define _WINSOCKAPI_
+    #define WIN32_LEAN_AND_MEAN
     #define NOMINMAX
     #include <Windows.h>
 #endif

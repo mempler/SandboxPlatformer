@@ -1,10 +1,10 @@
-#include "Network.hh"
+#include <array>
 
-#include <enet.h>
+#include "Network.hh"
 
 #include <Tracy.hpp>
 
-#include <array>
+#include <enet.h>
 
 static Network *g_pActiveNetwork;
 
@@ -55,7 +55,7 @@ void Network::Tick()
 }
 
 /* static */
-void Network::OnStatusChanged(  )
+void Network::OnStatusChanged()
 {
     ZoneScoped;
 
@@ -83,7 +83,8 @@ void Network::OnStatusChanged(  )
     //     ZoneScoped;
 
     //     auto conn = g_pActiveNetwork->GetConnection( pInfo->m_hConn );
-    //     if ( conn == nullptr ) conn = g_pActiveNetwork->AddConnection( pInfo->m_hConn );
+    //     if ( conn == nullptr ) conn = g_pActiveNetwork->AddConnection( pInfo->m_hConn
+    //     );
 
     //     conn->OnStateChange( conn, ConnectionState::Connecting,
     //                          (const char *) pInfo->m_info.m_szEndDebug );
