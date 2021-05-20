@@ -1,6 +1,6 @@
 #include "Network.hh"
 
-#include "enet.h"
+#include <enet.h>
 
 #include <Tracy.hpp>
 

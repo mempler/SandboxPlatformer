@@ -6,6 +6,8 @@ set(GAME_LIBS
     Kokoro::FileSystem
     Kokoro::Exception
     Kokoro::Config
+
+    enet_static
 )
 set(GAME_SERVER_LIBS
 )
