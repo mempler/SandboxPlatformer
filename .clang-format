@@ -162,7 +162,7 @@ IncludeCategories:
     SortPriority:    500
   
   # Standard Libraries
-  - Regex:           '<[[:alnum:].]+>'
+  - Regex:           '<[[:alnum:_].]+>'
     Priority:        5000
     SortPriority:    5000
 

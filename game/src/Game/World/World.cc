@@ -21,7 +21,7 @@ void World::Init( uint16_t uWidth, uint16_t uHeight )
 
     m_vTiles.resize( uWidth * uHeight );
 
-    m_eState |= eWorldState::IsValid;  // testing purposes
+    m_eState |= WorldState::IsValid;  // testing purposes
 
 #if !GAME_SERVER
     GameWindow &window = GetEngine()->GetWindow();
@@ -50,7 +50,7 @@ void World::Draw()
 
     if ( !IsValid() ) return;
 
-    GameWindow &window = GetEngine()->GetWindow();
+    BaseSurface *surface = GetEngine()->GetSurface();
     Camera2D &cam = GetEngine()->GetCamera();
     VertexBatcher &batcher = GetEngine()->GetBatcher();
 
@@ -74,7 +74,8 @@ void World::Draw()
     batcher.Reset();  // we are done
     batcher.SubmitRectangleRawHandle(
         bgfx::getTexture( m_hWorldFrameBuffer ),
-        Math::CalcTransform( { 0, 0, 1 }, { window.Width(), window.Height() } ) );
+        Math::CalcTransform( { 0, 0, 1 },
+                             { surface->GetWidth(), surface->GetHeight() } ) );
     batcher.SetCurrentView( 0 );  // back to default view
 }
 
@@ -142,7 +143,7 @@ bool World::Unpack( Kokoro::Memory::Buffer &buffer )
 
     m_uWidth = buffer.Pop<uint16_t>( 2 );
     m_uHeight = buffer.Pop<uint16_t>( 2 );
-    m_eState = buffer.Pop<eWorldState>( 4 );
+    m_eState = buffer.Pop<WorldState>( 4 );
 
     m_vTiles.resize( m_uWidth * m_uHeight );
 

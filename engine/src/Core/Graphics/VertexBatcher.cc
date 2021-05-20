@@ -17,7 +17,22 @@ static uint32_t g_uMaxQuads = 80000;
 VertexBatcher::VertexBatcher()
 {
     ZoneScoped;
+}
 
+VertexBatcher::~VertexBatcher()
+{
+    ZoneScoped;
+}
+
+/*****************************************************
+ * Initialize
+ *
+ * Initialize what we need after Engine initialization
+ * for example shader manager.
+ *****************************************************/
+void VertexBatcher::Init( TextureManager &textureManager )
+{
+    ZoneScoped;
     m_vlDefaultLayout.begin()
         .add( bgfx::Attrib::Position, 3, bgfx::AttribType::Float )
         .add( bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float )
@@ -44,22 +59,6 @@ VertexBatcher::VertexBatcher()
     m_hIndexBufferHandle = bgfx::createIndexBuffer(
         bgfx::copy( quads, g_uMaxQuads * 6 * sizeof( uint32_t ) ), BGFX_BUFFER_INDEX32 );
     delete [] quads;
-}
-
-VertexBatcher::~VertexBatcher()
-{
-    ZoneScoped;
-}
-
-/*****************************************************
- * Initialize
- *
- * Initialize what we need after Engine initialization
- * for example shader manager.
- *****************************************************/
-void VertexBatcher::Init( TextureManager &textureManager )
-{
-    ZoneScoped;
 
     // Initialize uniforms here
     m_hTextureUniform = bgfx::createUniform( "u_texture", bgfx::UniformType::Sampler );
@@ -117,7 +116,6 @@ void VertexBatcher::Flush()
         {
             bgfx::TransientVertexBuffer tvb;
             bgfx::allocTransientVertexBuffer( &tvb, vertexes.size(), m_vlDefaultLayout );
-
             memcpy( tvb.data, &vertexes [ 0 ], vertexes.size() * sizeof( VertexInfo ) );
             bgfx::setVertexBuffer( 0, &tvb, 0, vertexes.size() );
 

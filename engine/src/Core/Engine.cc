@@ -6,7 +6,8 @@
 
 #include "Core/Audio/AudioSystem.hh"
 #include "Core/Debug/DefaultLayout.hh"
-#include "Core/Debug/IResourceMonitor.hh"
+#include "Core/Graphics/Surface/PlatformSurface.hh"
+#include "Core/Graphics/Surface/Surface.hh"
 #include "Core/Managers/InputManager.hh"
 #include "Core/Managers/ShaderManager.hh"
 #include "Core/Managers/TextureManager.hh"
@@ -16,15 +17,17 @@
 
 #include <SDL_keycode.h>
 #include <imgui.h>
+#include <stdint.h>
 
 //////////////////
 //    Engine    //
 //////////////////
 // Turn off formatting, there is some weird shit going on
 // clang-format off
-Engine::Engine() 
-  : m_GameWindow(), 
-    m_Camera({ 0.f, 0.f }, { (float)m_GameWindow.Width(), (float)m_GameWindow.Height() }),
+Engine::Engine(SurfaceDesc &surfaceDesc) 
+  : m_BaseSurface(new PlatformSurface(surfaceDesc)), 
+    m_Camera({ 0.f, 0.f }, 
+                { (float)m_BaseSurface->GetWidth(), (float)m_BaseSurface->GetHeight() }),
     m_VertexBatcher()
 {
     ZoneScoped;
@@ -37,9 +40,9 @@ Engine::~Engine()
     ZoneScoped;
 }
 
-GameWindow &Engine::GetWindow()
+BaseSurface *Engine::GetSurface()
 {
-    return m_GameWindow;
+    return m_BaseSurface;
 }
 
 Camera2D &Engine::GetCamera()
@@ -77,11 +80,35 @@ InputManager &Engine::GetInputManager()
     return m_InputManager;
 }
 
+void Engine::AddView( bgfx::ViewId viID )
+{
+    ZoneScoped;
+    bgfx::setViewClear( viID, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x0000000FF, 1.0f, 0 );
+    bgfx::setViewRect( viID, 0, 0, bgfx::BackbufferRatio::Equal );
+
+    m_vViews.push_back( viID );
+}
+
+void Engine::ResetTransform()
+{
+    ZoneScoped;
+    for ( auto &i : m_vViews )
+    {
+        bgfx::setViewRect( i, 0, 0, bgfx::BackbufferRatio::Equal );
+        GetEngine()->GetCamera().SetUniformTransform( i );
+    }
+}
+
 void Engine::Init()
 {
     ZoneScoped;
 
-    Console::Init();
+    InitBGFX();
+
+    AddView( 0 );
+    m_Camera.SetUniformTransform( 0 );
+
+    m_BaseSurface->OnResolutionChanged.connect<&Engine::OnResolutionChanged>( this );
 
     m_ShaderManager.LoadDefaultShaders();
     m_AudioSystem.Init();
@@ -97,10 +124,103 @@ void Engine::Init()
 #endif
 }
 
+void Engine::InitBGFX()
+{
+    ZoneScoped;
+
+    /*
+    #if PLATFORM_WIN32
+        platformData.nwh = m_BaseSurface->GetHandle();
+    #elif PLATFORM_ANDROID
+        platformData.ndt = 0;
+        platformData.nwh = (void *) wmInfo.info.android.window;
+
+        // Delete existing surface
+        // TODO: use EGL for Wayland on Linux
+        eglDestroySurface( eglGetDisplay( EGL_DEFAULT_DISPLAY ),
+                           wmInfo.info.android.surface );
+    #elif PLATFORM_EMSCRIPTEN
+        platformData.nwh = (void *) "#canvas";
+    #endif
+    */
+
+    // Initialize BGFX using our Platform data
+    bgfx::Init bgfxInit;
+    // bgfxInit.debug = true; // This slows down the renderer quite a bit
+
+    bgfxInit.type = bgfx::RendererType::Count;  // Automatically choose a renderer. OpenGL
+                                                // for RENDERDOC.
+    bgfxInit.platformData = GetSurface()->GetPlatformData();
+    bgfxInit.resolution.width = GetSurface()->GetWidth();
+    bgfxInit.resolution.height = GetSurface()->GetHeight();
+    bgfxInit.resolution.reset = GetResetFlags();
+    bgfxInit.limits.transientVbSize = 134217728;
+
+    Console::Info( "Initializing BGFX..." );
+    if ( !bgfx::init( bgfxInit ) )
+    {
+        Console::Fatal( "Failed to initialize BGFX!" );
+        return;
+    }
+
+    Console::Info( "Game Window Initialized..." );
+    Console::Info( "BGFX Initialized..." );
+
+#if PLATFORM_ANDROID
+    // Set display size
+    // SDL_DisplayMode displayMode;
+    // SDL_GetDesktopDisplayMode( 0, &displayMode );
+
+    m_uResetFlags = BGFX_RESET_VSYNC | BGFX_RESET_FULLSCREEN;
+
+    // m_iWidth = static_cast<uint32_t>( displayMode.w );
+    // m_iHeight = static_cast<uint32_t>( displayMode.h );
+
+    bgfx::reset( m_iWidth, m_iHeight, GetResetFlags() );
+    bgfx::setViewRect( 0, 0, 0, bgfx::BackbufferRatio::Equal );
+#endif
+
+#if ENGINE_DEBUG
+    // ImGui::CreateContext();
+    // ImPlot::CreateContext();
+
+    // ImGuiIO &io = ImGui::GetIO();
+    // (void) io;
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+    // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;      // Enable Docking
+
+    // #if PLATFORM_ANDROID
+    // ImGui::GetCurrentContext()->CurrentDpiScale = 5;
+
+    // io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
+    // #endif
+
+    // ImGui::StyleColorsDark();
+
+    // ImGui_Implbgfx_Init( 999 );
+    // #if PLATFORM_WIN32
+    // imgui_impl( m_SDLWindow );
+    // #elif PLATFORM_LINUX
+    // ImGui_ImplSDL2_InitForOpenGL( m_SDLWindow, nullptr );
+    // #endif
+#endif
+}
+
 void Engine::BeginFrame()
 {
     ZoneScoped;
-    m_GameWindow.BeginFrame();
+
+    m_BaseSurface->Poll();
+
+    const auto now = bx::getHPCounter();
+    const auto frameTime = now - m_iLastTime;
+    m_iLastTime = now;
+
+    const auto freq = static_cast<float>( bx::getHPFrequency() );
+    const auto delta = static_cast<float>( frameTime ) / freq;
+    bgfx::touch( 0 );
+
     m_VertexBatcher.BeginFrame();
 
 #if ENGINE_DEBUG
@@ -169,14 +289,29 @@ void Engine::EndFrame()
 {
     ZoneScoped;
     m_VertexBatcher.EndFrame();
-    m_GameWindow.EndFrame();
+
+    bgfx::frame();
+}
+
+void Engine::OnResolutionChanged( BaseSurface *pSurface, uint32_t uWidth,
+                                  uint32_t uHeight )
+{
 }
 
 //////////////////
 //    BaseApp   //
 //////////////////
-BaseApp::BaseApp() : m_pEngine( new Engine )
+BaseApp::BaseApp()
 {
+    ZoneScoped;
+    Console::Init();
+    Console::Info( "Initializing Ice..." );
+
+    SurfaceDesc desc;
+    desc.sTitle = "Sandbox Platformer: Game Surface";
+    desc.ivRes = { 1280, 720 };
+    desc.eFlags |= eWindowFlags::Centered | eWindowFlags::Resizable;
+    m_pEngine = new Engine( desc );
 }
 
 BaseApp::~BaseApp()
@@ -194,7 +329,7 @@ void BaseApp::Run()
     }
 
     Timer timer;
-    while ( !m_pEngine->GetWindow().ShouldExit() )
+    while ( !m_pEngine->GetSurface()->ShouldExit() )
     {
         auto elapsed = timer.elapsed();
         timer.reset();

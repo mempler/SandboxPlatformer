@@ -3,6 +3,7 @@
 #include "Server/Server.hh"
 
 #include "Core/Graphics/Font/Label.hh"
+#include "Core/Graphics/Surface/Surface.hh"
 
 #include "Game/Debug/NetworkInspector.hh"
 #include "Game/Managers/ItemInfoManager.hh"
@@ -11,6 +12,7 @@
 #include "Game/World/World.hh"
 
 #include <steam/steamnetworkingsockets.h>
+
 
 // not the best place to put
 constexpr uintptr_t g_uFrameBufferFlags =
@@ -38,7 +40,7 @@ class Game
     void Tick( float fDeltaTime );
     void Draw();
 
-    void OnGameResize( GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight );
+    void OnResolutionChanged( BaseSurface *pSurface, uint32_t iWidth, uint32_t iHeight );
 
     // Networking
     void RequestWorld( std::string_view const &svName );

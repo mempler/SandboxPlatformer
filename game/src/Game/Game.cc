@@ -4,13 +4,10 @@
 
 #include "Core/Engine.hh"
 
-#include "Game/Debug/NetworkInspector.hh"
 #include "Game/Network/Packets/ItemDBPacket.hh"
 #include "Game/Network/Packets/WorldPacket.hh"
 
-#include <Tracy.hpp>
-
-void Game::OnGameResize( GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight )
+void Game::OnResolutionChanged( BaseSurface *pSurface, uint32_t iWidth, uint32_t iHeight )
 {
     ZoneScoped;
 
@@ -19,9 +16,8 @@ void Game::OnGameResize( GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHei
         if ( bgfx::isValid( m_World.GetFrameBuffer() ) )
             bgfx::destroy( m_World.GetFrameBuffer() );
 
-        m_World.GetFrameBuffer() =
-            bgfx::createFrameBuffer( pGameWindow->Width(), pGameWindow->Height(),
-                                     bgfx::TextureFormat::RGBA8, g_uFrameBufferFlags );
+        m_World.GetFrameBuffer() = bgfx::createFrameBuffer(
+            iWidth, iHeight, bgfx::TextureFormat::RGBA8, g_uFrameBufferFlags );
     }
 }
 
@@ -38,7 +34,8 @@ void Game::Init()
     ZoneScoped;
 
     // PREINIT EVENTS
-    GetEngine()->GetWindow().OnResize.connect<&Game::OnGameResize>( this );
+    GetEngine()->GetSurface()->OnResolutionChanged.connect<&Game::OnResolutionChanged>(
+        this );
     GetEngine()->GetInputManager().OnKeyDown.connect<&Player::OnKeyDown>( &m_Player );
     GetEngine()->GetInputManager().OnKeyRelease.connect<&Player::OnKeyRelease>(
         &m_Player );
@@ -49,8 +46,8 @@ void Game::Init()
 #endif
 
     // PREINIT VIEWS
-    GetEngine()->GetWindow().AddView( 2 );  // World tile layer
-    GetEngine()->GetWindow().ResetTransform();
+    GetEngine()->AddView( 2 );  // World tile layer
+    GetEngine()->ResetTransform();
 
     // CONNECT TO NETWORK
     SteamNetworkingIPAddr targetAddress;

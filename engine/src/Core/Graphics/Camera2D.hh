@@ -1,10 +1,6 @@
 #pragma once
 
-#include "Core/Graphics/Window.hh"
-
-#include <bgfx/bgfx.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "Core/Graphics/Surface/Surface.hh"
 
 class Camera2D
 {
@@ -77,5 +73,6 @@ class Camera2D
     float m_fZoom {};
 
   private:
-    void OnResize( GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight );
+    void OnResolutionChanged( BaseSurface *pGameWindow, uint32_t iWidth,
+                              uint32_t iHeight );
 };

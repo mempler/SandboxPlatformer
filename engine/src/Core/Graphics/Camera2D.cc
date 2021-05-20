@@ -19,7 +19,9 @@ void Camera2D::Init()
     ZoneScoped;
 
     // I wonder what would happen if this Camera gets destroyed...
-    GetEngine()->GetWindow().OnResize.connect<&Camera2D::OnResize>( this );
+    GetEngine()
+        ->GetSurface()
+        ->OnResolutionChanged.connect<&Camera2D::OnResolutionChanged>( this );
 }
 
 static glm::mat4 CalculateView( const glm::vec2 &v2Pos, float fRotation )
@@ -95,7 +97,8 @@ bool Camera2D::IsInsideDrawArea( const glm::vec2 &v2Point ) noexcept
     return false;
 }
 
-void Camera2D::OnResize( GameWindow *pGameWindow, uint32_t iWidth, uint32_t iHeight )
+void Camera2D::OnResolutionChanged( BaseSurface *pGameWindow, uint32_t iWidth,
+                                    uint32_t iHeight )
 {
     ZoneScoped;
 
