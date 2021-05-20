@@ -20,11 +20,6 @@
 //////////////////
 //    Engine    //
 //////////////////
-Engine *GetEngine()
-{
-    return GetApp()->GetEngine();
-}
-
 // Turn off formatting, there is some weird shit going on
 // clang-format off
 Engine::Engine() 

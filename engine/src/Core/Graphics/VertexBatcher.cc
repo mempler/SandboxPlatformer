@@ -9,6 +9,9 @@
 
 #include "bgfx/bgfx.h"
 
+#pragma GCC push_options
+#pragma GCC optimize( "O3" )
+
 static uint32_t g_uMaxQuads = 80000;
 
 VertexBatcher::VertexBatcher()
@@ -252,3 +255,4 @@ void VertexBatcher::SubmitRectangleRawHandle( bgfx::TextureHandle hTexture,
 
     event.indexes += 6;
 }
+#pragma GCC pop_options

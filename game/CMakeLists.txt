@@ -49,5 +49,3 @@ else()
             add_backward(${PROJECT_NAME}Server)
     endif()
 endif()
-
-

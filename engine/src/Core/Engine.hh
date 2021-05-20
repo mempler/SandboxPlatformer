@@ -85,7 +85,7 @@ class BaseApp
     void Run();
 
   public:
-    Engine *GetEngine() const
+    inline Engine *GetEngine() const
     {
         return m_pEngine;
     }
@@ -101,7 +101,10 @@ class BaseApp
 };
 
 extern BaseApp *GetApp();
-extern Engine *GetEngine();
+inline Engine *GetEngine()
+{
+    return GetApp()->GetEngine();
+}
 
 #if PLATFORM_ANDROID
 int SDL_main( int argc, char *argv [] );

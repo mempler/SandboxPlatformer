@@ -55,7 +55,7 @@ void Game::Init()
     // CONNECT TO NETWORK
     SteamNetworkingIPAddr targetAddress;
     targetAddress.Clear();
-    targetAddress.ParseString( "127.0.0.1:27015" );  // TODO: Don't hardcode this
+    targetAddress.ParseString( "127.0.0.1:27015" );  // FIXME: Don't hardcode this
 
     m_pFont = GetEngine()->GetFontManager().LoadFromFile( "file://Roboto-Regular.ttf",
                                                           256, 256, 22.f );
@@ -144,7 +144,7 @@ void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
 
         SteamNetworkingIPAddr targetAddress;
         targetAddress.Clear();
-        targetAddress.ParseString( "127.0.0.1:27015" );  // TODO: Don't hardcode this
+        targetAddress.ParseString( "127.0.0.1:27015" );  // FIXME: Don't hardcode this
 
         m_pNetworkClient = m_Network.ConnectTo( targetAddress );
         m_pNetworkClient->OnStateChange.connect<&Game::OnStateChange>( this );
@@ -188,7 +188,7 @@ void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
             Console::Error( "Failed to unpack ItemDB!" );
         }
 
-        // TODO: Move this somewhere else
+        // FIXME: Move this somewhere else
         // Request the world "START"
         RequestWorld( "START" );
 

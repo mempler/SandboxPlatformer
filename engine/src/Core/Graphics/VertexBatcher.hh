@@ -41,6 +41,9 @@ static const glm::mat4x2 g_m4DefCoords = {
     0, 1,  // V4
 };
 
+#pragma GCC push_options
+#pragma GCC optimize( "O3" )
+
 class ENGINE_EXPORT VertexBatcher
 {
   public:
@@ -196,7 +199,7 @@ class ENGINE_EXPORT VertexBatcher
     bgfx::ViewId m_viCurrentView = 0;
 
   private:
-    BatchEvent &GetVertexData( Texture2D *pTexture )
+    inline BatchEvent &GetVertexData( Texture2D *pTexture )
     {
         ZoneScoped;
 
@@ -211,7 +214,7 @@ class ENGINE_EXPORT VertexBatcher
         return m_vBatchEvents.back().second;
     }
 
-    BatchEvent &GetVertexData( bgfx::TextureHandle &hTexture )
+    inline BatchEvent &GetVertexData( bgfx::TextureHandle &hTexture )
     {
         ZoneScoped;
 
@@ -225,3 +228,5 @@ class ENGINE_EXPORT VertexBatcher
         return m_vBatchEvents.back().second;
     }
 };
+
+#pragma GCC pop_options
