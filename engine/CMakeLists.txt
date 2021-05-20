@@ -3,6 +3,7 @@
 
 set(IceSDKComponents
     IceCore
+    IceECS
     IceSurface
     IceUtils
 )

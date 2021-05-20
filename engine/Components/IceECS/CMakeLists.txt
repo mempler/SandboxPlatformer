@@ -1,17 +1,19 @@
 ##############################
 # Variables
 #
-set(ComponentName IceCore)
+set(ComponentName IceECS)
 
 set(RequiredComponents
-    IceSurface
-    IceUtils
-    IceECS
+    EnTT
 
-    bimg
-    bgfx
-    bx
+    Kokoro::Exception
 )
+
+if (UNIX AND NOT APPLE) # Linux
+    find_package(X11 REQUIRED)
+
+    set(RequiredComponents ${RequiredComponents} X11)
+endif()
 #
 ##############################
 # Internals

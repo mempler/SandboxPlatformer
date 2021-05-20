@@ -3,8 +3,9 @@
 #include <atomic>
 #include <thread>
 
+#include <IceSDK/ECS.hh>
 #include <IceSDK/Surface.hh>
-#include <IceSDK/Utils/FPSLimiter.hh>
+#include <IceSDK/Utils.hh>
 
 namespace IceSDK
 {
@@ -29,6 +30,14 @@ namespace IceSDK
         void Run( ThreadMode eMode );
 
         void SetFPSLimit( ThreadID eThread, uint32_t uLimit = 60 );
+        Scene *SetSceneActive( Scene *pNew )
+        {
+            Scene *old = m_pActiveScene;
+
+            m_pActiveScene = pNew;
+
+            return old;
+        }  // Returns old scene
 
       private:
         void InitBGFX();
@@ -49,5 +58,7 @@ namespace IceSDK
         std::atomic_bool m_bBGFXShutdown = false;
         std::atomic_bool m_bExit = false;
         ISurface *m_pSurface = nullptr;
+
+        Scene *m_pActiveScene = nullptr;
     };
 }  // namespace IceSDK

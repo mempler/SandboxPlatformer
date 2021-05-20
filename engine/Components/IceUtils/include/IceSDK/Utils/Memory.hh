@@ -2,7 +2,7 @@
 
 #include <Kokoro/fmt/format.hh>
 
-namespace Memory
+namespace IceSDK::Memory
 {
     inline std::string SizeInText( const double pLen )
     {
@@ -28,4 +28,4 @@ namespace Memory
 
         return fmt::format( "{:.2f}B", pLen );
     }
-}  // namespace Memory
+}  // namespace IceSDK::Memory
