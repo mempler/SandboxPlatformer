@@ -1,7 +1,6 @@
 #include "SurfaceImGui.hh"
 
 #include "Core/Managers/InputHelper.hh"
-#include "Core/Utils/Logger.hh"
 #include "Core/Utils/Timer.hh"
 
 void ImGui_ImplSurface_KeyPress( Key eKey, ButtonState eState, KeyMod eMod )
@@ -31,17 +30,26 @@ void ImGui_ImplSurface_MouseStateChange( MouseButton eButton, ButtonState eState
 {
     ImGuiIO &io = ImGui::GetIO();
 
-    if ( (int) eButton < IM_ARRAYSIZE( io.MouseDown ) )
-    {
-        if ( eState == ButtonState::Pressed )
-        {
-            io.MouseDown [ (int) eButton ] = true;
-        }
+    int mouse = 0;
 
-        if ( eState == ButtonState::Released )
-        {
-            io.MouseDown [ (int) eButton ] = false;
-        }
+    switch ( eButton )
+    {
+    case MouseButton::BTN_1: mouse = 0; break;
+    case MouseButton::BTN_2: mouse = 1; break;
+    case MouseButton::BTN_3: mouse = 2; break;
+    case MouseButton::BTN_4: mouse = 3; break;
+    case MouseButton::BTN_5: mouse = 4; break;
+    default: break;
+    }
+
+    if ( eState == ButtonState::Pressed )
+    {
+        io.MouseDown [ mouse ] = true;
+    }
+
+    else if ( eState == ButtonState::Released )
+    {
+        io.MouseDown [ mouse ] = false;
     }
 
     if ( eButton == MouseButton::BTN_4 )
