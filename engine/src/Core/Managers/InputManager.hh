@@ -57,10 +57,8 @@ class InputManager
     // delay
     signals::signal<void( Key eKey, KeyMod eMod )> OnKeyRelease;
 
-    // This is when key is down as in text writing type, perfect for text boxes
-    signals::signal<void( Key eKey, KeyMod eMod )> OnKeyDownInput;
-    // This is when key is up as in text writing type, perfect for text boxes
-    signals::signal<void( Key eKey, KeyMod eMod )> OnKeyReleaseInput;
+    // This is when writing made just right for text boxes
+    signals::signal<void( uint32_t uChar, KeyMod eMod )> OnCharInput;
 
   private:
     std::array<bool, 137> m_vKeyState;
@@ -73,4 +71,5 @@ class InputManager
 
   private:
     void OnSetKeyState( Key, ButtonState, KeyMod );
+    void OnChar( uint32_t, KeyMod );
 };
