@@ -36,6 +36,8 @@ class X11Surface final : public BaseSurface
     uintptr_t m_hDisplay;
     uintptr_t m_hWindow;
     uintptr_t m_hScreen;
+
+    uintptr_t m_hIC;
 };
 
     #endif

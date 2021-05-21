@@ -5,6 +5,8 @@
 
 void ImGui_ImplSurface_KeyPress( Key eKey, ButtonState eState, KeyMod eMod )
 {
+    if ( ImGui::GetCurrentContext() == NULL ) return;
+
     ImGuiIO &io = ImGui::GetIO();
 
     io.KeyCtrl = eMod & KeyMod::CONTROL;
@@ -26,8 +28,19 @@ void ImGui_ImplSurface_KeyPress( Key eKey, ButtonState eState, KeyMod eMod )
     }
 }
 
+void ImGui_ImplSurface_OnChar( uint32_t Char, KeyMod eMod )
+{
+    if ( ImGui::GetCurrentContext() == NULL ) return;
+
+    ImGuiIO &io = ImGui::GetIO();
+
+    io.AddInputCharacter( Char );
+}
+
 void ImGui_ImplSurface_MouseStateChange( MouseButton eButton, ButtonState eState )
 {
+    if ( ImGui::GetCurrentContext() == NULL ) return;
+
     ImGuiIO &io = ImGui::GetIO();
 
     int mouse = 0;
@@ -102,14 +115,17 @@ bool ImGui_ImplSurface_Init( BaseSurface *pSurface )
 
     pSurface->OnSetKeyState.connect<&ImGui_ImplSurface_KeyPress>();
     pSurface->OnSetMouseState.connect<&ImGui_ImplSurface_MouseStateChange>();
+    pSurface->OnChar.connect<&ImGui_ImplSurface_OnChar>();
 
     return true;
 }
 
-bool ImGui_ImplSurface_UpdateMouseCursor()
+void ImGui_ImplSurface_UpdateMouseCursor()
 {
+    if ( ImGui::GetCurrentContext() == NULL ) return;
+
     ImGuiIO &io = ImGui::GetIO();
-    if ( io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange ) return false;
+    if ( io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange ) return;
 
     ImGuiViewport *main_viewport = ImGui::GetMainViewport();
     BaseSurface *pSurface = (BaseSurface *) main_viewport->PlatformHandle;
@@ -139,12 +155,12 @@ bool ImGui_ImplSurface_UpdateMouseCursor()
 
         pSurface->SetCursor( cursor );
     }
-
-    return true;
 }
 
 void ImGui_ImplSurface_UpdateMousePos()
 {
+    if ( ImGui::GetCurrentContext() == NULL ) return;
+
     ImGuiIO &io = ImGui::GetIO();
 
     ImGuiViewport *main_viewport = ImGui::GetMainViewport();

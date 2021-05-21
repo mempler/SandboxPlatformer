@@ -1,11 +1,15 @@
 #include <cstring>
+#include <cwctype>
 
 #include "X11Surface.hh"
 
+#include "Core/Managers/InputHelper.hh"
 #include "Core/Utils/Logger.hh"
 
 #if PLATFORM_LINUX && !PLATFORM_ANDROID
     #define Font XID
+
+    #include "xkb_unicode.h"
 
     #include <X11/X.h>
     #include <X11/Xcursor/Xcursor.h>
@@ -18,6 +22,7 @@
     #define DISPLAY (Display *) m_hDisplay
     #define WINDOW m_hWindow
     #define SCREEN m_hScreen
+    #define IC ( XIC ) m_hIC
 
     // Window events
     #define UTF8_STRING XInternAtom( DISPLAY, "UTF8_STRING", False )
@@ -39,6 +44,24 @@
 
     #define Button6 6
     #define Button7 7
+
+// https://github.com/glfw/glfw/blob/master/src/x11_window.c#L466
+static unsigned int decodeUTF8( const char **s )
+{
+    unsigned int ch = 0, count = 0;
+    static const unsigned int offsets [] = { 0x00000000u, 0x00003080u, 0x000e2080u,
+                                             0x03c82080u, 0xfa082080u, 0x82082080u };
+
+    do
+    {
+        ch = ( ch << 6 ) + (unsigned char) **s;
+        ( *s )++;
+        count++;
+    } while ( ( **s & 0xc0 ) == 0x80 );
+
+    assert( count <= 6 );
+    return ch - offsets [ count - 1 ];
+}
 
 Key TranslateXKeySym( KeySym keysyms )
 {
@@ -266,9 +289,9 @@ X11Surface::X11Surface( SurfaceDesc &desc ) : BaseSurface( desc )
         xim = XOpenIM( display, 0, 0, 0 );
     }
 
-    XIC xic = XCreateIC( xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
-                         XNClientWindow, m_hWindow, XNFocusWindow, m_hWindow, NULL );
-    XSetICFocus( xic );
+    XIC ic = XCreateIC( xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
+                        XNClientWindow, m_hWindow, XNFocusWindow, m_hWindow, NULL );
+    XSetICFocus( ic );
     XSelectInput( display, m_hWindow,
                   KeyPressMask | KeyReleaseMask | PointerMotionMask | FocusChangeMask
                       | ButtonPressMask | ButtonReleaseMask );
@@ -278,6 +301,8 @@ X11Surface::X11Surface( SurfaceDesc &desc ) : BaseSurface( desc )
     XSetWMProtocols( display, m_hWindow, events, sizeof( events ) / sizeof( Atom ) );
 
     SetTitle( desc.sTitle );
+
+    m_hIC = (uintptr_t) ic;
 }
 
 X11Surface::~X11Surface()
@@ -352,6 +377,35 @@ void X11Surface::Poll()
                 key,
                 event.type == KeyPress ? ButtonState::Pressed : ButtonState::Released,
                 m_iLastMod );
+
+            {
+                // Magic
+                char buffer [ 100 ];
+                char *chars = buffer;
+
+                bool isCalloc = false;
+
+                Status status;
+                int count = Xutf8LookupString( IC, &event.xkey, buffer,
+                                               sizeof( buffer ) - 1, NULL, &status );
+
+                if ( status == XBufferOverflow )
+                {
+                    isCalloc = true;
+                    chars = (char *) calloc( count + 1, 1 );
+                    count =
+                        Xutf8LookupString( IC, &event.xkey, chars, count, NULL, &status );
+                }
+
+                if ( status == XLookupChars || status == XLookupBoth )
+                {
+                    const char *c = chars;
+                    chars [ count ] = '\0';
+                    while ( c - chars < count ) OnChar( decodeUTF8( &c ), m_iLastMod );
+
+                    if ( isCalloc ) free( chars );
+                }
+            }
 
             break;
         }

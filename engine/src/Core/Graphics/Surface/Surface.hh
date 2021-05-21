@@ -143,6 +143,8 @@ class BaseSurface
     signals::signal<void()> OnLoseFocus;
     signals::signal<void()> OnGainFocus;
 
+    signals::signal<void( uint32_t, KeyMod )> OnChar;  // Text input
+
   protected:
     SurfaceHandle m_Handle;
     SurfaceDesc m_Desc;  // lets just store it there

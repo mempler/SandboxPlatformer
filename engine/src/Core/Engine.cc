@@ -110,6 +110,12 @@ void Engine::Init()
 {
     ZoneScoped;
 
+    // Initialize C++ Locale (Language stuff)
+
+    std::locale loc( "" );  // Set default locale
+    std::locale::global( loc );
+    std::cout.imbue( loc );
+
     InitBGFX();
 
     AddView( 0 );
