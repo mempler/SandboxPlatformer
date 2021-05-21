@@ -24,8 +24,6 @@ void Server::Init()
     Console::Info( "Running: IceServer" );
     Console::Info( "Version: {}", "1.0.0" );
 
-    if ( enet_initialize() != 0 ) Console::Fatal( "Failed to initialize ENet!" );
-
     // PREINIT
     m_Network.OnStateChange.connect<&Server::OnStateChange>( this );
     m_Network.OnPacket.connect<&Server::OnPacket>( this );
@@ -33,6 +31,8 @@ void Server::Init()
     ENetAddress address = { 0 };
     address.host = ENET_HOST_ANY;
     address.port = 27015;
+
+    m_Network.InitServer(address, 32);
 
     Console::Info( "Server listening on port {}", address.port );
 
@@ -63,10 +63,10 @@ void Server::Init()
 
     for ( uint16_t x = 0; x < 100; x++ )
     {
-        m_World.PlaceFore( 2, x, 0 );
+        m_World.PlaceFore( 3, x, 0 );
         for ( uint16_t y = 1; y < 60; y++ )
         {
-            m_World.PlaceFore( 1, x, y );
+            m_World.PlaceFore( 2, x, y );
         }
     }
 
@@ -97,8 +97,7 @@ void Server::Tick( float fDeltaTime )
     m_Network.Tick();
 }
 
-void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState,
-                            const char *szMessage )
+void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState )
 {
     switch ( eState )
     {
@@ -125,7 +124,7 @@ void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState,
     }
     case ConnectionState::Disconnected:
     {
-        Console::Info( "A peer disconnected... ({})", szMessage );
+        Console::Info( "A peer disconnected..." );
         break;
     }
     }

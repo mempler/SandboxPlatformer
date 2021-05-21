@@ -22,8 +22,7 @@ class Server
 
     Network m_Network;
 
-    void OnStateChange( NetClientPtr pClient, ConnectionState eState,
-                        const char *szMessage );
+    void OnStateChange( NetClientPtr pClient, ConnectionState eState );
 
     void OnPacket( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer );
 };

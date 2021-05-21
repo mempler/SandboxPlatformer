@@ -68,7 +68,7 @@ class Game
     NetworkInspector *m_pNetworkInspector;
 #endif
 
-    void OnStateChange( NetClientPtr, ConnectionState, const char * );
+    void OnStateChange( NetClientPtr, ConnectionState );
     void OnPacket( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer );
 };
 

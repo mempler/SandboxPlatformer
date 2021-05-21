@@ -38,6 +38,10 @@ void Game::Init()
     GetEngine()->GetInputManager().OnKeyRelease.connect<&Player::OnKeyRelease>(
         &m_Player );
 
+    // PREINIT RESOURCES
+    m_pFont = GetEngine()->GetFontManager().LoadFromFile( "file://Roboto-Regular.ttf",
+                                                          256, 256, 22.f );
+
 #if ENGINE_DEBUG
     m_pNetworkInspector =
         GetEngine()->RegisterDebugUtil<NetworkInspector>( true, "Network" );
@@ -52,10 +56,10 @@ void Game::Init()
     enet_address_set_host( &address, "127.0.0.1" );
     address.port = 27015;  // FIXME: Don't hardcode this
 
-    m_pFont = GetEngine()->GetFontManager().LoadFromFile( "file://Roboto-Regular.ttf",
-                                                          256, 256, 22.f );
+    m_Network.InitClient();
+
     m_pNetworkClient = m_Network.ConnectTo( address );
-    
+
     m_pNetworkClient->OnStateChange.connect<&Game::OnStateChange>( this );
     m_pNetworkClient->OnPacket.connect<&Game::OnPacket>( this );
 }
@@ -126,8 +130,7 @@ void Game::RequestItemDB()
 #endif
 }
 
-void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
-                          const char *szMessage )
+void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState )
 {
     ZoneScoped;
 

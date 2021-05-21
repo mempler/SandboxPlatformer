@@ -4,9 +4,9 @@
 
 #include "Packet.hh"
 
-#include <Tracy.hpp>
-
 #include <enet/enet.h>
+
+#include <Tracy.hpp>
 #include <signals.hpp>
 
 enum class ConnectionState
@@ -31,7 +31,7 @@ constexpr const char *ConnectionState_ToString( ConnectionState eState )
 class NetClient
 {
   public:
-    typedef std::shared_ptr<NetClient> NetClientPtr;
+    typedef NetClient *NetClientPtr;
 
     NetClient()
     {
@@ -84,7 +84,7 @@ class NetClient
         return m_hConn;
     }
 
-    signals::signal<void( NetClientPtr, ConnectionState, const char * )> OnStateChange;
+    signals::signal<void( NetClientPtr, ConnectionState )> OnStateChange;
     signals::signal<void( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer )> OnPacket;
 
   private:

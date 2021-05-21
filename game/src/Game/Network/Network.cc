@@ -6,6 +6,8 @@
 
 #include "Core/Utils/Logger.hh"
 
+#include "Game/Network/NetClient.hh"
+
 #include <Tracy.hpp>
 
 static Network *g_pActiveNetwork;
@@ -15,8 +17,23 @@ Network::Network()
     ZoneScoped;
 
     if ( enet_initialize() != 0 ) Console::Fatal( "Failed to initialize ENet!" );
+}
 
+void Network::InitClient()
+{
     m_pInstance = enet_host_create( 0, 1, 2, 0, 0 );
+
+    if ( !m_pInstance )
+    {
+        Console::Fatal( "Failed to initialize ENet host!" );
+    }
+}
+
+void Network::InitServer( ENetAddress &address, uint32_t uMaxConnection )
+{
+    ZoneScoped;
+
+    m_pInstance = enet_host_create( &address, uMaxConnection, 2, 0, 0 );
 
     if ( !m_pInstance )
     {
@@ -34,7 +51,20 @@ NetClientPtr Network::ConnectTo( ENetAddress &address )
         Console::Fatal( "Failed to initialize ENet peer!" );
     }
 
-    return std::make_shared<NetClient>( m_pInstance, peer );
+    NetClientPtr pNetClient = new NetClient( m_pInstance, peer );
+    peer->data = pNetClient;
+
+    return pNetClient;
+}
+
+NetClientPtr Network::AddPeer( ENetPeer *peer )
+{
+    NetClientPtr pNetClient = new NetClient( m_pInstance, peer );
+    peer->data = pNetClient;
+
+    m_vClients.push_back( pNetClient );
+
+    return pNetClient;
 }
 
 void Network::Tick()
@@ -47,9 +77,22 @@ void Network::Tick()
     {
         switch ( event.type )
         {
-        case ENET_EVENT_TYPE_CONNECT: Console::Info( "Peer connected." ); break;
+        case ENET_EVENT_TYPE_CONNECT:
+        {
+#if GAME_SERVER
+            NetClientPtr pClient = AddPeer( event.peer );
+#else
+            NetClientPtr pClient = (NetClientPtr) event.peer->data;
+#endif
+            OnStateChange( pClient, ConnectionState::Connected );
+            pClient->OnStateChange( pClient, ConnectionState::Connected );
+
+            Console::Info( "Peer connected." );
+            break;
+        }
         case ENET_EVENT_TYPE_RECEIVE:
         {
+            NetClientPtr pClient = (NetClientPtr) event.peer->data;
             Kokoro::Memory::Buffer buffer( event.packet->data, event.packet->dataLength );
 
             PacketHeader header;
@@ -60,71 +103,23 @@ void Network::Tick()
             else
             {
                 // Let our signal subscriber handle all this.
+                OnPacket( pClient, header, buffer );
+                pClient->OnPacket( pClient, header, buffer );
             }
 
             enet_packet_destroy( event.packet );
             break;
         }
-        case ENET_EVENT_TYPE_DISCONNECT: Console::Info( "Peer disconnected." ); break;
+        case ENET_EVENT_TYPE_DISCONNECT:
+        {
+            NetClientPtr pClient = (NetClientPtr) event.peer->data;
+            OnStateChange( pClient, ConnectionState::Disconnected );
+            pClient->OnStateChange( pClient, ConnectionState::Disconnected );
+
+            Console::Info( "Peer disconnected." );
+            break;
+        }
         default: break;
         }
     }
-}
-
-/* static */
-void Network::OnStatusChanged()
-{
-    ZoneScoped;
-
-    // switch ( pInfo->m_info.m_eState )
-    // {
-    // case k_ESteamNetworkingConnectionState_ClosedByPeer:
-    // case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
-    // {
-    //     ZoneScoped;
-
-    //     auto conn = g_pActiveNetwork->GetConnection( pInfo->m_hConn );
-    //     conn->OnStateChange( conn, ConnectionState::Disconnected,
-    //                          (const char *) pInfo->m_info.m_szEndDebug );
-
-    //     g_pActiveNetwork->OnStateChange( conn, ConnectionState::Disconnected,
-    //                                      (const char *) pInfo->m_info.m_szEndDebug );
-
-    //     conn->Disconnect( pInfo->m_info.m_szEndDebug );
-    //     g_pActiveNetwork->DestroyConnection( pInfo->m_hConn );
-    //     break;
-    // }
-
-    // case k_ESteamNetworkingConnectionState_Connecting:
-    // {
-    //     ZoneScoped;
-
-    //     auto conn = g_pActiveNetwork->GetConnection( pInfo->m_hConn );
-    //     if ( conn == nullptr ) conn = g_pActiveNetwork->AddConnection( pInfo->m_hConn
-    //     );
-
-    //     conn->OnStateChange( conn, ConnectionState::Connecting,
-    //                          (const char *) pInfo->m_info.m_szEndDebug );
-
-    //     g_pActiveNetwork->OnStateChange( conn, ConnectionState::Connecting,
-    //                                      (const char *) pInfo->m_info.m_szEndDebug );
-
-    //     break;
-    // }
-
-    // case k_ESteamNetworkingConnectionState_Connected:
-    // {
-    //     ZoneScoped;
-
-    //     auto conn = g_pActiveNetwork->GetConnection( pInfo->m_hConn );
-    //     conn->OnStateChange( conn, ConnectionState::Connected,
-    //                          (const char *) pInfo->m_info.m_szEndDebug );
-
-    //     g_pActiveNetwork->OnStateChange( conn, ConnectionState::Connected,
-    //                                      (const char *) pInfo->m_info.m_szEndDebug );
-    //     break;
-    // }
-
-    // default: break; /* Unhandled */
-    // }
 }

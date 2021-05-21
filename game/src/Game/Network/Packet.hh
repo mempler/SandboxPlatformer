@@ -5,10 +5,9 @@
 #include "Core/Utils/Logger.hh"
 
 #include <Kokoro/Memory/Buffer.hh>
+#include <enet/enet.h>
 
 #include <Tracy.hpp>
-
-#include <enet/enet.h>
 
 enum class PacketType : uint16_t
 {
@@ -72,8 +71,9 @@ struct PacketHeader
 
         // Nasty hack
         auto tmpData = buffer.Pop<const char *>( sizeof( m_vPadding ) );
-        std::copy( buffer.current(), buffer.current() + sizeof( m_vPadding ),
-                   m_vPadding );
+        // fix your stl fucking hell
+        // std::copy( buffer.current(), buffer.current() + sizeof( m_vPadding ),
+        //            m_vPadding );
         delete tmpData;
 
         return true;
