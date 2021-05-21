@@ -12,6 +12,8 @@
 
 #include "Kokoro/Memory/Buffer.hh"
 
+#include <enet/enet.h>
+
 #define TICK_SPEED 60
 
 void Server::Init()
@@ -22,20 +24,17 @@ void Server::Init()
     Console::Info( "Running: IceServer" );
     Console::Info( "Version: {}", "1.0.0" );
 
-    SteamDatagramErrMsg errMsg;
-    if ( !GameNetworkingSockets_Init( nullptr, errMsg ) )
-        Console::Fatal( "GameNetworkingSockets_Init failed: {}", errMsg );
+    if ( enet_initialize() != 0 ) Console::Fatal( "Failed to initialize ENet!" );
 
     // PREINIT
     m_Network.OnStateChange.connect<&Server::OnStateChange>( this );
     m_Network.OnPacket.connect<&Server::OnPacket>( this );
 
-    SteamNetworkingIPAddr address;
-    address.Clear();
-    address.m_port = 27015;
+    ENetAddress address = { 0 };
+    address.host = ENET_HOST_ANY;
+    address.port = 27015;
 
-    m_Listener = m_Network.CreateListener( address );
-    Console::Info( "Server listening on port {}", address.m_port );
+    Console::Info( "Server listening on port {}", address.port );
 
     // TODO: actual world loading & items.dat
     Console::Info( "Loading items.dat..." );
@@ -115,12 +114,12 @@ void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState,
 
         // A client is attempting to connect
         // Try to accept the connection.
-        if ( m_Listener.AcceptConnection( pClient ) )
-        {
-            pClient->Disconnect( "Unexpected closure!!" );
-            Console::Error( "Couldn't accept connection. (Why?)" );
-            break;
-        }
+        // if ( m_Listener.AcceptConnection( pClient ) )
+        // {
+        //     pClient->Disconnect( "Unexpected closure!!" );
+        //     Console::Error( "Couldn't accept connection. (Why?)" );
+        //     break;
+        // }
 
         break;
     }

@@ -11,8 +11,6 @@
 #include "Game/Player/Player.hh"
 #include "Game/World/World.hh"
 
-#include <steam/steamnetworkingsockets.h>
-
 
 // not the best place to put
 constexpr uintptr_t g_uFrameBufferFlags =

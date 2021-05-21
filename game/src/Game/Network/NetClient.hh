@@ -5,8 +5,8 @@
 #include "Packet.hh"
 
 #include <Tracy.hpp>
-#define ENET_IMPLEMENTATION
-#include <enet.h>
+
+#include <enet/enet.h>
 #include <signals.hpp>
 
 enum class ConnectionState
@@ -46,7 +46,7 @@ class NetClient
     {
         ZoneScoped;
 
-        return packet.SendTo( m_pInstance, m_hConn );
+        return packet.SendTo( m_hConn );
     }
 
     void Disconnect( std::string_view const &svReason )

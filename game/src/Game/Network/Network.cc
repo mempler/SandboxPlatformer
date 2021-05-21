@@ -2,9 +2,11 @@
 
 #include "Network.hh"
 
-#include <Tracy.hpp>
+#include "enet/enet.h"
 
-#include <enet.h>
+#include "Core/Utils/Logger.hh"
+
+#include <Tracy.hpp>
 
 static Network *g_pActiveNetwork;
 
@@ -13,11 +15,26 @@ Network::Network()
     ZoneScoped;
 
     if ( enet_initialize() != 0 ) Console::Fatal( "Failed to initialize ENet!" );
+
+    m_pInstance = enet_host_create( 0, 1, 2, 0, 0 );
+
+    if ( !m_pInstance )
+    {
+        Console::Fatal( "Failed to initialize ENet host!" );
+    }
 }
 
 NetClientPtr Network::ConnectTo( ENetAddress &address )
 {
     ZoneScoped;
+
+    ENetPeer *peer = enet_host_connect( m_pInstance, &address, 2, 0 );
+    if ( !peer )
+    {
+        Console::Fatal( "Failed to initialize ENet peer!" );
+    }
+
+    return std::make_shared<NetClient>( m_pInstance, peer );
 }
 
 void Network::Tick()
@@ -25,33 +42,33 @@ void Network::Tick()
     ZoneScoped;
 
     // Accept messages
-    // ISteamNetworkingMessage *pIncomingMsg = nullptr;
-    // m_pInstance->ReceiveMessagesOnPollGroup( m_hPollGroup, &pIncomingMsg, 1 );
+    ENetEvent event {};
+    while ( enet_host_service( m_pInstance, &event, 0 ) > 0 )
+    {
+        switch ( event.type )
+        {
+        case ENET_EVENT_TYPE_CONNECT: Console::Info( "Peer connected." ); break;
+        case ENET_EVENT_TYPE_RECEIVE:
+        {
+            Kokoro::Memory::Buffer buffer( event.packet->data, event.packet->dataLength );
 
-    // if ( pIncomingMsg != nullptr )
-    // {
-    //     Kokoro::Memory::Buffer buffer( (uint8_t *) pIncomingMsg->GetData(),
-    //                                    pIncomingMsg->GetSize() );
+            PacketHeader header;
+            if ( !header.Unpack( buffer ) )
+            {
+                Console::Error( "Invalid message! skipping..." );
+            }
+            else
+            {
+                // Let our signal subscriber handle all this.
+            }
 
-    //     PacketHeader header;
-    //     if ( !header.Unpack( buffer ) )
-    //     {
-    //         Console::Error( "Invalid message! skipping..." );
-    //     }
-    //     else
-    //     {
-    //         NetClientPtr client = GetConnection( pIncomingMsg->GetConnection() );
-
-    //         pIncomingMsg->Release();  // Release resources we dont need it anymore
-
-    //         OnPacket( client, header,
-    //                   buffer );  // Let our signal subscriber handle all this.
-    //         client->OnPacket( client, header, buffer );
-    //     }
-    // }
-
-    // g_pActiveNetwork = this;
-    // m_pInstance->RunCallbacks();
+            enet_packet_destroy( event.packet );
+            break;
+        }
+        case ENET_EVENT_TYPE_DISCONNECT: Console::Info( "Peer disconnected." ); break;
+        default: break;
+        }
+    }
 }
 
 /* static */

@@ -7,8 +7,8 @@
 #include <Kokoro/Memory/Buffer.hh>
 
 #include <Tracy.hpp>
-#define ENET_IMPLEMENTATION
-#include <enet.h>
+
+#include <enet/enet.h>
 
 enum class PacketType : uint16_t
 {

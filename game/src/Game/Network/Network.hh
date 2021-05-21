@@ -7,7 +7,7 @@
 #include "Game/Network/NetClient.hh"
 #include "Game/Network/Packet.hh"
 
-#include <enet.h>
+#include <enet/enet.h>
 #include <signals.hpp>
 
 class Network

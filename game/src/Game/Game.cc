@@ -1,7 +1,5 @@
 #include "Game.hh"
 
-#include "steam/isteamnetworkingutils.h"
-
 #include "Core/Engine.hh"
 
 #include "Game/Network/Packets/ItemDBPacket.hh"
@@ -50,13 +48,14 @@ void Game::Init()
     GetEngine()->ResetTransform();
 
     // CONNECT TO NETWORK
-    SteamNetworkingIPAddr targetAddress;
-    targetAddress.Clear();
-    targetAddress.ParseString( "127.0.0.1:27015" );  // FIXME: Don't hardcode this
+    ENetAddress address = { 0 };
+    enet_address_set_host( &address, "127.0.0.1" );
+    address.port = 27015;  // FIXME: Don't hardcode this
 
     m_pFont = GetEngine()->GetFontManager().LoadFromFile( "file://Roboto-Regular.ttf",
                                                           256, 256, 22.f );
-    m_pNetworkClient = m_Network.ConnectTo( targetAddress );
+    m_pNetworkClient = m_Network.ConnectTo( address );
+    
     m_pNetworkClient->OnStateChange.connect<&Game::OnStateChange>( this );
     m_pNetworkClient->OnPacket.connect<&Game::OnPacket>( this );
 }
@@ -135,18 +134,19 @@ void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState,
     switch ( eState )
     {
     case ConnectionState::Disconnected:
+    {
         m_lConnectionStatus.SetText( { 0, 0, 999.f },
                                      "Network: Not Connected... Retrying", m_pFont );
         m_lConnectionStatus.SetColor( { 1, .3, .3, 1 } );
 
-        SteamNetworkingIPAddr targetAddress;
-        targetAddress.Clear();
-        targetAddress.ParseString( "127.0.0.1:27015" );  // FIXME: Don't hardcode this
+        ENetAddress address = { 0 };
+        enet_address_set_host( &address, "127.0.0.1" );
+        address.port = 27015;
 
-        m_pNetworkClient = m_Network.ConnectTo( targetAddress );
+        m_pNetworkClient = m_Network.ConnectTo( address );
         m_pNetworkClient->OnStateChange.connect<&Game::OnStateChange>( this );
         break;
-
+    }
     case ConnectionState::Connected:
         m_lConnectionStatus.SetText( { 0, 0, 999.f }, "Network: Connected!", m_pFont );
         m_lConnectionStatus.SetColor( { .3, 1, .3, 1 } );

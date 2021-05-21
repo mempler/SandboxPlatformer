@@ -20,7 +20,6 @@ class Server
     ItemInfoManager m_ItemInfoManager;
     World m_World;
 
-    NetListener m_Listener;
     Network m_Network;
 
     void OnStateChange( NetClientPtr pClient, ConnectionState eState,
