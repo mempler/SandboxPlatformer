@@ -24,11 +24,13 @@ class Win32Surface : public BaseSurface
     int GetMonitorWidth() override;
     int GetMonitorHeight() override;
 
+    bgfx::PlatformData GetPlatformData() override;
+
   private:
     static LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
                                         LPARAM lParam );
 
-    void AdjustViewRect( RECT &rect );
+    HWND m_Handle;
 };
 
 #endif

@@ -140,14 +140,7 @@ void VertexBatcher::Reset()
 
     Flush();
 
-    // TODO: Add FreeSTL function
-    // clear the map
-    for ( auto &&event : m_vBatchEvents )
-        std::vector<VertexInfo>().swap( event.second.vertices );
-
     m_vBatchEvents.clear();
-    std::vector<std::pair<bgfx::TextureHandle, BatchEvent>>().swap(
-        m_vBatchEvents );  // kill me fucking hell
 }
 
 /*****************************************************

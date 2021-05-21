@@ -62,11 +62,16 @@ enum class OSEventType
     QUIT,
     GAIN_FOCUS,
     LOSE_FOCUS,
-    LBUTTONDOWN,
-    LBUTTONCLICK,
-    RBUTTONDOWN,
-    RBUTTONCLICK,
+    MOUSE_CLICK,
+    MOUSE_DOWN,
+    MOUSE_MOVE,
+    MOUSE_DOUBLE_CLICK,
     SIZE,
+    SIZING,
+    PAINT,
+    ACTIVATE,
+    KEY_DOWN,
+    KEY_UP
 };
 
 //

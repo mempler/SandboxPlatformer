@@ -23,32 +23,12 @@ void BaseSurface::TranslateEvent( OSEventType eType, uintptr_t uLVal, intptr_t i
     case OSEventType::QUIT: m_bExit = true; break;
     case OSEventType::GAIN_FOCUS: OnGainFocus(); break;
     case OSEventType::LOSE_FOCUS: OnLoseFocus(); break;
-
-    // Not possible to implement (maybe)
-    // or we'll let the Surface translate Key / Button to an uintptr
-    // and post this here
-    case OSEventType::LBUTTONCLICK:
-    case OSEventType::RBUTTONCLICK:
-    case OSEventType::LBUTTONDOWN:
-    case OSEventType::RBUTTONDOWN: break;
-    // {
-    //     bool button [ 2 ];
-    //     button [ 0 ] = ( wParam & MK_LBUTTON ) != 0;
-    //     button [ 1 ] = ( wParam & MK_RBUTTON ) != 0;
-
-    //     KeyMod mods = KeyMod::None;
-
-    //     if ( ( wParam & MK_SHIFT ) != 0 ) mods = (KeyMod) ( mods | KeyMod::SHIFT );
-    //     if ( ( wParam & VK_SHIFT ) != 0 ) mods = (KeyMod) ( mods | KeyMod::CONTROL );
-
-    //     for ( int i = 0; i < 2; i++ )
-    //     {
-    //         if ( button [ i ] )
-    //         {
-    //         }
-    //     }
-    //     break;
-    // }
+    case OSEventType::MOUSE_DOUBLE_CLICK:
+    {
+        Console::Info( "keys: {}, mods: {}, x: {}, y: {}", ULVALUE( uLVal ),
+                       URVALUE( uLVal ), ULVALUE( iRVal ), URVALUE( iRVal ) );
+        break;
+    }
     case OSEventType::SIZE:
     {
         glm::ivec2 scl = { ULVALUE( uLVal ), URVALUE( uLVal ) };
@@ -61,6 +41,8 @@ void BaseSurface::TranslateEvent( OSEventType eType, uintptr_t uLVal, intptr_t i
 
         break;
     }
+    case OSEventType::KEY_DOWN: Console::Info( "keydown {}, {}.", (char)uLVal, (int)(char)iRVal ); break;
+
     default: break;
     }
 }
