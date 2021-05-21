@@ -4,10 +4,10 @@
 
 #include <Kokoro/Utility/BitFlags.hh>
 
-enum class ButtonState
+enum class ButtonState : bool
 {
-    Pressed,
-    Released
+    Released,
+    Pressed
 };
 
 enum class KeyMod : uint8_t
@@ -22,7 +22,7 @@ enum class KeyMod : uint8_t
 };
 BitFlags( KeyMod );
 
-enum class Key
+enum class Key : uint16_t
 {
     Key_UNKNOWN = 0,
 
@@ -153,17 +153,17 @@ enum class Key
     Key_RIGHT_SUPER = 347,
 };
 
-enum class MouseButton
+enum class MouseButton : uint8_t
 {
     NONE,
-    BTN_1,
-    BTN_2,
-    BTN_3,
-    BTN_4,
-    BTN_5,
-    BTN_6,
-    BTN_7,
-    BTN_8,
+    BTN_1 = 1 << 0,
+    BTN_2 = 1 << 1,
+    BTN_3 = 1 << 2,
+    BTN_4 = 1 << 3,
+    BTN_5 = 1 << 4,
+    BTN_6 = 1 << 5,
+    BTN_7 = 1 << 6,
+    BTN_8 = 1 << 7,
     BTN_LAST = BTN_1,
     BTN_LEFT = BTN_2,
     BTN_RIGHT = BTN_3,

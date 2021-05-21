@@ -15,7 +15,7 @@ void InputManager::Init()
 void InputManager::OnSetKeyState( Key eKey, ButtonState eButtonState, KeyMod eKeyMod )
 {
     // TODO: Add repeating keys after X amount of time
-    if ( m_umKeyState [ eKey ] != eButtonState )
+    if ( m_vKeyState [ (int) eKey ] != (bool) eButtonState )
     {
         if ( eButtonState == ButtonState::Pressed )
         {
@@ -28,7 +28,7 @@ void InputManager::OnSetKeyState( Key eKey, ButtonState eButtonState, KeyMod eKe
     }
 
     m_eKeyMods = eKeyMod;
-    m_umKeyState [ eKey ] = eButtonState;
+    m_vKeyState [ (int) eKey ] = (bool) eButtonState;
 
     if ( eButtonState == ButtonState::Pressed )
     {
