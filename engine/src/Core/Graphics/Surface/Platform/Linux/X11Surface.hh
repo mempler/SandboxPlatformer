@@ -24,7 +24,7 @@ class X11Surface final : public BaseSurface
     int GetMonitorWidth() override;
     int GetMonitorHeight() override;
 
-    glm::ivec2 GetCursorPosition() override;
+    glm::ivec2 &GetCursorPosition() override;
     void SetCursor( SurfaceCursor eCursor ) override;
     void SetCursorPosition( const glm::ivec2 &ivPos ) override;
 

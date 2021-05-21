@@ -431,8 +431,8 @@ void X11Surface::Poll()
 
             // FIXME: Only fire this if it's inside the window
             OnSetMousePosition( glm::ivec2 { x, y } );
-            m_Desc.ivMouseRes.x = x;
-            m_Desc.ivMouseRes.y = y;
+            m_Desc.ivMousePos.x = x;
+            m_Desc.ivMousePos.y = y;
 
             break;
         }
@@ -487,9 +487,9 @@ int X11Surface::GetMonitorHeight()
     return attributes.height;
 }
 
-glm::ivec2 X11Surface::GetCursorPosition()
+glm::ivec2 &X11Surface::GetCursorPosition()
 {
-    return m_Desc.ivMouseRes;
+    return m_Desc.ivMousePos;
 }
 
 void X11Surface::SetCursorPosition( const glm::ivec2 &ivPos )

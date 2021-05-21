@@ -15,6 +15,8 @@ constexpr DWORD g_defWindowStyle =
 
 Win32Surface::Win32Surface( SurfaceDesc &desc ) : BaseSurface( desc )
 {
+    m_Instance = GetModuleHandle( 0 );
+    
     WNDCLASSEX wc;
     ZeroMemory( &wc, sizeof( WNDCLASSEX ) );
 
@@ -23,7 +25,7 @@ Win32Surface::Win32Surface( SurfaceDesc &desc ) : BaseSurface( desc )
     wc.lpfnWndProc = WindowProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
-    wc.hInstance = 0;
+    wc.hInstance = m_Instance;
     wc.hIcon = LoadIcon( 0, IDI_APPLICATION );
     wc.hCursor = LoadCursor( 0, IDC_ARROW );
     wc.hbrBackground = (HBRUSH) GetStockObject( BLACK_BRUSH );
@@ -36,7 +38,7 @@ Win32Surface::Win32Surface( SurfaceDesc &desc ) : BaseSurface( desc )
 
     int windowFlags = g_defWindowStyle;
 
-    if ( m_Desc.eFlags & eWindowFlags::Fullscreen )
+    if ( m_Desc.eFlags & WindowFlags::Fullscreen )
     {
         // window will be fullscreen, no need to calculate other position and stuff
         // just directly pass it over
@@ -50,8 +52,8 @@ Win32Surface::Win32Surface( SurfaceDesc &desc ) : BaseSurface( desc )
         dm.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
         // actual holy shit moment
-        if ( ( m_Desc.ivRes.x != GetMonitorWidth() )
-             && ( m_Desc.ivRes.y != GetMonitorHeight() ) )
+        if ( ( m_Desc.ivWindowRes.x != GetMonitorWidth() )
+             && ( m_Desc.ivWindowRes.y != GetMonitorHeight() ) )
         {
             if ( ChangeDisplaySettingsA( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
             {
@@ -68,19 +70,19 @@ Win32Surface::Win32Surface( SurfaceDesc &desc ) : BaseSurface( desc )
 
     else
     {
-        if ( m_Desc.eFlags & eWindowFlags::Resizable )
+        if ( m_Desc.eFlags & WindowFlags::Resizable )
             windowFlags |= WS_MAXIMIZEBOX | WS_THICKFRAME;
 
         int windowPosX = 0;
         int windowPosY = 0;
 
-        if ( m_Desc.eFlags & eWindowFlags::Centered )
+        if ( m_Desc.eFlags & WindowFlags::Centered )
         {
-            windowPosX = ( GetMonitorWidth() / 2 ) - ( m_Desc.ivRes.x / 2 );
-            windowPosY = ( GetMonitorHeight() / 2 ) - ( m_Desc.ivRes.y / 2 );
+            windowPosX = ( GetMonitorWidth() / 2 ) - ( m_Desc.ivWindowRes.x / 2 );
+            windowPosY = ( GetMonitorHeight() / 2 ) - ( m_Desc.ivWindowRes.y / 2 );
         }
 
-        RECT rc = { 0, 0, m_Desc.ivRes.x, m_Desc.ivRes.y };
+        RECT rc = { 0, 0, m_Desc.ivWindowRes.x, m_Desc.ivWindowRes.y };
 
         AdjustWindowRectEx( &rc, windowFlags, 0, WS_EX_APPWINDOW | WS_EX_WINDOWEDGE );
 
@@ -117,7 +119,7 @@ void Win32Surface::SetPosition( const glm::ivec2 &ivPos )
 
 void Win32Surface::SetResolution( const glm::ivec2 &ivRes )
 {
-    m_Desc.ivRes = ivRes;
+    m_Desc.ivWindowRes = ivRes;
 }
 
 Key TranslateWin32KeySym( WPARAM wParam )
@@ -226,7 +228,10 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
         uintptr_t uLVal = COMBINEUSHORT( keys, mods );
 
         if ( msg == WM_MOUSEMOVE )
+        {
+            pSurf->SetCursorPosition( { SLVALUE( lParam ), SRVALUE( lParam ) } );
             pSurf->TranslateEvent( OSEventType::MOUSE_MOVE, uLVal, lParam );
+        }
         else if ( msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN )
             pSurf->TranslateEvent( OSEventType::MOUSE_DOWN, uLVal, lParam );
         else
@@ -264,6 +269,52 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
     }
 
     return 0;
+}
+
+glm::ivec2 &Win32Surface::GetCursorPosition()
+{
+    return m_Desc.ivMousePos;
+}
+
+void Win32Surface::SetCursorPosition( const glm::ivec2 &ivPos )
+{
+    m_Desc.ivMousePos = ivPos;  // what
+}
+
+void Win32Surface::SetCursor( SurfaceCursor eCursor )
+{
+    ::ShowCursor( TRUE );  // make sure that cursor is shown
+    switch ( eCursor )
+    {
+    case SurfaceCursor::Arrow:  //
+        ::SetCursor( LoadCursorA( m_Instance, IDC_ARROW ) );
+        break;
+    case SurfaceCursor::TextInput:
+        ::SetCursor( LoadCursorA( m_Instance, IDC_IBEAM ) );
+        break;
+    case SurfaceCursor::ResizeAll:
+        ::SetCursor( LoadCursorA( m_Instance, IDC_SIZEALL ) );
+        break;
+    case SurfaceCursor::ResizeEW:
+        ::SetCursor( LoadCursorA( m_Instance, IDC_SIZEWE ) );
+        break;
+    case SurfaceCursor::ResizeNS:
+        ::SetCursor( LoadCursorA( m_Instance, IDC_SIZENS ) );
+        break;
+    case SurfaceCursor::ResizeNESW:
+        ::SetCursor( LoadCursorA( m_Instance, IDC_SIZENESW ) );
+        break;  // FIXME:
+    case SurfaceCursor::ResizeNWSE:
+        ::SetCursor( LoadCursorA( m_Instance, IDC_SIZENWSE ) );
+        break;
+    case SurfaceCursor::Hand:  //
+        ::SetCursor( LoadCursorA( m_Instance, IDC_HAND ) );
+        break;
+    case SurfaceCursor::NotAllowed:
+        ::SetCursor( LoadCursorA( m_Instance, IDC_NO ) );
+        break;
+    case SurfaceCursor::Hidden: ::ShowCursor( FALSE ); break;
+    }
 }
 
 int Win32Surface::GetMonitorWidth()

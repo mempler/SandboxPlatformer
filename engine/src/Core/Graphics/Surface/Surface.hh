@@ -52,7 +52,7 @@ struct SurfaceDesc
     glm::ivec2 ivWindowPos;
     glm::ivec2 ivWindowRes;
 
-    glm::ivec2 ivMouseRes;
+    glm::ivec2 ivMousePos;
 };
 
 typedef intptr_t SurfaceHandle;
@@ -127,7 +127,7 @@ class BaseSurface
     virtual int GetMonitorWidth() = 0;
     virtual int GetMonitorHeight() = 0;
 
-    virtual glm::ivec2 GetCursorPosition() = 0;
+    virtual glm::ivec2 &GetCursorPosition() = 0;
     virtual void SetCursor( SurfaceCursor eCursor ) = 0;
     virtual void SetCursorPosition( const glm::ivec2 &ivPos ) = 0;
 
