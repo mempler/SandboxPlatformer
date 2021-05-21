@@ -379,5 +379,4 @@ void BaseApp::Run()
 
         m_pEngine->EndFrame();
     }
-    
 }

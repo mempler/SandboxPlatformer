@@ -22,7 +22,7 @@ enum class KeyMod : uint8_t
 };
 BitFlags( KeyMod );
 
-enum class Key : uint16_t
+enum class Key : uint8_t
 {
     Key_UNKNOWN = 0,
 
@@ -107,50 +107,50 @@ enum class Key : uint16_t
     Key_BACKSLASH = 92,     /* \ */
     Key_RIGHT_BRACKET = 93, /* ] */
     Key_GRAVE_ACCENT = 96,  /* ` */
-    Key_WORLD_1 = 161,      /* non-US #1 */
-    Key_WORLD_2 = 162,      /* non-US #2 */
-    Key_ESCAPE = 256,
+    Key_ESCAPE = 97,
 
     /* Function Keys */
 
-    Key_F13 = 302,
-    Key_F14 = 303,
-    Key_F15 = 304,
-    Key_F16 = 305,
-    Key_F17 = 306,
-    Key_F18 = 307,
-    Key_F19 = 308,
-    Key_F20 = 309,
-    Key_F21 = 310,
-    Key_F22 = 311,
-    Key_F23 = 312,
-    Key_F24 = 313,
-    Key_F25 = 314,
-    Key_KP_0 = 320,
-    Key_KP_1 = 321,
-    Key_KP_2 = 322,
-    Key_KP_3 = 323,
-    Key_KP_4 = 324,
-    Key_KP_5 = 325,
-    Key_KP_6 = 326,
-    Key_KP_7 = 327,
-    Key_KP_8 = 328,
-    Key_KP_9 = 329,
-    Key_KP_DECIMAL = 330,
-    Key_KP_DIVIDE = 331,
-    Key_KP_MULTIPLY = 332,
-    Key_KP_SUBTRACT = 333,
-    Key_KP_ADD = 334,
-    Key_KP_ENTER = 335,
-    Key_KP_EQUAL = 336,
-    Key_LEFT_SHIFT = 340,
-    Key_LEFT_CONTROL = 341,
-    Key_LEFT_ALT = 342,
-    Key_LEFT_SUPER = 343,
-    Key_RIGHT_SHIFT = 344,
-    Key_RIGHT_CONTROL = 345,
-    Key_RIGHT_ALT = 346,
-    Key_RIGHT_SUPER = 347,
+    Key_F13 = 98,
+    Key_F14 = 99,
+    Key_F15 = 100,
+    Key_F16 = 101,
+    Key_F17 = 102,
+    Key_F18 = 103,
+    Key_F19 = 104,
+    Key_F20 = 105,
+    Key_F21 = 106,
+    Key_F22 = 107,
+    Key_F23 = 108,
+    Key_F24 = 109,
+    Key_F25 = 110,
+    Key_KP_0 = 111,
+    Key_KP_1 = 112,
+    Key_KP_2 = 113,
+    Key_KP_3 = 114,
+    Key_KP_4 = 115,
+    Key_KP_5 = 116,
+    Key_KP_6 = 117,
+    Key_KP_7 = 118,
+    Key_KP_8 = 119,
+    Key_KP_9 = 120,
+    Key_KP_DECIMAL = 121,
+    Key_KP_DIVIDE = 122,
+    Key_KP_MULTIPLY = 123,
+    Key_KP_SUBTRACT = 124,
+    Key_KP_ADD = 125,
+    Key_KP_ENTER = 126,
+    Key_KP_EQUAL = 127,
+    Key_LEFT_SHIFT = 128,
+    Key_LEFT_CONTROL = 129,
+    Key_LEFT_ALT = 130,
+    Key_LEFT_SUPER = 131,
+    Key_RIGHT_SHIFT = 132,
+    Key_RIGHT_CONTROL = 133,
+    Key_RIGHT_ALT = 134,
+    Key_RIGHT_SUPER = 135,
+    Key_WORLD_1 = 136, /* non-US #1 */
+    Key_WORLD_2 = 137, /* non-US #2 */
 };
 
 enum class MouseButton : uint8_t

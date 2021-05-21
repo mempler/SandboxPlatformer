@@ -63,7 +63,7 @@ class InputManager
     signals::signal<void( Key eKey, KeyMod eMod )> OnKeyReleaseInput;
 
   private:
-    std::array<bool, 347> m_vKeyState;
+    std::array<bool, 137> m_vKeyState;
 
     glm::vec2 m_v2MouseScrollAxis;
     glm::vec2 m_v2MouseMoveDelta;
