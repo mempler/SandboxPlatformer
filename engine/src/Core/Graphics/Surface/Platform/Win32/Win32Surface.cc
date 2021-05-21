@@ -4,11 +4,10 @@
 #include "Core/Graphics/Surface/Surface.hh"
 #include "Core/Managers/InputHelper.hh"
 
-#include <vadefs.h>
-
 #if PLATFORM_WIN32
 
     #include <dwmapi.h>
+    #include <vadefs.h>
 
 constexpr DWORD g_defWindowStyle =
     ( WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_VISIBLE | WS_POPUP
