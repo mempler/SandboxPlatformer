@@ -19,6 +19,10 @@ if (ENGINE_TRACING_ENABLED)
     add_definitions(-DTRACY_ENABLE) # Enable tracing solution wide.
 endif()
 
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
+
 add_subdirectory(vendor)
 add_subdirectory(engine)
 add_subdirectory(game)

@@ -13,12 +13,11 @@
 
 #include <signals.hpp>
 
-
 // Cross platform windowing/surface implementation
 // and specific OS/platform abstraction tool and utility
 // damn, feel like doing professional stuff now. hire me valve
 
-enum class eWindowFlags
+enum class WindowFlags
 {
     None,
     Fullscreen = 1 << 0,
@@ -26,7 +25,21 @@ enum class eWindowFlags
     Centered = 1 << 2,  // Desktop dist. specific
     Resizable = 1 << 3
 };
-BitFlags( eWindowFlags );
+BitFlags( WindowFlags );
+
+enum class SurfaceCursor
+{
+    Arrow,
+    TextInput,
+    ResizeAll,
+    ResizeEW,
+    ResizeNS,
+    ResizeNESW,
+    ResizeNWSE,
+    Hand,
+    NotAllowed,
+    Hidden,
+};
 
 struct SurfaceDesc
 {
@@ -34,10 +47,12 @@ struct SurfaceDesc
     std::string sName = "IceApp";
     std::string sIcon = "";
 
-    eWindowFlags eFlags = eWindowFlags::None;
+    WindowFlags eFlags = WindowFlags::None;
 
-    glm::ivec2 ivPos;
-    glm::ivec2 ivRes;
+    glm::ivec2 ivWindowPos;
+    glm::ivec2 ivWindowRes;
+
+    glm::ivec2 ivMouseRes;
 };
 
 typedef intptr_t SurfaceHandle;
@@ -84,8 +99,14 @@ class BaseSurface
 
     SurfaceHandle GetHandle() const;
 
-    uint32_t GetWidth();
-    uint32_t GetHeight();
+    inline uint32_t GetWidth()
+    {
+        return m_Desc.ivWindowRes.x;
+    }
+    inline uint32_t GetHeight()
+    {
+        return m_Desc.ivWindowRes.y;
+    }
 
     bool ShouldExit();
 
@@ -97,11 +118,13 @@ class BaseSurface
     virtual void SetPosition( const glm::ivec2 &ivPos ) = 0;
     virtual void SetResolution( const glm::ivec2 &ivRes ) = 0;
 
-    const virtual glm::ivec2 &GetMousePos() const = 0;
-
     // OS specific
     virtual int GetMonitorWidth() = 0;
     virtual int GetMonitorHeight() = 0;
+
+    virtual glm::ivec2 GetCursorPosition() = 0;
+    virtual void SetCursor( SurfaceCursor eCursor ) = 0;
+    virtual void SetCursorPosition( const glm::ivec2 &ivPos ) = 0;
 
     virtual bgfx::PlatformData GetPlatformData() = 0;
 

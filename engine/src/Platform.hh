@@ -34,7 +34,7 @@
 
 // Platform Specific
 #ifndef NDEBUG
-    #define ENGINE_DEBUG 0
+    #define ENGINE_DEBUG 1
 #else
     #define ENGINE_DEBUG 0
 #endif
