@@ -291,8 +291,6 @@ void Engine::BeginFrame()
             }
         }
 
-        ImGui::ShowDemoWindow();
-
         ImGui::End();
     }
 #endif
