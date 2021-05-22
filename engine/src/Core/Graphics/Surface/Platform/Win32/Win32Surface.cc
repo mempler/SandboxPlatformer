@@ -1,8 +1,12 @@
+#include <cwctype>
+
 #include "Win32Surface.hh"
 
 #include "Core/Engine.hh"
 #include "Core/Graphics/Surface/Surface.hh"
 #include "Core/Managers/InputHelper.hh"
+
+#include <stdint.h>
 
 #if PLATFORM_WIN32
 
@@ -16,7 +20,7 @@ constexpr DWORD g_defWindowStyle =
 Win32Surface::Win32Surface( SurfaceDesc &desc ) : BaseSurface( desc )
 {
     m_Instance = GetModuleHandle( 0 );
-    
+
     WNDCLASSEX wc;
     ZeroMemory( &wc, sizeof( WNDCLASSEX ) );
 
@@ -125,9 +129,10 @@ void Win32Surface::SetResolution( const glm::ivec2 &ivRes )
 Key TranslateWin32KeySym( WPARAM wParam )
 {
     // 12345... + QWERTY...
-    if ( wParam >= 0x30 || wParam <= 0x5A ) return (Key) wParam;
+    if ( wParam >= 0x30 && wParam <= 0x5A ) return (Key) wParam;
     // NUMPAD0-9 + /*-+
-    if ( wParam >= 0x60 || wParam <= 0x69 ) return (Key) ( wParam + 224 );
+    if ( wParam >= 0x60 && wParam <= 0x69 ) return (Key) ( wParam + 224 );
+
     switch ( wParam )
     {
     case VK_ESCAPE: return Key::Key_ESCAPE;
@@ -214,7 +219,6 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
     case WM_LBUTTONDBLCLK:
     case WM_RBUTTONDOWN:
     case WM_RBUTTONDBLCLK:
-    case WM_MOUSEMOVE:
     {
         MouseButton keys = MouseButton::NONE;
         if ( wParam & MK_LBUTTON ) keys |= MouseButton::BTN_1;
@@ -227,47 +231,94 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
 
         uintptr_t uLVal = COMBINEUSHORT( keys, mods );
 
-        if ( msg == WM_MOUSEMOVE )
-        {
-            pSurf->SetCursorPosition( { SLVALUE( lParam ), SRVALUE( lParam ) } );
-            pSurf->TranslateEvent( OSEventType::MOUSE_MOVE, uLVal, lParam );
-        }
-        else if ( msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN )
+        pSurf->OnSetMouseState( keys, ButtonState::Pressed );
+
+        if ( msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN )
             pSurf->TranslateEvent( OSEventType::MOUSE_DOWN, uLVal, lParam );
+
         else
             pSurf->TranslateEvent( OSEventType::MOUSE_DOUBLE_CLICK, uLVal, lParam );
 
+        break;
+    }
+    case WM_LBUTTONUP:
+    case WM_RBUTTONUP:
+    {
+        MouseButton keys = MouseButton::NONE;
+        if ( wParam & MK_LBUTTON ) keys |= MouseButton::BTN_1;
+        if ( wParam & MK_RBUTTON ) keys |= MouseButton::BTN_2;
+
+        KeyMod mods = KeyMod::None;
+
+        if ( wParam & MK_SHIFT ) mods |= KeyMod::SHIFT;
+        if ( wParam & MK_CONTROL ) mods |= KeyMod::CONTROL;
+
+        uintptr_t uLVal = COMBINEUSHORT( keys, mods );
+
+        pSurf->OnSetMouseState( keys, ButtonState::Released );
+        pSurf->TranslateEvent( OSEventType::MOUSE_UP, uLVal, lParam );
+        break;
+    }
+    case WM_MOUSEMOVE:
+    {
+        pSurf->SetCursorPosition( { SLVALUE( lParam ), SRVALUE( lParam ) } );
+        pSurf->TranslateEvent( OSEventType::MOUSE_MOVE, 0, 0 );
         break;
     }
     case WM_SIZE: pSurf->TranslateEvent( OSEventType::SIZE, lParam, wParam ); break;
     case WM_KEYUP:
     case WM_KEYDOWN:
     {
-        switch ( wParam )
+        Key key = TranslateWin32KeySym( wParam );
+
+        KeyMod mod = KeyMod::None;
+
+        switch ( key )
         {
-        case 'R':
-            if ( GetKeyState( VK_CONTROL ) & 0xfe )  // refresh requested
-                break;
-        case 'V':
-            if ( GetKeyState( VK_CONTROL ) & 0xfe )  // paste requested
-                break;
-        case 'C':
-            if ( GetKeyState( VK_CONTROL ) & 0xfe )  // copy requested
-                break;
-        case 'X':
-            if ( GetKeyState( VK_CONTROL ) & 0xfe )  // cut requested
-                break;
-            break;
+        case Key::Key_RIGHT_SHIFT:
+        case Key::Key_LEFT_SHIFT: mod |= KeyMod::SHIFT; break;
+
+        case Key::Key_RIGHT_CONTROL:
+        case Key::Key_LEFT_CONTROL: mod |= KeyMod::CONTROL; break;
+
+        case Key::Key_RIGHT_ALT:
+        case Key::Key_LEFT_ALT: mod |= KeyMod::ALT; break;
+
+        case Key::Key_RIGHT_SUPER:
+        case Key::Key_LEFT_SUPER: mod |= KeyMod::SUPER; break;
+
+        case Key::Key_CAPS_LOCK: mod |= KeyMod::CAPS_LOCK; break;
+        case Key::Key_NUM_LOCK: mod |= KeyMod::NUM_LOCK; break;
+
+        default: break;
         }
+
+        pSurf->OnSetKeyState(
+            key, msg == WM_KEYDOWN ? ButtonState::Pressed : ButtonState::Released, mod );
 
         pSurf->TranslateEvent( OSEventType::KEY_DOWN,
                                (uintptr_t) TranslateWin32KeySym( wParam ), lParam >> 30 );
         break;
     }
+    case WM_CHAR:
+    {
+        int uchar = 0;
+        uint8_t c = (uint8_t) wParam;
+        if ( !::IsWindowUnicode( hwnd ) )
+            MultiByteToWideChar( CP_UTF8, 0, (LPCSTR) &c, 1, (LPWSTR) &uchar, 1 );
+
+        pSurf->OnChar( uchar, KeyMod::None );
+        break;
+    }
+
+    case WM_SETCURSOR:
+    {
+        pSurf->SetCursor( pSurf->m_eCurrentCursor );
+        break;
+    }
 
     default: return DefWindowProc( hwnd, msg, wParam, lParam );
     }
-
     return 0;
 }
 
@@ -278,43 +329,39 @@ glm::ivec2 &Win32Surface::GetCursorPosition()
 
 void Win32Surface::SetCursorPosition( const glm::ivec2 &ivPos )
 {
-    m_Desc.ivMousePos = ivPos;  // what
+    m_Desc.ivMousePos = ivPos;
+    OnSetMousePosition( ivPos );
 }
 
 void Win32Surface::SetCursor( SurfaceCursor eCursor )
 {
     ::ShowCursor( TRUE );  // make sure that cursor is shown
+
+    static ::HCURSOR arrowCursor { LoadCursor( NULL, IDC_ARROW ) };
+    static ::HCURSOR ibeamCursor { LoadCursor( NULL, IDC_IBEAM ) };
+    static ::HCURSOR handCursor { LoadCursor( NULL, IDC_HAND ) };
+    static ::HCURSOR sizeAllCursor { LoadCursor( NULL, IDC_SIZEALL ) };
+    static ::HCURSOR sizeWECursor { LoadCursor( NULL, IDC_SIZEWE ) };
+    static ::HCURSOR sizeNSCursor { LoadCursor( NULL, IDC_SIZENS ) };
+    static ::HCURSOR sizeNESWCursor { LoadCursor( NULL, IDC_SIZENESW ) };
+    static ::HCURSOR sizeNWSECursor { LoadCursor( NULL, IDC_SIZENWSE ) };
+    static ::HCURSOR noCursor { LoadCursor( NULL, IDC_NO ) };
+
     switch ( eCursor )
     {
-    case SurfaceCursor::Arrow:  //
-        ::SetCursor( LoadCursorA( m_Instance, IDC_ARROW ) );
-        break;
-    case SurfaceCursor::TextInput:
-        ::SetCursor( LoadCursorA( m_Instance, IDC_IBEAM ) );
-        break;
-    case SurfaceCursor::ResizeAll:
-        ::SetCursor( LoadCursorA( m_Instance, IDC_SIZEALL ) );
-        break;
-    case SurfaceCursor::ResizeEW:
-        ::SetCursor( LoadCursorA( m_Instance, IDC_SIZEWE ) );
-        break;
-    case SurfaceCursor::ResizeNS:
-        ::SetCursor( LoadCursorA( m_Instance, IDC_SIZENS ) );
-        break;
-    case SurfaceCursor::ResizeNESW:
-        ::SetCursor( LoadCursorA( m_Instance, IDC_SIZENESW ) );
-        break;  // FIXME:
-    case SurfaceCursor::ResizeNWSE:
-        ::SetCursor( LoadCursorA( m_Instance, IDC_SIZENWSE ) );
-        break;
-    case SurfaceCursor::Hand:  //
-        ::SetCursor( LoadCursorA( m_Instance, IDC_HAND ) );
-        break;
-    case SurfaceCursor::NotAllowed:
-        ::SetCursor( LoadCursorA( m_Instance, IDC_NO ) );
-        break;
+    case SurfaceCursor::Arrow: ::SetCursor( arrowCursor ); break;
+    case SurfaceCursor::TextInput: ::SetCursor( ibeamCursor ); break;
+    case SurfaceCursor::ResizeAll: ::SetCursor( sizeAllCursor ); break;
+    case SurfaceCursor::ResizeEW: ::SetCursor( sizeWECursor ); break;
+    case SurfaceCursor::ResizeNS: ::SetCursor( sizeNSCursor ); break;
+    case SurfaceCursor::ResizeNESW: ::SetCursor( sizeNESWCursor ); break;  // FIXME:
+    case SurfaceCursor::ResizeNWSE: ::SetCursor( sizeNWSECursor ); break;
+    case SurfaceCursor::Hand: ::SetCursor( handCursor ); break;
+    case SurfaceCursor::NotAllowed: ::SetCursor( noCursor ); break;
     case SurfaceCursor::Hidden: ::ShowCursor( FALSE ); break;
     }
+
+    m_eCurrentCursor = eCursor;
 }
 
 int Win32Surface::GetMonitorWidth()

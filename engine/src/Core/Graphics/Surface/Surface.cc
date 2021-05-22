@@ -25,8 +25,6 @@ void BaseSurface::TranslateEvent( OSEventType eType, uintptr_t uLVal, intptr_t i
     case OSEventType::LOSE_FOCUS: OnLoseFocus(); break;
     case OSEventType::MOUSE_DOUBLE_CLICK:
     {
-        Console::Info( "keys: {}, mods: {}, x: {}, y: {}", ULVALUE( uLVal ),
-                       URVALUE( uLVal ), ULVALUE( iRVal ), URVALUE( iRVal ) );
         break;
     }
     case OSEventType::SIZE:
@@ -37,11 +35,10 @@ void BaseSurface::TranslateEvent( OSEventType eType, uintptr_t uLVal, intptr_t i
         OnResolutionChanged( this, scl.x, scl.y );
         bgfx::reset( scl.x, scl.y, GetEngine()->GetResetFlags() );
         GetEngine()->ResetTransform();
-        Console::Info( "Window size changed to {}, {}.", scl.x, scl.y );
 
         break;
     }
-    case OSEventType::KEY_DOWN: Console::Info( "keydown {}, {}.", (char)uLVal, (int)(char)iRVal ); break;
+    case OSEventType::KEY_DOWN: break;
 
     default: break;
     }

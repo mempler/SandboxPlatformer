@@ -1,8 +1,8 @@
 #pragma once
 
-const float g_fVelX = 300.f;
+const float g_fVelX = 500.f;
 const float g_fVelY = 250.f;
-const float g_fAcceleration = 5000.f;
+const float g_fAcceleration = 50.f;
 
 class Player;
 class Avatar
@@ -29,8 +29,8 @@ class Avatar
     glm::vec2 m_v2Size = { 20.f, 30.f };
     glm::mat4 m_m4Transform {};
 
-    glm::vec2 m_v2Velocity { 500, 0 };
-    glm::vec2 m_v2TargetVelocity { 10, 0 };
+    glm::vec2 m_v2Velocity { 0, 0 };
+    glm::vec2 m_v2TargetVelocity { 0, 0 };
 
     friend Player;
 };

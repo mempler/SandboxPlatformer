@@ -64,6 +64,7 @@ enum class OSEventType
     LOSE_FOCUS,
     MOUSE_CLICK,
     MOUSE_DOWN,
+    MOUSE_UP,
     MOUSE_MOVE,
     MOUSE_DOUBLE_CLICK,
     SIZE,
@@ -134,6 +135,8 @@ class BaseSurface
     virtual bgfx::PlatformData GetPlatformData() = 0;
 
   public:
+    SurfaceCursor m_eCurrentCursor = SurfaceCursor::Arrow;
+    
     KeyMod m_iLastMod = KeyMod::None;
 
     signals::signal<void( BaseSurface *, uint32_t, uint32_t )> OnResolutionChanged;
