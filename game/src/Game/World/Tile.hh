@@ -2,19 +2,23 @@
 
 #include "Game/Managers/ItemInfoManager.hh"
 
+#include <Kokoro/Memory/Buffer.hh>
+#include <glm/glm.hpp>
+
 struct Tile
 {
     Item *pFore = 0;  // pointer because they are already loaded
     Item *pBack = 0;  // no need to create them again, check iteminfoman
 
-    glm::vec3 v3Pos {};
-    glm::vec2 v2Size {};
+    glm::ivec2 iPos = { 0, 0 };
 
+    // Game stuff
     glm::mat4 m4Transform {};
 
     void UpdateTransform();
+    void Draw();
 
-    void RenderForeground();
-    void RenderBackground();
-    void RenderTileShadow();
+    // Network stuff
+    bool Pack( Kokoro::Memory::Buffer &buffer );
+    bool Unpack( uint32_t iWorldVersion, Kokoro::Memory::Buffer &buffer );
 };

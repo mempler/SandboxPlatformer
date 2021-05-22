@@ -83,6 +83,20 @@ void Camera2D::SetUniformTransform( bgfx::ViewId vViewID )
                             glm::value_ptr( m_m4Projection ) );
 }
 
+bool Camera2D::IsInsideDrawArea( const glm::vec2 &v2Point ) noexcept
+{
+    auto &b = m_v2Pos;
+    auto b2 = b + m_v2Scale;
+
+    /* clang-format off */
+    if ( v2Point.x >= b.x && v2Point.x <= b2.x
+      && v2Point.y >= b.y && v2Point.y <= b2.y )
+        return true;
+    /* clang-format on */
+
+    return false;
+}
+
 void Camera2D::OnResolutionChanged( BaseSurface *pGameWindow, uint32_t iWidth,
                                     uint32_t iHeight )
 {

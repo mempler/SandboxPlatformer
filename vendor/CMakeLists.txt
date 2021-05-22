@@ -15,6 +15,7 @@ add_subdirectory(bgfx.cmake)
 
 ###############################################################################################
 
+add_definitions(-DGLM_ENABLE_EXPERIMENTAL) # Quaternions
 if((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
 	add_compile_options(-msse3)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
@@ -145,5 +146,13 @@ add_subdirectory(tracy)
 
 option(SPDLOG_FMT_EXTERNAL_HO "Use external fmt header-only library instead of bundled" ON)
 add_subdirectory(spdlog)
+
+###############################################################################################
+
+add_subdirectory(enet)
+
+###############################################################################################
+
+add_subdirectory(backward)
 
 ###############################################################################################

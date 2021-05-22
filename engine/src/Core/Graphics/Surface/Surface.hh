@@ -136,7 +136,7 @@ class BaseSurface
 
   public:
     SurfaceCursor m_eCurrentCursor = SurfaceCursor::Arrow;
-    
+
     KeyMod m_iLastMod = KeyMod::None;
 
     signals::signal<void( BaseSurface *, uint32_t, uint32_t )> OnResolutionChanged;

@@ -156,6 +156,7 @@ enum class Key : uint8_t
 enum class MouseButton : uint8_t
 {
     NONE,
+
     BTN_1 = 1 << 0,
     BTN_2 = 1 << 1,
     BTN_3 = 1 << 2,
@@ -164,6 +165,7 @@ enum class MouseButton : uint8_t
     BTN_6 = 1 << 5,
     BTN_7 = 1 << 6,
     BTN_8 = 1 << 7,
+
     BTN_LAST = BTN_1,
     BTN_LEFT = BTN_2,
     BTN_RIGHT = BTN_3,

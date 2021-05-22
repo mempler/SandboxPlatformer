@@ -1,16 +1,21 @@
 #include "World.hh"
 
+#include "Server/Server.hh"
+
 #include "Core/Engine.hh"
 #include "Core/Utils/Math.hh"
 
 #include "Game/Game.hh"
 #include "Game/Player/Avatar.hh"
-#include "Game/World/WorldRenderer.hh"
+
+#include <Tracy.hpp>
 
 #define XYTV( x, y ) ( x + ( y * m_uWidth ) )
 
 void World::Init( uint16_t uWidth, uint16_t uHeight )
 {
+    ZoneScoped;
+
     m_uWidth = uWidth;
     m_uHeight = uHeight;
 
@@ -18,6 +23,7 @@ void World::Init( uint16_t uWidth, uint16_t uHeight )
 
     m_eState |= WorldState::IsValid;  // testing purposes
 
+#if !GAME_SERVER
     BaseSurface *surface = GetEngine()->GetSurface();
 
     // TODO: MOVE THIS TO A BETTER PLACE
@@ -26,69 +32,132 @@ void World::Init( uint16_t uWidth, uint16_t uHeight )
     m_hWorldFrameBuffer =
         bgfx::createFrameBuffer( surface->GetWidth(), surface->GetHeight(),
                                  bgfx::TextureFormat::RGBA8, g_uFrameBufferFlags );
+#endif
 }
 
 void World::Tick( float fDeltaTime )
 {
+    ZoneScoped;
+
     if ( !IsValid() ) return;
 
-    for ( auto &&i : m_vAvatars ) i->OnUpdate( fDeltaTime );
+    for ( auto &avatar : m_vAvatars ) avatar.Tick( fDeltaTime );
 }
 
 void World::Draw()
 {
+    ZoneScoped;
+
     if ( !IsValid() ) return;
 
     BaseSurface *surface = GetEngine()->GetSurface();
+    Camera2D &cam = GetEngine()->GetCamera();
+    VertexBatcher &batcher = GetEngine()->GetBatcher();
 
-    GetEngine()
-        ->GetBatcher()
-        .Reset();  // reset what we've drawn, we will be switching views
-    GetEngine()->GetBatcher().SetCurrentView( 2 );
-    bgfx::setViewFrameBuffer(
-        2,
-        m_hWorldFrameBuffer );  // tell bgfx that we are using this framebuffer
+    // reset what we've drawn, we will go flat earthlers.
+    batcher.Reset();
+    batcher.SetCurrentView( 2 );
 
-    WorldRenderer::Draw( this );  // WorldRenderer will handle what we want
+    // tell bgfx that we are using this framebuffer
+    bgfx::setViewFrameBuffer( 2, m_hWorldFrameBuffer );
+
+    // Render out the world
+    for ( auto &tile : m_vTiles )
+    {
+        if ( !cam.IsInsideDrawArea( tile.iPos * 32 ) ) continue;
+
+        tile.Draw();
+    }
 
     RenderAvatars();
 
-    GetEngine()->GetBatcher().Reset();  // we are done
-    GetEngine()->GetBatcher().SubmitRectangleRawHandle(
+    batcher.Reset();  // we are done
+    batcher.SubmitRectangleRawHandle(
         bgfx::getTexture( m_hWorldFrameBuffer ),
         Math::CalcTransform( { 0, 0, 1 },
                              { surface->GetWidth(), surface->GetHeight() } ) );
-    GetEngine()->GetBatcher().SetCurrentView( 0 );  // back to default view
-}
-
-void World::RenderAvatars()
-{
-    for ( auto &&i : m_vAvatars ) i->OnRender();
+    batcher.SetCurrentView( 0 );  // back to default view
 }
 
 void World::PlaceFore( uint16_t uID, uint16_t x, uint16_t y )
 {
+    ZoneScoped;
+
     Tile *tile = &m_vTiles [ XYTV( x, y ) ];
 
-    tile->v3Pos = { x * 32.f, y * 32.f, 5 };
-    tile->v2Size = { 32.f, 32.f };
+    tile->iPos = {
+        x,
+        y,
+    };
+
+#if !GAME_SERVER  // This is too expensive for the server
     tile->UpdateTransform();
-    tile->pFore = GetGame()->GetItemInfoMan().GetItem( uID );
+#endif
+
+    tile->pFore = GAME->GetItemInfoMan().GetItem( uID );
 }
 
 void World::PlaceBack( uint16_t uID, uint16_t x, uint16_t y )
 {
+    ZoneScoped;
 }
 
-Avatar *World::AddAvatar( Avatar *avatar )
+Avatar *World::CreateAvatar()
 {
-    m_vAvatars.push_back( avatar );
+    ZoneScoped;
 
-    return avatar;
+    return &m_vAvatars.emplace_back();
 }
 
-void World::OnPlayerEnter()
+bool World::Pack( Kokoro::Memory::Buffer &buffer )
 {
-    Avatar *avatar = new Avatar( { 100.f, 100.f, 7 }, "None" );
-    GetGame()->GetLocalPlayer().InitAvatar( AddAvatar( avatar ) );
+    ZoneScoped;
+
+    m_uVersion = WORLD_VERSION;
+    buffer.Push( m_uVersion );
+
+    buffer.Push( m_uWidth );
+    buffer.Push( m_uHeight );
+    buffer.Push( m_eState );
+
+    for ( auto &tile : m_vTiles )
+    {
+        tile.Pack( buffer );
+    }
+
+    return true;
+}
+
+bool World::Unpack( Kokoro::Memory::Buffer &buffer )
+{
+    ZoneScoped;
+
+    if ( !buffer.can_read( 10 ) )
+    {
+        return false;
+    }
+
+    Init( 0, 0 );  // Init ourself
+
+    m_uVersion = buffer.Pop<uint16_t>( 2 );
+
+    m_uWidth = buffer.Pop<uint16_t>( 2 );
+    m_uHeight = buffer.Pop<uint16_t>( 2 );
+    m_eState = buffer.Pop<WorldState>( 4 );
+
+    m_vTiles.resize( m_uWidth * m_uHeight );
+
+    for ( auto &tile : m_vTiles )
+    {
+        if ( !tile.Unpack( m_uVersion, buffer ) ) return false;
+    }
+
+    return true;
+}
+
+void World::RenderAvatars()
+{
+    ZoneScoped;
+
+    for ( auto &avatar : m_vAvatars ) avatar.Draw();
 }

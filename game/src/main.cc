@@ -4,6 +4,9 @@
 
 #include "Game/Game.hh"
 
+#if GAME_SERVER
+    #include "Server/Server.hh"
+#endif
 class Application : public BaseApp
 {
   protected:
@@ -17,7 +20,8 @@ class Application : public BaseApp
         m_lWatermark.SetText( { 0, 0, 999.f }, "ICESDK DEMO", m_pFont );
         m_lWatermark.SetColor( { 1, 1, 1, .2 } );
 
-        glm::vec3 center = { m_pEngine->GetSurface()->GetWidth() / 2.f - m_lWatermark.GetSize().x / 2,
+        glm::vec3 center = { m_pEngine->GetSurface()->GetWidth() / 2.f
+                                 - m_lWatermark.GetSize().x / 2,
                              m_pEngine->GetSurface()->GetHeight() - 100.f, 999.f };
 
         m_lWatermark.SetPosition( center );
@@ -44,7 +48,7 @@ class Application : public BaseApp
     }
 
   private:
-    void OnWindowResize( BaseSurface *pSurface, uint32_t iWidth, uint32_t iHeight )
+    inline void OnWindowResize( BaseSurface *pSurface, uint32_t iWidth, uint32_t iHeight )
     {
         glm::vec3 center = { pSurface->GetWidth() / 2.f - m_lWatermark.GetSize().x / 2.f,
                              pSurface->GetHeight() - 100.f, 999.f };
@@ -61,11 +65,21 @@ class Application : public BaseApp
 
 static Application *app = nullptr;
 
+#if GAME_SERVER
+static Server *g_pServer = nullptr;
+#endif
+
 int main()
 {
+#if GAME_SERVER
+    g_pServer = new Server;
+
+    g_pServer->Run();
+#else
     app = new Application;
 
     app->Run();
+#endif
 
     return 0;
 }
@@ -79,3 +93,10 @@ Game *GetGame()
 {
     return &app->GetGame();
 }
+
+#if GAME_SERVER
+Server *GetServer()
+{
+    return g_pServer;
+}
+#endif

@@ -2,8 +2,13 @@
 
 #include "Core/Engine.hh"
 
+#include "Game/Network/Packets/ItemDBPacket.hh"
+#include "Game/Network/Packets/WorldPacket.hh"
+
 void Game::OnResolutionChanged( BaseSurface *pSurface, uint32_t iWidth, uint32_t iHeight )
 {
+    ZoneScoped;
+
     if ( m_World.IsValid() )
     {
         if ( bgfx::isValid( m_World.GetFrameBuffer() ) )
@@ -24,6 +29,8 @@ Game::~Game()
 
 void Game::Init()
 {
+    ZoneScoped;
+
     // PREINIT EVENTS
     GetEngine()->GetSurface()->OnResolutionChanged.connect<&Game::OnResolutionChanged>(
         this );
@@ -31,47 +38,47 @@ void Game::Init()
     GetEngine()->GetInputManager().OnKeyRelease.connect<&Player::OnKeyRelease>(
         &m_Player );
 
+    // PREINIT RESOURCES
+    m_pFont = GetEngine()->GetFontManager().LoadFromFile( "file://Roboto-Regular.ttf",
+                                                          256, 256, 22.f );
+
+#if ENGINE_DEBUG
+    m_pNetworkInspector =
+        GetEngine()->RegisterDebugUtil<NetworkInspector>( true, "Network" );
+#endif
+
     // PREINIT VIEWS
     GetEngine()->AddView( 2 );  // World tile layer
     GetEngine()->ResetTransform();
 
-    // PRELOAD ITEMS, FOR NOW
-    // Rock
-    m_ItemInfoManager.Preload( { 0., 0, 32, 32 },
-                               GetEngine()->GetTextureManager().CreateTextureFromFile(
-                                   "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
-    // Dirt
-    m_ItemInfoManager.Preload( { 32, 0, 32, 32 },
-                               GetEngine()->GetTextureManager().CreateTextureFromFile(
-                                   "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
-    // Grass
-    m_ItemInfoManager.Preload( { 64, 0, 32, 32 },
-                               GetEngine()->GetTextureManager().CreateTextureFromFile(
-                                   "file://tiles1.png", TEXTURE_FORMAT_NEAREST ) );
+    // CONNECT TO NETWORK
+    ENetAddress address = { 0 };
+    enet_address_set_host( &address, "127.0.0.1" );
+    address.port = 27015;  // FIXME: Don't hardcode this
 
-    m_World.Init( 100, 60 );
+    m_Network.InitClient();
 
-    for ( uint16_t i = 0; i < 100; i++ ) m_World.PlaceFore( 2, i, 0 );
+    m_pNetworkClient = m_Network.ConnectTo( address );
 
-    for ( uint16_t x = 0; x < 100; x++ )
-    {
-        for ( uint16_t y = 1; y < 60; y++ )
-        {
-            m_World.PlaceFore( 1, x, y );
-        }
-    }
-
-    m_World.OnPlayerEnter();
+    m_pNetworkClient->OnStateChange.connect<&Game::OnStateChange>( this );
+    m_pNetworkClient->OnPacket.connect<&Game::OnPacket>( this );
 }
 
 void Game::Tick( float fDeltaTime )
 {
+    ZoneScoped;
+
     m_World.Tick( fDeltaTime );
+    m_Network.Tick();
 }
 
 void Game::Draw()
 {
+    ZoneScoped;
+
     m_World.Draw();
+
+    if ( m_pNetworkClient ) m_lConnectionStatus.Render();
 }
 
 ItemInfoManager &Game ::GetItemInfoMan()
@@ -87,4 +94,121 @@ World &Game::GetWorld()
 Player &Game::GetLocalPlayer()
 {
     return m_Player;
+}
+
+// Network stuff
+void Game::RequestWorld( const std::string_view &svName )
+{
+    ZoneScoped;
+
+    Packets::WorldRequestData data;
+    data.m_sName = svName;
+
+    Packets::REQ_World packet {};
+    packet.m_Object = &data;
+
+    auto size = m_pNetworkClient->Send( packet );
+
+#if ENGINE_DEBUG
+    m_pNetworkInspector->HookSendPacket( packet.m_Header.m_eType, size );
+#endif
+}
+
+void Game::RequestItemDB()
+{
+    ZoneScoped;
+
+    Packets::ItemDBRequestData data;
+
+    Packets::REQ_ItemDB packet {};
+    packet.m_Object = &data;
+
+    auto size = m_pNetworkClient->Send( packet );
+
+#if ENGINE_DEBUG
+    m_pNetworkInspector->HookSendPacket( packet.m_Header.m_eType, size );
+#endif
+}
+
+void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState )
+{
+    ZoneScoped;
+
+    switch ( eState )
+    {
+    case ConnectionState::Disconnected:
+    {
+        m_lConnectionStatus.SetText( { 0, 0, 999.f },
+                                     "Network: Not Connected... Retrying", m_pFont );
+        m_lConnectionStatus.SetColor( { 1, .3, .3, 1 } );
+
+        ENetAddress address = { 0 };
+        enet_address_set_host( &address, "127.0.0.1" );
+        address.port = 27015;
+
+        m_pNetworkClient = m_Network.ConnectTo( address );
+        m_pNetworkClient->OnStateChange.connect<&Game::OnStateChange>( this );
+        break;
+    }
+    case ConnectionState::Connected:
+        m_lConnectionStatus.SetText( { 0, 0, 999.f }, "Network: Connected!", m_pFont );
+        m_lConnectionStatus.SetColor( { .3, 1, .3, 1 } );
+
+        // Before we can request any worlds, we gotta get an ItemDB
+        RequestItemDB();
+        break;
+
+    case ConnectionState::Connecting:
+        m_lConnectionStatus.SetText( { 0, 0, 999.f }, "Network: Connecting...", m_pFont );
+        m_lConnectionStatus.SetColor( { 1, 1, .3, 1 } );
+        break;
+    default: break;
+    }
+
+#if ENGINE_DEBUG
+    m_pNetworkInspector->HookConnectionState( eState );
+#endif
+}
+
+void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
+                     Kokoro::Memory::Buffer buffer )
+{
+    ZoneScoped;
+
+#if ENGINE_DEBUG
+    m_pNetworkInspector->HookRecievePacket( header.m_eType, buffer.size() );
+#endif
+
+    switch ( header.m_eType )
+    {
+    case PacketType::SRV_SendItemDB:
+    {
+        if ( !m_ItemInfoManager.Unpack( buffer ) )
+        {
+            Console::Error( "Failed to unpack ItemDB!" );
+        }
+
+        // FIXME: Move this somewhere else
+        // Request the world "START"
+        RequestWorld( "START" );
+
+        break;
+    }
+
+    case PacketType::SRV_SendWorld:
+    {
+        if ( !m_World.Unpack( buffer ) )
+        {
+            Console::Error( "Failed to unpack World!" );
+        }
+
+        break;
+    }
+
+    default:
+    {
+        Console::Warn( "Unimplemented Packet: {}!", (int) header.m_eType );
+        break;
+    }
+    }
 }

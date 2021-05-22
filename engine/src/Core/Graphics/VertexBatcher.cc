@@ -9,6 +9,9 @@
 
 #include "bgfx/bgfx.h"
 
+#pragma GCC push_options
+#pragma GCC optimize( "O3" )
+
 static uint32_t g_uMaxQuads = 80000;
 
 VertexBatcher::VertexBatcher()
@@ -140,7 +143,17 @@ void VertexBatcher::Reset()
 
     Flush();
 
+    // clear the map
     m_vBatchEvents.clear();
+
+    /*
+    for ( auto &&event : m_vBatchEvents )
+        std::vector<VertexInfo>().swap( event.second.vertices );
+
+    m_vBatchEvents.clear();
+    std::vector<std::pair<bgfx::TextureHandle, BatchEvent>>().swap(
+        m_vBatchEvents );  // kill me fucking hell
+    */
 }
 
 /*****************************************************
@@ -154,12 +167,15 @@ void VertexBatcher::Submit( Texture2D *pTexture, const glm::mat4 &m4Transform,
     ZoneScoped;
 
     BatchEvent &event = GetVertexData( pTexture );
+
     event.vertices.resize( event.vertices.size() + 4 );
 
     VertexInfo *info = &event.vertices [ event.vertices.size() - 4 ];
 
     for ( size_t i = 0; i < 4; i++ )
     {
+        ZoneScoped;
+
         info->pos = m4Transform * g_m4DefPos [ i ];
         info->uv = m4UV [ i ];
         info->color = v4Color;
@@ -235,3 +251,4 @@ void VertexBatcher::SubmitRectangleRawHandle( bgfx::TextureHandle hTexture,
 
     event.indexes += 6;
 }
+#pragma GCC pop_options

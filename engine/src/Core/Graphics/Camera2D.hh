@@ -30,6 +30,9 @@ class Camera2D
     // Basic abstraction of bgfx::setViewTransform(...)
     void SetUniformTransform( bgfx::ViewId vViewID );
 
+    // Returns true if we're in the draw area
+    bool IsInsideDrawArea( const glm::vec2 &v2Position ) noexcept;
+
   public:
     // Returns constant pointer of projection.
     // This var cannot be edited. And shouldn't.
@@ -70,5 +73,6 @@ class Camera2D
     float m_fZoom {};
 
   private:
-    void OnResolutionChanged( BaseSurface *pGameWindow, uint32_t iWidth, uint32_t iHeight );
+    void OnResolutionChanged( BaseSurface *pGameWindow, uint32_t iWidth,
+                              uint32_t iHeight );
 };

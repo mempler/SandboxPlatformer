@@ -20,6 +20,8 @@ class IDebugUtil
         return m_bIsShowing;
     }
 
+    virtual const char* Name() = 0;
+
   protected:
     bool m_bIsShowing = false;
 

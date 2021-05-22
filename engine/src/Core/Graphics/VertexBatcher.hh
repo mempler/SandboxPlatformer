@@ -11,7 +11,6 @@
 
 #include <vector>
 
-
 // The idea behind using glm functions:
 //
 // (vertex)
@@ -41,6 +40,9 @@ static const glm::mat4x2 g_m4DefCoords = {
     0, 0,  // V3
     0, 1,  // V4
 };
+
+#pragma GCC push_options
+#pragma GCC optimize( "O3" )
 
 class ENGINE_EXPORT VertexBatcher
 {
@@ -111,8 +113,7 @@ class ENGINE_EXPORT VertexBatcher
      * @param v4Color Color, use [0, 1].
      *****************************************************/
     void Submit( Texture2D *pTexture, const glm::mat4 &m4Transform,
-                 const glm::mat4x2 &m4UV,
-                 const glm::vec4 &v4Color = { 1, 1, 1, 1 } );
+                 const glm::mat4x2 &m4UV, const glm::vec4 &v4Color = { 1, 1, 1, 1 } );
 
     /*****************************************************
      * SubmitWithUV
@@ -126,8 +127,7 @@ class ENGINE_EXPORT VertexBatcher
      * @param v4Color Color, use [0, 1].
      *****************************************************/
     void SubmitWithUV( Texture2D *pTexture, const glm::mat4 &m4Transform,
-                       const glm::vec4 &v4UV,
-                       const glm::vec4 &v4Color = { 1, 1, 1, 1 } );
+                       const glm::vec4 &v4UV, const glm::vec4 &v4Color = { 1, 1, 1, 1 } );
 
     /*****************************************************
      * SubmitWithRawUV
@@ -199,24 +199,34 @@ class ENGINE_EXPORT VertexBatcher
     bgfx::ViewId m_viCurrentView = 0;
 
   private:
-    BatchEvent &GetVertexData( Texture2D *pTexture )
+    inline BatchEvent &GetVertexData( Texture2D *pTexture )
     {
+        ZoneScoped;
+
         for ( auto &&t : m_vBatchEvents )
             if ( t.first.idx == pTexture->GetHandle().idx ) return t.second;
 
         m_vBatchEvents.push_back(
             std::make_pair( pTexture->GetHandle(), BatchEvent {} ) );
 
+        m_vBatchEvents.back().second.vertices.reserve( 256 );  // Preallocate 256 vertices
+
         return m_vBatchEvents.back().second;
     }
 
-    BatchEvent &GetVertexData( bgfx::TextureHandle &hTexture )
+    inline BatchEvent &GetVertexData( bgfx::TextureHandle &hTexture )
     {
+        ZoneScoped;
+
         for ( auto &&t : m_vBatchEvents )
             if ( t.first.idx == hTexture.idx ) return t.second;
 
         m_vBatchEvents.push_back( std::make_pair( hTexture, BatchEvent {} ) );
 
+        m_vBatchEvents.back().second.vertices.reserve( 256 );  // Preallocate 256 vertices
+
         return m_vBatchEvents.back().second;
     }
 };
+
+#pragma GCC pop_options

@@ -4,6 +4,7 @@
 
 #include "Core/Audio/AudioSystem.hh"
 #include "Core/Debug/GameView.hh"
+#include "Core/Debug/IDebugUtil.hh"
 #include "Core/Debug/IResourceMonitor.hh"
 #include "Core/Debug/Profiler.hh"
 #include "Core/Graphics/Camera2D.hh"
@@ -39,6 +40,20 @@ class Engine
 
     void Init();
 
+#if ENGINE_DEBUG
+    template <typename DBG>
+    DBG *RegisterDebugUtil( bool bShowByDefault = false, const char *szTab = "Engine" )
+    {
+        DBG *dbg = new DBG( this );
+
+        dbg->SetShowing( bShowByDefault );
+
+        m_vDebugUtils.push_back( std::make_pair( szTab, (IDebugUtil *) dbg ) );
+
+        return dbg;
+    }
+#endif
+
   public:
     uint32_t GetResetFlags()
     {
@@ -73,12 +88,12 @@ class Engine
     bool m_bShowDebugUtils = false;
 #endif
 
+#if ENGINE_DEBUG
+    std::vector<std::pair<const char *, IDebugUtil *>> m_vDebugUtils;
+#endif
+
     // Callback utils
     void OnResolutionChanged( BaseSurface *pSurface, uint32_t uWidth, uint32_t uHeight );
-
-    GameView m_GameView;
-    IResourceMonitor m_IResourceMonitor;
-    Profiler m_Profiler;
 
     uint32_t m_uResetFlags = 0;
 
@@ -100,7 +115,7 @@ class BaseApp
     void Run();
 
   public:
-    Engine *GetEngine() const
+    inline Engine *GetEngine() const
     {
         return m_pEngine;
     }
@@ -116,7 +131,10 @@ class BaseApp
 };
 
 extern BaseApp *GetApp();
-extern Engine *GetEngine();
+inline Engine *GetEngine()
+{
+    return GetApp()->GetEngine();
+}
 
 #if PLATFORM_ANDROID
 int SDL_main( int argc, char *argv [] );

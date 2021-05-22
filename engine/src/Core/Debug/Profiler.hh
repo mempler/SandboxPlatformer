@@ -17,6 +17,11 @@ class Profiler : public IDebugUtil
 
     void Draw() override;
 
+    const char *Name() override
+    {
+        return "Performance Profiler";
+    }
+
   private:
     Timer timer;
 

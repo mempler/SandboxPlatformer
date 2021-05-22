@@ -234,6 +234,8 @@ X11Surface::X11Surface( SurfaceDesc &desc ) : BaseSurface( desc )
 {
     setlocale( LC_ALL, "" );
 
+    XInitThreads();
+
     Display *display = XOpenDisplay( NULL );
     if ( display == nullptr )
     {

@@ -2,6 +2,8 @@
 
 #include "Engine.hh"
 
+#include "Tracy.hpp"
+
 #include "Core/Audio/AudioSystem.hh"
 #include "Core/Debug/DefaultLayout.hh"
 #include "Core/Debug/imgui/SurfaceImGui.hh"
@@ -21,22 +23,13 @@
 //////////////////
 //    Engine    //
 //////////////////
-Engine *GetEngine()
-{
-    ZoneScoped;
-    return GetApp()->GetEngine();
-}
-
 // Turn off formatting, there is some weird shit going on
 // clang-format off
 Engine::Engine(SurfaceDesc &surfaceDesc) 
   : m_BaseSurface(new PlatformSurface(surfaceDesc)), 
     m_Camera({ 0.f, 0.f }, 
                 { (float)m_BaseSurface->GetWidth(), (float)m_BaseSurface->GetHeight() }),
-    m_VertexBatcher(), 
-    m_IResourceMonitor(this), 
-    m_GameView(this),
-    m_Profiler(this)
+    m_VertexBatcher()
 {
     ZoneScoped;
 }
@@ -130,10 +123,11 @@ void Engine::Init()
 
     m_VertexBatcher.Init( m_TextureManager );
 
-    // Show by default
-    m_IResourceMonitor.SetShowing( true );
-    m_GameView.SetShowing( true );
-    m_Profiler.SetShowing( false );
+#if ENGINE_DEBUG
+    RegisterDebugUtil<IResourceMonitor>( true );
+    RegisterDebugUtil<GameView>( true );
+    RegisterDebugUtil<Profiler>( true );
+#endif
 }
 
 void Engine::InitBGFX()
@@ -222,8 +216,6 @@ void Engine::InitBGFX()
 
 void Engine::BeginFrame()
 {
-    FrameMarkStart( "Engine Frame" );
-
     ZoneScoped;
 
     m_BaseSurface->Poll();
@@ -247,8 +239,7 @@ void Engine::BeginFrame()
     {
         m_bShowDebugUtils = !m_bShowDebugUtils;
 
-        if ( !m_bShowDebugUtils && m_GameView.IsShowing() )
-            bgfx::setViewFrameBuffer( 0, BGFX_INVALID_HANDLE );  // Reset framebuffer
+        bgfx::setViewFrameBuffer( 0, BGFX_INVALID_HANDLE );  // Reset framebuffer
     }
 
     if ( m_bShowDebugUtils )
@@ -276,43 +267,28 @@ void Engine::BeginFrame()
 
         if ( ImGui::BeginMenuBar() )
         {
-            if ( ImGui::BeginMenu( "Engine" ) )
+            for ( auto &[ tab, dbgUtil ] : m_vDebugUtils )
             {
-                if ( ImGui::MenuItem( "IResource Monitor" ) )
-                {  // Toggle
-                    m_IResourceMonitor.SetShowing( !m_IResourceMonitor.IsShowing() );
+                if ( ImGui::BeginMenu( tab ) )
+                {
+                    if ( ImGui::MenuItem( dbgUtil->Name() ) )
+                    {  // Toggle
+                        dbgUtil->SetShowing( !dbgUtil->IsShowing() );
+                    }
+
+                    ImGui::EndMenu();
                 }
-
-                if ( ImGui::MenuItem( "Game View" ) )
-                {  // Toggle
-                    m_GameView.SetShowing( !m_GameView.IsShowing() );
-
-                    m_GameView.Draw();  // Draw one more time
-                }
-
-                if ( ImGui::MenuItem( "Profiler" ) )
-                {  // Toggle
-                    m_Profiler.SetShowing( !m_Profiler.IsShowing() );
-                }
-
-                ImGui::EndMenu();
             }
+
             ImGui::EndMenuBar();
         }
 
-        if ( m_IResourceMonitor.IsShowing() )
+        for ( auto &[ tab, dbgUtil ] : m_vDebugUtils )
         {
-            m_IResourceMonitor.Draw();
-        }
-
-        if ( m_GameView.IsShowing() )
-        {
-            m_GameView.Draw();
-        }
-
-        if ( m_Profiler.IsShowing() )
-        {
-            m_Profiler.Draw();
+            if ( dbgUtil->IsShowing() )
+            {
+                dbgUtil->Draw();
+            }
         }
 
         ImGui::ShowDemoWindow();
@@ -333,8 +309,6 @@ void Engine::EndFrame()
 #endif
 
     bgfx::frame();
-
-    FrameMarkEnd( "Engine Frame" );
 }
 
 void Engine::OnResolutionChanged( BaseSurface *pSurface, uint32_t uWidth,
@@ -384,5 +358,25 @@ void BaseApp::Run()
         Draw( elapsed );
 
         m_pEngine->EndFrame();
+
+        FrameMark;
     }
 }
+
+#if TRACY_ENABLE
+void *operator new( size_t s )
+{
+    void *p = malloc( s );
+
+    TracySecureAlloc( p, s );
+
+    return p;
+}
+
+void operator delete( void *p ) noexcept
+{
+    TracySecureFree( p );
+
+    free( p );
+}
+#endif

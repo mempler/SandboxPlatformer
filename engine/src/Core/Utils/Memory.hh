@@ -23,8 +23,7 @@ namespace Memory
 
         if ( pLen < 1024.0 * 1024.0 * 1024.0 * 1024.0 )
         {
-            return fmt::format( "{:.2f}GB",
-                                pLen / ( 1024.0 * 1024.0 * 1024.0 ) );
+            return fmt::format( "{:.2f}GB", pLen / ( 1024.0 * 1024.0 * 1024.0 ) );
         }
 
         return fmt::format( "{:.2f}B", pLen );
