@@ -45,16 +45,15 @@ NetClientPtr Network::ConnectTo( ENetAddress &address )
 {
     ZoneScoped;
 
+    m_bIsClient = true;
+
     ENetPeer *peer = enet_host_connect( m_pInstance, &address, 2, 0 );
     if ( !peer )
     {
         Console::Fatal( "Failed to initialize ENet peer!" );
     }
 
-    NetClientPtr pNetClient = new NetClient( m_pInstance, peer );
-    peer->data = pNetClient;
-
-    return pNetClient;
+    return AddPeer( peer );
 }
 
 NetClientPtr Network::AddPeer( ENetPeer *peer )
@@ -79,11 +78,12 @@ void Network::Tick()
         {
         case ENET_EVENT_TYPE_CONNECT:
         {
-#if GAME_SERVER
-            NetClientPtr pClient = AddPeer( event.peer );
-#else
-            NetClientPtr pClient = (NetClientPtr) event.peer->data;
-#endif
+            NetClientPtr pClient;
+            if ( !m_bIsClient )
+                pClient = AddPeer( event.peer );
+            else
+                pClient = (NetClientPtr) event.peer->data;
+
             OnStateChange( pClient, ConnectionState::Connected );
             pClient->OnStateChange( pClient, ConnectionState::Connected );
 
@@ -113,8 +113,20 @@ void Network::Tick()
         case ENET_EVENT_TYPE_DISCONNECT:
         {
             NetClientPtr pClient = (NetClientPtr) event.peer->data;
+            if ( pClient == nullptr ) continue;
+
             OnStateChange( pClient, ConnectionState::Disconnected );
             pClient->OnStateChange( pClient, ConnectionState::Disconnected );
+
+            for ( size_t i = 0; i < m_vClients.size(); i++ )
+            {
+                if ( m_vClients.at( i ) != pClient ) continue;
+
+                m_vClients.erase( m_vClients.begin() + i );
+                break;
+            }
+
+            delete pClient;
 
             Console::Info( "Peer disconnected." );
             break;

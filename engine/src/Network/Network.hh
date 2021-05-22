@@ -40,6 +40,8 @@ class Network
     signals::signal<void( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer )> OnPacket;
 
   private:
+    bool m_bIsClient = false;
+
     ENetHost *m_pInstance = nullptr;
 
     std::vector<NetClientPtr> m_vClients;
