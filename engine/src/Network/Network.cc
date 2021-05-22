@@ -63,6 +63,9 @@ NetClientPtr Network::AddPeer( ENetPeer *peer )
 
     m_vClients.push_back( pNetClient );
 
+    OnStateChange( pNetClient, ConnectionState::Connecting );
+    pNetClient->OnStateChange( pNetClient, ConnectionState::Connecting );
+
     return pNetClient;
 }
 

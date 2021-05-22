@@ -57,13 +57,6 @@ class NetClient
         enet_peer_reset( m_hConn );
     }
 
-    bool IsValid()
-    {
-        ZoneScoped;
-
-        return m_hConn->state == ENET_PEER_STATE_CONNECTED;
-    }
-
     ConnectionState GetState()
     {
         ZoneScoped;
