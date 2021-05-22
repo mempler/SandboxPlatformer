@@ -1,0 +1,32 @@
+# ItemDB, List of all items currently available ingame
+
+# ID              : ID of the item
+# HEALTH          : -1 = Unbreakable, 0 = Instant Break, 1 = 1 hit, 2 = 2 hits and so on...
+# NAME            : Name of the item
+# DESCID          : Description ID of the given tem
+# ATLAS IDENTIFIER: Identifier of the texture used. Possible protocols: file:// pkg:// http://
+# ATLAS X,Y       : Coordinate inside of the atlas
+# TILED           : If an tile is tiled (Connected textures) = 1 for Enabled or 0 for disabled
+# Tiled X,Y,W,H   : Works only if TILED is enabled, otherwise will be ignored
+
+# 16 Items
+
+# 0 is reserved for Air!                              
+
+# ID | NAME          | DESCID     | ATLAS IDENTIFIER  | ATLAS X,Y | HEALTH | TILED | TILED X,Y,W,H
+1    | Bedrock       | bedrock    | file://tiles1.png | 0,0       | -1     | 0     | 0,0,0,0
+2    | Dirt          | dirt       | file://tiles1.png | 1,0       |  4     | 1     | 0,1,9,6
+3    | Rock          | rock       | file://tiles1.png | 3,0       |  7     | 0     | 0,0,0,0
+4    | Lava          | lava       | file://tiles1.png | 4,0       |  4     | 0     | 0,0,0,0
+5    | White Block   | w_block    | file://tiles1.png | 5,0       |  6     | 0     | 0,0,0,0
+6    | Black Block   | b_block    | file://tiles1.png | 6,0       |  6     | 0     | 0,0,0,0
+7    | Red Block     | r_block    | file://tiles1.png | 7,0       |  6     | 0     | 0,0,0,0
+8    | Green Block   | g_block    | file://tiles1.png | 8,0       |  6     | 0     | 0,0,0,0
+9    | Blue Block    | b_block    | file://tiles1.png | 9,0       |  6     | 0     | 0,0,0,0
+10   | Yellow Block  | y_block    | file://tiles1.png | 10,0      |  6     | 0     | 0,0,0,0
+11   | Orange Block  | o_block    | file://tiles1.png | 11,0      |  6     | 0     | 0,0,0,0
+12   | Purple Block  | pu_block   | file://tiles1.png | 12,0      |  6     | 0     | 0,0,0,0
+13   | Pink Block    | pi_block   | file://tiles1.png | 13,0      |  6     | 0     | 0,0,0,0
+14   | Diamond Block | d_block    | file://tiles1.png | 14,0      |  3     | 0     | 0,0,0,0
+15   | Crystal Block | c_block    | file://tiles1.png | 15,0      |  3     | 0     | 0,0,0,0
+16   | Rainbow Block | r_block    | file://tiles1.png | 16,0      |  6     | 0     | 0,0,0,0
