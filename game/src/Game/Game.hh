@@ -7,10 +7,10 @@
 
 #include "Game/Debug/NetworkInspector.hh"
 #include "Game/Managers/ItemInfoManager.hh"
-#include "Game/Network/Network.hh"
 #include "Game/Player/Player.hh"
 #include "Game/World/World.hh"
 
+#include "Network/Network.hh"
 
 // not the best place to put
 constexpr uintptr_t g_uFrameBufferFlags =

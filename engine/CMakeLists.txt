@@ -20,6 +20,7 @@ set(ENGINE_LIBS
     tracy
     spdlog
     sse3
+    enet
 )
 
 if (LINUX AND NOT ANDROID)

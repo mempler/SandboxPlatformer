@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Game/Network/Packet.hh"
 #include "Game/World/World.hh"
+
+#include "Network/Packet.hh"
 
 namespace Packets
 {

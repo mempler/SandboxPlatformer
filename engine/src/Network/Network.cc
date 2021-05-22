@@ -6,7 +6,7 @@
 
 #include "Core/Utils/Logger.hh"
 
-#include "Game/Network/NetClient.hh"
+#include "Network/NetClient.hh"
 
 #include <Tracy.hpp>
 

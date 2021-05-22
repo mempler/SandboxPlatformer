@@ -1,4 +1,5 @@
 #include "pch.hh"
+#include <cstdint>
 
 #include "NetworkInspector.hh"
 
@@ -8,11 +9,10 @@
 #include "Core/Utils/Memory.hh"
 
 #include "Game/Game.hh"
-#include "Game/Network/NetClient.hh"
+
+#include "Network/NetClient.hh"
 
 #include "bgfx/bgfx.h"
-
-#include <cstdint>
 
 static ImVec4 GetColor_NetworkInspector( const char *szState )
 {

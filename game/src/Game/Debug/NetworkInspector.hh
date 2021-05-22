@@ -1,13 +1,15 @@
 #pragma once
 
+#include <tuple>
+#include <vector>
+
 #include "Core/Debug/IDebugUtil.hh"
 
-#include "Game/Network/Network.hh"
-#include "Game/Network/Packet.hh"
+#include "Network/NetClient.hh"
+#include "Network/Network.hh"
+#include "Network/Packet.hh"
 
 #include "bgfx/bgfx.h"
-
-#include <tuple>
 
 class NetworkInspector : public IDebugUtil
 {

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Game/Network/Network.hh"
 #include "Game/World/World.hh"
+
+#include "Network/Network.hh"
 
 class Server
 {

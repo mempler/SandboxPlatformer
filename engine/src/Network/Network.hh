@@ -5,8 +5,8 @@
 
 #include "Core/Utils/Logger.hh"
 
-#include "Game/Network/NetClient.hh"
-#include "Game/Network/Packet.hh"
+#include "Network/NetClient.hh"
+#include "Network/Packet.hh"
 
 #include <enet/enet.h>
 
@@ -30,7 +30,7 @@ class Network
     NetClientPtr ConnectTo( ENetAddress &address );
 
     // Add new peer to our network
-    NetClientPtr AddPeer(ENetPeer *peer);
+    NetClientPtr AddPeer( ENetPeer *peer );
 
     // This has to be called to send all remaining packets
     // towards the server (every tick preferable)

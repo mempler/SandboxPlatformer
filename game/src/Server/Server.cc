@@ -6,9 +6,10 @@
 #include "Core/Utils/Logger.hh"
 #include "Core/Utils/Timer.hh"
 
-#include "Game/Network/Packet.hh"
 #include "Game/Network/Packets/ItemDBPacket.hh"
 #include "Game/Network/Packets/WorldPacket.hh"
+
+#include "Network/Packet.hh"
 
 #include "Kokoro/Memory/Buffer.hh"
 
@@ -32,7 +33,7 @@ void Server::Init()
     address.host = ENET_HOST_ANY;
     address.port = 27015;
 
-    m_Network.InitServer(address, 32);
+    m_Network.InitServer( address, 32 );
 
     Console::Info( "Server listening on port {}", address.port );
 

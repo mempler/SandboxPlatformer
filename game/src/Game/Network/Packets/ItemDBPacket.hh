@@ -1,7 +1,8 @@
 #pragma once
 
 #include "Game/Managers/ItemInfoManager.hh"
-#include "Game/Network/Packet.hh"
+
+#include "Network/Packet.hh"
 
 namespace Packets
 {
