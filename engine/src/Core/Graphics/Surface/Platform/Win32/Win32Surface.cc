@@ -226,8 +226,11 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
 
         KeyMod mods = KeyMod::None;
 
-        if ( wParam & MK_SHIFT ) mods |= KeyMod::SHIFT;
-        if ( wParam & MK_CONTROL ) mods |= KeyMod::CONTROL;
+        if ( GetKeyState( VK_SHIFT ) & 0x8000 ) mods |= KeyMod::SHIFT;
+        if ( GetKeyState( VK_CONTROL ) & 0x8000 ) mods |= KeyMod::CONTROL;
+        if ( GetKeyState( VK_MENU ) & 0x8000 ) mods |= KeyMod::ALT;
+        if ( GetKeyState( VK_LWIN ) & 0x8000 ) mods |= KeyMod::SUPER;
+        if ( GetKeyState( VK_CAPITAL ) & 0x8000 ) mods |= KeyMod::CAPS_LOCK;
 
         uintptr_t uLVal = COMBINEUSHORT( keys, mods );
 
@@ -250,8 +253,11 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
 
         KeyMod mods = KeyMod::None;
 
-        if ( wParam & MK_SHIFT ) mods |= KeyMod::SHIFT;
-        if ( wParam & MK_CONTROL ) mods |= KeyMod::CONTROL;
+        if ( GetKeyState( VK_SHIFT ) & 0x8000 ) mods |= KeyMod::SHIFT;
+        if ( GetKeyState( VK_CONTROL ) & 0x8000 ) mods |= KeyMod::CONTROL;
+        if ( GetKeyState( VK_MENU ) & 0x8000 ) mods |= KeyMod::ALT;
+        if ( GetKeyState( VK_LWIN ) & 0x8000 ) mods |= KeyMod::SUPER;
+        if ( GetKeyState( VK_CAPITAL ) & 0x8000 ) mods |= KeyMod::CAPS_LOCK;
 
         uintptr_t uLVal = COMBINEUSHORT( keys, mods );
 
