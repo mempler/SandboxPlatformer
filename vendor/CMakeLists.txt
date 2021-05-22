@@ -15,8 +15,16 @@ add_subdirectory(bgfx.cmake)
 
 ###############################################################################################
 
-add_definitions(-DGLM_FORCE_SSE3) # FIXME: glm crashes using SSE because of some alignment issues
 add_definitions(-DGLM_ENABLE_EXPERIMENTAL) # Quaternions
+if((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+	add_compile_options(-msse3)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
+	add_compile_options(/QxSSE3)
+elseif((CMAKE_CXX_COMPILER_ID MATCHES "MSVC") AND NOT CMAKE_CL_64)
+	add_compile_options(/arch:SSE2) # VC doesn't support /arch:SSE3
+endif()
+
+add_definitions(-DGLM_FORCE_SSE3)
 
 add_subdirectory(glm)
 

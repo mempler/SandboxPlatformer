@@ -16,10 +16,9 @@ class Win32Surface : public BaseSurface
     void SetPosition( const glm::ivec2 &ivPos ) override;
     void SetResolution( const glm::ivec2 &ivRes ) override;
 
-    const glm::ivec2 &GetMousePos() const override
-    {
-        return m_Desc.ivPos;
-    }
+    glm::ivec2 &GetCursorPosition() override;
+    void SetCursor( SurfaceCursor eCursor ) override;
+    void SetCursorPosition( const glm::ivec2 &ivPos ) override;
 
     int GetMonitorWidth() override;
     int GetMonitorHeight() override;
@@ -31,6 +30,7 @@ class Win32Surface : public BaseSurface
                                         LPARAM lParam );
 
     HWND m_Handle;
+    HINSTANCE m_Instance;
 };
 
 #endif

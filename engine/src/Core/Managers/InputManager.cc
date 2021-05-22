@@ -3,32 +3,22 @@
 #include "InputManager.hh"
 
 #include "Core/Engine.hh"
+#include "Core/Graphics/Surface/Surface.hh"
 
 void InputManager::Init()
 {
     ZoneScoped;
 
-    GetEngine()->GetSurface()->OnSetKeyState.connect<&InputManager::OnSetKeyState>(
-        this );
+    BaseSurface *pSurface = GetEngine()->GetSurface();
+
+    pSurface->OnSetKeyState.connect<&InputManager::OnSetKeyState>( this );
+    pSurface->OnChar.connect<&InputManager::OnChar>( this );
 }
 
 void InputManager::OnSetKeyState( Key eKey, ButtonState eButtonState, KeyMod eKeyMod )
 {
-    // TODO: Add repeating keys after X amount of time
-    if ( m_umKeyState [ eKey ] != eButtonState )
-    {
-        if ( eButtonState == ButtonState::Pressed )
-        {
-            OnKeyDownInput( eKey, eKeyMod );
-        }
-        else
-        {
-            OnKeyReleaseInput( eKey, eKeyMod );
-        }
-    }
-
     m_eKeyMods = eKeyMod;
-    m_umKeyState [ eKey ] = eButtonState;
+    m_vKeyState [ (int) eKey ] = (bool) eButtonState;
 
     if ( eButtonState == ButtonState::Pressed )
     {
@@ -38,4 +28,9 @@ void InputManager::OnSetKeyState( Key eKey, ButtonState eButtonState, KeyMod eKe
     {
         OnKeyRelease( eKey, eKeyMod );
     }
+}
+
+void InputManager::OnChar( uint32_t uChar, KeyMod eMod )
+{
+    OnCharInput( uChar, eMod );
 }

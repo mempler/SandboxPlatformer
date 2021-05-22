@@ -22,6 +22,12 @@ set(ENGINE_LIBS
     sse3
 )
 
+if (LINUX AND NOT ANDROID)
+    find_package(X11 REQUIRED)
+    
+    set(ENGINE_LIBS ${ENGINE_LIBS} X11::X11 X11::Xkb X11::xkbcommon X11::Xcursor)
+endif()
+
 file(GLOB_RECURSE ENGINE_SOURCES 
     src/*.cc
 )

@@ -6,6 +6,7 @@
 
 #include "Core/Audio/AudioSystem.hh"
 #include "Core/Debug/DefaultLayout.hh"
+#include "Core/Debug/imgui/SurfaceImGui.hh"
 #include "Core/Graphics/Surface/PlatformSurface.hh"
 #include "Core/Graphics/Surface/Surface.hh"
 #include "Core/Managers/InputManager.hh"
@@ -102,6 +103,12 @@ void Engine::Init()
 {
     ZoneScoped;
 
+    // Initialize C++ Locale (Language stuff)
+
+    std::locale loc( "" );  // Set default locale
+    std::locale::global( loc );
+    std::cout.imbue( loc );
+
     InitBGFX();
 
     AddView( 0 );
@@ -180,24 +187,25 @@ void Engine::InitBGFX()
 #endif
 
 #if ENGINE_DEBUG
-    // ImGui::CreateContext();
-    // ImPlot::CreateContext();
+    ImGui::CreateContext();
+    ImPlot::CreateContext();
 
-    // ImGuiIO &io = ImGui::GetIO();
-    // (void) io;
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
-    // io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;      // Enable Docking
+    ImGuiIO &io = ImGui::GetIO();
+    (void) io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;      // Enable Docking
 
-    // #if PLATFORM_ANDROID
-    // ImGui::GetCurrentContext()->CurrentDpiScale = 5;
+    #if PLATFORM_ANDROID
+    ImGui::GetCurrentContext()->CurrentDpiScale = 5;
 
-    // io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
-    // #endif
+    io.ConfigFlags |= ImGuiConfigFlags_IsTouchScreen;
+    #endif
 
-    // ImGui::StyleColorsDark();
+    ImGui::StyleColorsDark();
 
-    // ImGui_Implbgfx_Init( 999 );
+    ImGui_Implbgfx_Init( 255 );
+    ImGui_ImplSurface_Init( GetSurface() );
+
     // #if PLATFORM_WIN32
     // imgui_impl( m_SDLWindow );
     // #elif PLATFORM_LINUX
@@ -223,7 +231,11 @@ void Engine::BeginFrame()
     m_VertexBatcher.BeginFrame();
 
 #if ENGINE_DEBUG
-    if ( ImGui::IsKeyPressed( SDL_SCANCODE_F8, false ) )
+    ImGui_Implbgfx_NewFrame();
+    ImGui_ImplSurface_NewFrame();
+    ImGui::NewFrame();
+
+    if ( ImGui::IsKeyPressed( (int) Key::Key_F8, false ) )
     {
         m_bShowDebugUtils = !m_bShowDebugUtils;
 
@@ -279,6 +291,8 @@ void Engine::BeginFrame()
             }
         }
 
+        ImGui::ShowDemoWindow();
+
         ImGui::End();
     }
 #endif
@@ -288,6 +302,11 @@ void Engine::EndFrame()
 {
     ZoneScoped;
     m_VertexBatcher.EndFrame();
+
+#if ENGINE_DEBUG
+    ImGui::Render();
+    ImGui_Implbgfx_RenderDrawLists( ImGui::GetDrawData() );
+#endif
 
     bgfx::frame();
 }
@@ -308,8 +327,8 @@ BaseApp::BaseApp()
 
     SurfaceDesc desc;
     desc.sTitle = "Sandbox Platformer: Game Surface";
-    desc.ivRes = { 1280, 720 };
-    desc.eFlags |= eWindowFlags::Centered | eWindowFlags::Resizable;
+    desc.ivWindowRes = { 1280, 720 };
+    desc.eFlags |= WindowFlags::Centered | WindowFlags::Resizable;
     m_pEngine = new Engine( desc );
 }
 

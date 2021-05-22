@@ -13,27 +13,27 @@ class InputManager
   public:
     void Init();
 
-    bool IsKeyDown( Key eKey )
+    inline bool IsKeyDown( Key eKey )
     {
-        return m_umKeyState.at( eKey ) == ButtonState::Pressed;
+        return m_vKeyState.at( (int) eKey );
     }
-    bool IsKeyUp( Key eKey )
+    inline bool IsKeyUp( Key eKey )
     {
-        return m_umKeyState.at( eKey ) == ButtonState::Released;
+        return !m_vKeyState.at( (int) eKey );
     }
 
-    bool IsKeyModActive( KeyMod eMod )
+    inline bool IsKeyModActive( KeyMod eMod )
     {
         return m_eKeyMods & eMod;
     }
 
-    bool IsMouseBtnDown( MouseButton eBtn )
+    inline bool IsMouseBtnDown( MouseButton eBtn )
     {
-        return m_umMouseButtonState.at( eBtn ) == ButtonState::Pressed;
+        return m_eMouseButtonState & eBtn;
     }
-    bool IsMouseBtnUp( MouseButton eBtn )
+    inline bool IsMouseBtnUp( MouseButton eBtn )
     {
-        return m_umMouseButtonState.at( eBtn ) == ButtonState::Pressed;
+        return m_eMouseButtonState & eBtn;
     }
 
     const glm::vec2 GetMouseScrollAxis()
@@ -57,20 +57,19 @@ class InputManager
     // delay
     signals::signal<void( Key eKey, KeyMod eMod )> OnKeyRelease;
 
-    // This is when key is down as in text writing type, perfect for text boxes
-    signals::signal<void( Key eKey, KeyMod eMod )> OnKeyDownInput;
-    // This is when key is up as in text writing type, perfect for text boxes
-    signals::signal<void( Key eKey, KeyMod eMod )> OnKeyReleaseInput;
+    // This is when writing made just right for text boxes
+    signals::signal<void( uint32_t uChar, KeyMod eMod )> OnCharInput;
 
   private:
-    std::unordered_map<MouseButton, ButtonState> m_umMouseButtonState;
-    std::unordered_map<Key, ButtonState> m_umKeyState;
+    std::array<bool, 137> m_vKeyState;
 
     glm::vec2 m_v2MouseScrollAxis;
     glm::vec2 m_v2MouseMoveDelta;
 
+    uint8_t m_eMouseButtonState;
     KeyMod m_eKeyMods;
 
   private:
     void OnSetKeyState( Key, ButtonState, KeyMod );
+    void OnChar( uint32_t, KeyMod );
 };

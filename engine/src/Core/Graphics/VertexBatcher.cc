@@ -143,9 +143,7 @@ void VertexBatcher::Reset()
 
     Flush();
 
-    // TODO: Add FreeSTL function
     // clear the map
-
     m_vBatchEvents.clear();
 
     /*

@@ -32,6 +32,9 @@ if (CMAKE_BUILD_TYPE EQUAL "RELEASE")
     endif()
 endif()
 
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+endif()
 
 add_subdirectory(vendor)
 add_subdirectory(engine)
