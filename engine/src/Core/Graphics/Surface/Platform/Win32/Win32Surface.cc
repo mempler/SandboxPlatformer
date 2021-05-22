@@ -271,30 +271,16 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
     {
         Key key = TranslateWin32KeySym( wParam );
 
-        KeyMod mod = KeyMod::None;
+        KeyMod mods = KeyMod::None;
 
-        switch ( key )
-        {
-        case Key::Key_RIGHT_SHIFT:
-        case Key::Key_LEFT_SHIFT: mod |= KeyMod::SHIFT; break;
-
-        case Key::Key_RIGHT_CONTROL:
-        case Key::Key_LEFT_CONTROL: mod |= KeyMod::CONTROL; break;
-
-        case Key::Key_RIGHT_ALT:
-        case Key::Key_LEFT_ALT: mod |= KeyMod::ALT; break;
-
-        case Key::Key_RIGHT_SUPER:
-        case Key::Key_LEFT_SUPER: mod |= KeyMod::SUPER; break;
-
-        case Key::Key_CAPS_LOCK: mod |= KeyMod::CAPS_LOCK; break;
-        case Key::Key_NUM_LOCK: mod |= KeyMod::NUM_LOCK; break;
-
-        default: break;
-        }
+        if ( GetKeyState( VK_SHIFT ) & 0x8000 ) mods |= KeyMod::SHIFT;
+        if ( GetKeyState( VK_CONTROL ) & 0x8000 ) mods |= KeyMod::CONTROL;
+        if ( GetKeyState( VK_MENU ) & 0x8000 ) mods |= KeyMod::ALT;
+        if ( GetKeyState( VK_LWIN ) & 0x8000 ) mods |= KeyMod::SUPER;
+        if ( GetKeyState( VK_CAPITAL ) & 0x8000 ) mods |= KeyMod::CAPS_LOCK;
 
         pSurf->OnSetKeyState(
-            key, msg == WM_KEYDOWN ? ButtonState::Pressed : ButtonState::Released, mod );
+            key, msg == WM_KEYDOWN ? ButtonState::Pressed : ButtonState::Released, mods );
 
         pSurf->TranslateEvent( OSEventType::KEY_DOWN,
                                (uintptr_t) TranslateWin32KeySym( wParam ), lParam >> 30 );
@@ -302,12 +288,12 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
     }
     case WM_CHAR:
     {
-        int uchar = 0;
-        uint8_t c = (uint8_t) wParam;
-        if ( !::IsWindowUnicode( hwnd ) )
-            MultiByteToWideChar( CP_UTF8, 0, (LPCSTR) &c, 1, (LPWSTR) &uchar, 1 );
+        // int uchar = 0;
+        // uint8_t c = (uint8_t) wParam;
+        // if ( !::IsWindowUnicode( hwnd ) )
+        //     MultiByteToWideChar( CP_UTF8, 0, (LPCSTR) &c, 1, (LPWSTR) &uchar, 1 );
 
-        pSurf->OnChar( uchar, KeyMod::None );
+        pSurf->OnChar( wParam, KeyMod::None );
         break;
     }
 
