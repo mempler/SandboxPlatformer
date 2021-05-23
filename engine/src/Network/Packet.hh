@@ -16,8 +16,15 @@ enum class PacketType : uint16_t
 
     CLN_RequestWorld,
     SRV_SendWorld,
+
+    CLN_RequestAvatar,
+    SRV_SendAvatar,
+
+    CLN_RequestAvatarState,
+    SRV_SendAvatarState,
 };
 
+// TODO, this is not engine stuff
 constexpr const char *PacketType_ToString( PacketType eType )
 {
     const char *Type = "";
@@ -28,6 +35,9 @@ constexpr const char *PacketType_ToString( PacketType eType )
 
     case PacketType::CLN_RequestWorld: Type = "RequestWorld"; break;
     case PacketType::SRV_SendWorld: Type = "SendWorld"; break;
+
+    case PacketType::CLN_RequestAvatar: Type = "RequestAvatar"; break;
+    case PacketType::SRV_SendAvatar: Type = "SendAvatar"; break;
 
     default: Type = "Unknown"; break;
     }

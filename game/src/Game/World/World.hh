@@ -6,6 +6,10 @@
 
 #include <Kokoro/Memory/Buffer.hh>
 
+#if GAME_SERVER
+    #include "Server/SPlayer/SPlayer.hh"
+#endif
+
 #define WORLD_VERSION 0
 
 enum class WorldState : uint32_t
@@ -33,8 +37,9 @@ class World
 
     // Network stuff
     bool Pack( Kokoro::Memory::Buffer &buffer );
-
     bool Unpack( Kokoro::Memory::Buffer &buffer );
+
+    std::vector<Avatar> m_vAvatars;
 
   public:
     bool IsValid()
@@ -51,8 +56,6 @@ class World
     void RenderAvatars();
 
   private:
-    std::vector<Avatar> m_vAvatars;
-
     uint16_t m_uVersion = WORLD_VERSION;
 
     uint16_t m_uWidth;

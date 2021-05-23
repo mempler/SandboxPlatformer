@@ -39,10 +39,10 @@ class Network
     signals::signal<void( NetClientPtr, ConnectionState )> OnStateChange;
     signals::signal<void( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer )> OnPacket;
 
+    std::vector<NetClientPtr> m_vClients;
+
   private:
     bool m_bIsClient = false;
 
     ENetHost *m_pInstance = nullptr;
-
-    std::vector<NetClientPtr> m_vClients;
 };

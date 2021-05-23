@@ -41,12 +41,23 @@ class Game
     void OnResolutionChanged( BaseSurface *pSurface, uint32_t iWidth, uint32_t iHeight );
 
     // Networking
+    void RequestAvatars();
     void RequestWorld( std::string_view const &svName );
     void RequestItemDB();
 
     ConnectionState GetNetClientState()
     {
         return m_pNetworkClient->GetState();
+    }
+
+    NetClientPtr GetClient()
+    {
+        return m_pNetworkClient;
+    }
+
+    NetworkInspector *GetNetInspector()
+    {
+        return m_pNetworkInspector;
     }
 
   private:

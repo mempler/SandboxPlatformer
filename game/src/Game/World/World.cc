@@ -85,10 +85,7 @@ void World::PlaceFore( uint16_t uID, uint16_t x, uint16_t y )
 
     Tile *tile = &m_vTiles [ XYTV( x, y ) ];
 
-    tile->iPos = {
-        x,
-        y,
-    };
+    tile->iPos = { x, y };
 
 #if !GAME_SERVER  // This is too expensive for the server
     tile->UpdateTransform();
@@ -106,7 +103,10 @@ Avatar *World::CreateAvatar()
 {
     ZoneScoped;
 
-    return &m_vAvatars.emplace_back();
+    Avatar *av = &m_vAvatars.emplace_back();
+    av->m_MovementTimer.start();
+    
+    return av;
 }
 
 bool World::Pack( Kokoro::Memory::Buffer &buffer )

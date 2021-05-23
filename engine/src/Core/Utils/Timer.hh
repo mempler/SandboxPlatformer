@@ -9,14 +9,19 @@ class Timer
     Timer() : beg_( clock_::now() )
     {
     }
+
+    void start()
+    {
+        beg_ = clock_::now();
+    }
+
     void reset()
     {
         beg_ = clock_::now();
     }
     double elapsed() const
     {
-        return std::chrono::duration_cast<second_>( clock_::now() - beg_ )
-            .count();
+        return std::chrono::duration_cast<second_>( clock_::now() - beg_ ).count();
     }
 
   private:

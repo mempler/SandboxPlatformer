@@ -1,11 +1,14 @@
 #include "Server.hh"
 
 #include "Ascii.h"
+#include "Server/SPlayer/SPlayer.hh"
 
 #include "Core/Utils/Limiter.hh"
 #include "Core/Utils/Logger.hh"
 #include "Core/Utils/Timer.hh"
 
+#include "Game/Network/Packets/AvatarPacket.hh"
+#include "Game/Network/Packets/AvatarStatePacket.hh"
 #include "Game/Network/Packets/ItemDBPacket.hh"
 #include "Game/Network/Packets/WorldPacket.hh"
 
@@ -106,6 +109,10 @@ void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState )
     {
         Console::Info( "A peer has established a connection!" );
 
+        pClient->Handle()->data = new SPlayer(0);
+        auto pPlayer = (SPlayer *) pClient->Handle()->data;
+        m_vPlayers.push_back(pPlayer);
+
         break;
     }
     case ConnectionState::Connecting:
@@ -126,6 +133,7 @@ void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState )
     case ConnectionState::Disconnected:
     {
         Console::Info( "A peer disconnected..." );
+        // data gets destroyed i think
         break;
     }
     }
@@ -134,6 +142,7 @@ void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState )
 void Server::OnPacket( NetClientPtr pClient, PacketHeader header,
                        Kokoro::Memory::Buffer buffer )
 {
+    auto pPlayer = (SPlayer *) pClient->Handle()->data;
     switch ( header.m_eType )
     {
     case PacketType::CLN_RequestItemDB:
@@ -157,6 +166,54 @@ void Server::OnPacket( NetClientPtr pClient, PacketHeader header,
         packet.m_Object = &m_World;
 
         pClient->Send( packet );
+
+        break;
+    }
+
+    case PacketType::CLN_RequestAvatar:
+    {
+        Console::Trace( "A peer requested the local avatar to be send" );
+
+        // yeah yeah TODO
+        for ( auto &avatar : m_World.m_vAvatars )
+        {
+            Packets::SND_Avatar packet;
+            packet.m_Object = &avatar;
+
+            for ( auto &client : m_Network.m_vClients )
+            {
+                client->Send( packet );
+            }
+        }
+
+        Avatar *avatar = m_World.CreateAvatar();
+        avatar->m_bLocal = true;
+        avatar->m_v3Position = { 200.f, 100.f, 7.f };
+
+        Packets::SND_Avatar packet;
+        packet.m_Object = avatar;
+
+        pClient->Send( packet );
+
+        avatar->m_bLocal = false;
+        break;
+    }
+
+    case PacketType::CLN_RequestAvatarState:
+    {
+        // for ( auto &avatar : m_World.m_vAvatars )
+        // {
+        //     Packets::AvatarStatePacket data;
+        //     data.SetAvatar( avatar );
+
+        //     Packets::SND_AvatarState packet;
+        //     packet.m_Object = &data;
+
+        //     for ( auto &client : m_Network.m_vClients )
+        //     {
+        //         client->Send( packet );
+        //     }
+        // }
         break;
     }
 

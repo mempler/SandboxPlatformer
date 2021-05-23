@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+
+#include "Server/SPlayer/SPlayer.hh"
+
 #include "Game/World/World.hh"
 
 #include "Network/Network.hh"
@@ -22,6 +26,7 @@ class Server
     World m_World;
 
     Network m_Network;
+    std::vector<SPlayer *> m_vPlayers;
 
     void OnStateChange( NetClientPtr pClient, ConnectionState eState );
 

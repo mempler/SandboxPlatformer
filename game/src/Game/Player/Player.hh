@@ -5,6 +5,7 @@
 #include "Core/Managers/InputManager.hh"
 
 #include "Game/World/World.hh"
+#include "Network/NetClient.hh"
 
 class Player
 {
@@ -21,7 +22,8 @@ class Player
     // Events
     void OnKeyDown( Key eKey, KeyMod eMod );
     void OnKeyRelease( Key eKey, KeyMod eMod );
-
+    
   private:
     Avatar *m_pAvatar = 0;
+
 };

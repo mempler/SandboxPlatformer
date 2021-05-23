@@ -2,8 +2,12 @@
 
 #include "Core/Engine.hh"
 
+#include "Game/Network/Packets/AvatarPacket.hh"
 #include "Game/Network/Packets/ItemDBPacket.hh"
 #include "Game/Network/Packets/WorldPacket.hh"
+#include "Game/Player/Avatar.hh"
+
+#include "Network/Packet.hh"
 
 void Game::OnResolutionChanged( BaseSurface *pSurface, uint32_t iWidth, uint32_t iHeight )
 {
@@ -97,6 +101,22 @@ Player &Game::GetLocalPlayer()
 }
 
 // Network stuff
+void Game::RequestAvatars()
+{
+    ZoneScoped;
+
+    Packets::AvatarRequestData data;
+
+    Packets::REQ_Avatar packet {};
+    packet.m_Object = &data;
+
+    auto size = m_pNetworkClient->Send( packet );
+
+#if ENGINE_DEBUG
+    m_pNetworkInspector->HookSendPacket( packet.m_Header.m_eType, size );
+#endif
+}
+
 void Game::RequestWorld( const std::string_view &svName )
 {
     ZoneScoped;
@@ -202,6 +222,37 @@ void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
             Console::Error( "Failed to unpack World!" );
         }
 
+        // everything is ready and we want local avatar now
+        RequestAvatars();
+
+        break;
+    }
+
+    case PacketType::SRV_SendAvatar:
+    {
+        // holy shit this is so fucking unsafe
+        // but we do this for testing purposes
+        Avatar *avatar = m_World.CreateAvatar();
+        if ( !avatar->Unpack( buffer ) )
+        {
+            Console::Error( "Failed to unpack Avatar!" );
+        }
+
+        if ( avatar->m_bLocal )
+        {
+
+            m_Player.InitAvatar( avatar );
+        }
+
+        break;
+    }
+
+    case PacketType::SRV_SendAvatarState:
+    {
+        if ( !m_Player.GetAvatar()->UnpackState( buffer ) )
+        {
+            Console::Error( "Corrupted movement packet!" );
+        }
         break;
     }
 
