@@ -4,17 +4,25 @@
 
 #include "Network/NetClient.hh"
 
+static uint32_t s_uNetID = 1;
 
 class SPlayer
 {
   public:
-    SPlayer( int id )
-    {
-    }
+    SPlayer( NetClientPtr pClient );
+
+    // Network stuff
+    bool PackLogin( Kokoro::Memory::Buffer &buffer );
+    bool UnpackLogin( Kokoro::Memory::Buffer &buffer );
+
+    NetClientPtr ClientHandle();
+
+    uint32_t m_PID = 0; // Network/peer ID
 
   private:
-    int m_ID = 0;
+    uint32_t m_UID = 0;
 
-    Player *m_CPlayer = 0;
+    std::string m_sName = "";
+
     NetClientPtr m_pClient = 0;
 };

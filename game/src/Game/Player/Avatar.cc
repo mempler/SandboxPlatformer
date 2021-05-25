@@ -38,11 +38,8 @@ void Avatar::Tick( float fDelta )
     {
         m_MovementTimer.reset();
 
-        Packets::AvatarStatePacket data;
-        data.m_v3Position = m_v3Position;
-        data.m_v2Size = m_v2Size;
-        data.m_v2Velocity = m_v2Velocity;
-        data.m_v2TargetVelocity = m_v2TargetVelocity;
+        Packets::AvatarStateData data;
+        data.SetAvatar( this );
 
         Packets::REQ_AvatarState packet {};
         packet.m_Object = &data;
@@ -58,35 +55,6 @@ void Avatar::Tick( float fDelta )
 void Avatar::Draw()
 {
     GetEngine()->GetBatcher().SubmitRectangle( 0, m_m4Transform );
-}
-
-bool Avatar::Pack( Kokoro::Memory::Buffer &buffer )
-{
-    ZoneScoped;
-
-    buffer.Push<uint8_t>( m_sName.length() );
-    buffer.Push( m_sName );
-    buffer.Push( m_v3Position );
-    buffer.Push( m_v2Size );
-    buffer.Push( m_v2Velocity );
-    buffer.Push( m_bLocal );
-
-    return true;
-}
-
-bool Avatar::Unpack( Kokoro::Memory::Buffer &buffer )
-{
-    ZoneScoped;
-    if ( !buffer.can_read( 20 ) ) return false;
-
-    uint8_t nameLen = buffer.Pop<uint8_t>( 1 );
-    m_sName = buffer.Pop<std::string>( nameLen );
-    m_v3Position = buffer.Pop<glm::vec3>( 12 );
-    m_v2Size = buffer.Pop<glm::vec2>( 8 );
-    m_v2Velocity = buffer.Pop<glm::vec2>( 8 );
-    m_bLocal = buffer.Pop<bool>( 1 );
-
-    return true;
 }
 
 bool Avatar::PackState( Kokoro::Memory::Buffer &buffer )

@@ -287,8 +287,9 @@ LRESULT CALLBACK Win32Surface::WindowProc( HWND hwnd, UINT msg, WPARAM wParam,
         pSurf->OnSetKeyState(
             key, msg == WM_KEYDOWN ? ButtonState::Pressed : ButtonState::Released, mods );
 
-        pSurf->TranslateEvent( OSEventType::KEY_DOWN,
-                               (uintptr_t) TranslateWin32KeySym( wParam ), lParam >> 30 );
+        pSurf->TranslateEvent(
+            msg == WM_KEYDOWN ? OSEventType::KEY_DOWN : OSEventType::KEY_UP,
+            (uintptr_t) TranslateWin32KeySym( wParam ), lParam >> 30 );
         break;
     }
     case WM_CHAR:

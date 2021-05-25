@@ -80,6 +80,8 @@ class NetClient
     signals::signal<void( NetClientPtr, ConnectionState )> OnStateChange;
     signals::signal<void( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer )> OnPacket;
 
+    void *m_ExtraData = 0; // To store Player
+
   private:
     ENetPeer *m_hConn = 0;
     ENetHost *m_pInstance = 0;

@@ -38,7 +38,6 @@ void BaseSurface::TranslateEvent( OSEventType eType, uintptr_t uLVal, intptr_t i
 
         break;
     }
-    case OSEventType::KEY_DOWN: break;
 
     default: break;
     }

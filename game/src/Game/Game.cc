@@ -1,8 +1,10 @@
 #include "Game.hh"
 
 #include "Core/Engine.hh"
+#include "Core/Utils/Logger.hh"
 
 #include "Game/Network/Packets/AvatarPacket.hh"
+#include "Game/Network/Packets/AvatarStatePacket.hh"
 #include "Game/Network/Packets/ItemDBPacket.hh"
 #include "Game/Network/Packets/WorldPacket.hh"
 #include "Game/Player/Avatar.hh"
@@ -230,29 +232,49 @@ void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
 
     case PacketType::SRV_SendAvatar:
     {
-        // holy shit this is so fucking unsafe
-        // but we do this for testing purposes
-        Avatar *avatar = m_World.CreateAvatar();
-        if ( !avatar->Unpack( buffer ) )
+        Packets::AvatarReceiveData data;
+        if ( !data.Unpack( buffer ) )
         {
-            Console::Error( "Failed to unpack Avatar!" );
+            Console::Error( "Something went wrong, server sent invalid avatar!" );
+            break;
         }
 
-        if ( avatar->m_bLocal )
-        {
+        Console::Log( "Received an avatar." );
 
+        Avatar *avatar = new Avatar;
+
+        data.InitAvatar( avatar );
+
+        if ( data.m_bLocal )
+        {
             m_Player.InitAvatar( avatar );
         }
+
+        m_World.AvatarOnEnter( avatar );
 
         break;
     }
 
     case PacketType::SRV_SendAvatarState:
     {
-        if ( !m_Player.GetAvatar()->UnpackState( buffer ) )
+        Packets::AvatarStateData data;
+        if ( !data.Unpack( buffer ) )
         {
-            Console::Error( "Corrupted movement packet!" );
+            Console::Error( "Something went wrong, server sent invalid avatar state!" );
+            break;
         }
+
+        Console::Log("ID: {}, {}", m_Player.GetAvatar()->m_ID, data.m_ID);
+
+        for ( auto avatar : m_World.m_vAvatars )
+        {
+            if ( avatar->m_ID == data.m_ID )
+            {
+                Console::Log("Yup {}, {}", data.m_v2Velocity.x, data.m_v2Velocity.y);
+                data.InitAvatar( avatar );
+            }
+        }
+
         break;
     }
 

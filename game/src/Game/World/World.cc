@@ -41,7 +41,9 @@ void World::Tick( float fDeltaTime )
 
     if ( !IsValid() ) return;
 
-    for ( auto &avatar : m_vAvatars ) avatar.Tick( fDeltaTime );
+#if !GAME_SERVER
+    for ( auto &avatar : m_vAvatars ) avatar->Tick( fDeltaTime );
+#endif
 }
 
 void World::Draw()
@@ -99,14 +101,13 @@ void World::PlaceBack( uint16_t uID, uint16_t x, uint16_t y )
     ZoneScoped;
 }
 
-Avatar *World::CreateAvatar()
+void World::AvatarOnEnter( Avatar *pAvatar )
 {
-    ZoneScoped;
+    return m_vAvatars.push_back(pAvatar);
+}
 
-    Avatar *av = &m_vAvatars.emplace_back();
-    av->m_MovementTimer.start();
-    
-    return av;
+void World::AvatarOnLeave( Avatar *pAvatar )
+{
 }
 
 bool World::Pack( Kokoro::Memory::Buffer &buffer )
@@ -158,6 +159,7 @@ bool World::Unpack( Kokoro::Memory::Buffer &buffer )
 void World::RenderAvatars()
 {
     ZoneScoped;
-
-    for ( auto &avatar : m_vAvatars ) avatar.Draw();
+#if !GAME_SERVER
+    for ( auto &avatar : m_vAvatars ) avatar->Draw();
+#endif
 }

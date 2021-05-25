@@ -5,6 +5,7 @@
 #include "Kokoro/Memory/Buffer.hh"
 
 #include <glm/glm.hpp>
+#include <stdint.h>
 
 
 constexpr float g_fVelX = 300.f;
@@ -19,12 +20,12 @@ struct Avatar
     glm::vec3 m_v3Position {};
     glm::vec2 m_v2Size = { 20.f, 30.f };
 
-    glm::vec2 m_v2Velocity { 0, 0 };
+    glm::vec2 m_v2Velocity { 500, 0 };
     glm::vec2 m_v2TargetVelocity { 0, 0 };
 
     glm::mat4 m_m4Transform {};
 
-    bool m_bLocal = false;
+    uint32_t m_ID = 0;
 
     Timer m_MovementTimer{};
 
@@ -35,8 +36,6 @@ struct Avatar
 
     // Networking
     // This should be never used i think
-    bool Pack( Kokoro::Memory::Buffer &buffer );
-    bool Unpack( Kokoro::Memory::Buffer &buffer );
     bool PackState( Kokoro::Memory::Buffer &buffer );
     bool UnpackState( Kokoro::Memory::Buffer &buffer );
 };

@@ -6,10 +6,6 @@
 
 #include <Kokoro/Memory/Buffer.hh>
 
-#if GAME_SERVER
-    #include "Server/SPlayer/SPlayer.hh"
-#endif
-
 #define WORLD_VERSION 0
 
 enum class WorldState : uint32_t
@@ -33,13 +29,14 @@ class World
     void PlaceFore( uint16_t uID, uint16_t x, uint16_t y );
     void PlaceBack( uint16_t uID, uint16_t x, uint16_t y );
 
-    Avatar *CreateAvatar();
+    void AvatarOnEnter( Avatar *pAvatar );
+    void AvatarOnLeave( Avatar *pAvatar );
 
     // Network stuff
     bool Pack( Kokoro::Memory::Buffer &buffer );
     bool Unpack( Kokoro::Memory::Buffer &buffer );
 
-    std::vector<Avatar> m_vAvatars;
+    std::vector<Avatar *> m_vAvatars;
 
   public:
     bool IsValid()

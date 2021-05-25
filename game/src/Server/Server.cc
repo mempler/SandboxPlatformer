@@ -109,9 +109,9 @@ void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState )
     {
         Console::Info( "A peer has established a connection!" );
 
-        pClient->Handle()->data = new SPlayer(0);
-        auto pPlayer = (SPlayer *) pClient->Handle()->data;
-        m_vPlayers.push_back(pPlayer);
+        SPlayer *player = new SPlayer( pClient );
+        pClient->m_ExtraData = player;
+        m_vPlayers.push_back( player );
 
         break;
     }
@@ -142,7 +142,8 @@ void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState )
 void Server::OnPacket( NetClientPtr pClient, PacketHeader header,
                        Kokoro::Memory::Buffer buffer )
 {
-    auto pPlayer = (SPlayer *) pClient->Handle()->data;
+    auto pPlayer = (SPlayer *) pClient->m_ExtraData;
+
     switch ( header.m_eType )
     {
     case PacketType::CLN_RequestItemDB:
@@ -177,43 +178,70 @@ void Server::OnPacket( NetClientPtr pClient, PacketHeader header,
         // yeah yeah TODO
         for ( auto &avatar : m_World.m_vAvatars )
         {
-            Packets::SND_Avatar packet;
-            packet.m_Object = &avatar;
+            Packets::AvatarReceiveData data;
+            data.SetAvatar( avatar, false );
 
-            for ( auto &client : m_Network.m_vClients )
-            {
-                client->Send( packet );
-            }
+            Packets::SND_Avatar packet {};
+            packet.m_Object = &data;
+
+            pClient->Send( packet );
+
+            Console::Log( "Sent local ID: {}", data.m_ID );
         }
 
-        Avatar *avatar = m_World.CreateAvatar();
-        avatar->m_bLocal = true;
+        Avatar *avatar = new Avatar;
         avatar->m_v3Position = { 200.f, 100.f, 7.f };
+        avatar->m_ID = pPlayer->m_PID;
 
-        Packets::SND_Avatar packet;
-        packet.m_Object = avatar;
+        m_World.AvatarOnEnter( avatar );
+
+        Packets::AvatarReceiveData data;
+        data.SetAvatar( avatar, true );
+
+        Packets::SND_Avatar packet {};
+        packet.m_Object = &data;
 
         pClient->Send( packet );
 
-        avatar->m_bLocal = false;
+        Console::Log( "Sent local ID: {}", data.m_ID );
         break;
     }
 
     case PacketType::CLN_RequestAvatarState:
     {
-        // for ( auto &avatar : m_World.m_vAvatars )
-        // {
-        //     Packets::AvatarStatePacket data;
-        //     data.SetAvatar( avatar );
+        Packets::AvatarStateData receivedData;
+        receivedData.Unpack( buffer );
 
-        //     Packets::SND_AvatarState packet;
-        //     packet.m_Object = &data;
+        for ( auto avatar : m_World.m_vAvatars )
+        {
+            if ( avatar->m_ID == pPlayer->m_PID )
+            {
+                receivedData.InitAvatar( avatar );
+            }
+        }
 
-        //     for ( auto &client : m_Network.m_vClients )
-        //     {
-        //         client->Send( packet );
-        //     }
-        // }
+        for ( auto avatar : m_World.m_vAvatars )
+        {
+            if ( avatar->m_ID != pPlayer->m_PID ) continue;
+
+            Packets::AvatarStateData data;
+            data.SetAvatar( avatar );
+
+            Packets::SND_AvatarState packet;
+            packet.m_Object = &data;
+
+            for ( auto &client : m_Network.m_vClients )
+            {
+                if ( client == pClient ) continue;
+                client->Send( packet );
+            }
+        }
+        break;
+    }
+
+    case PacketType::CLN_RequestLogin:
+    {
+
         break;
     }
 

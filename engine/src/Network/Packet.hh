@@ -22,6 +22,9 @@ enum class PacketType : uint16_t
 
     CLN_RequestAvatarState,
     SRV_SendAvatarState,
+    
+    CLN_RequestLogin,
+    SRV_SendLogin,
 };
 
 // TODO, this is not engine stuff

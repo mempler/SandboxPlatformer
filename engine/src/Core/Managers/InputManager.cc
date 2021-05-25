@@ -15,18 +15,18 @@ void InputManager::Init()
     pSurface->OnChar.connect<&InputManager::OnChar>( this );
 }
 
-void InputManager::OnSetKeyState( Key eKey, ButtonState eButtonState, KeyMod eKeyMod )
+void InputManager::OnSetKeyState( Key eKey, ButtonState eState, KeyMod eMod )
 {
-    m_eKeyMods = eKeyMod;
-    m_vKeyState [ (int) eKey ] = (bool) eButtonState;
+    m_eKeyMods = eMod;
+    m_vKeyState [ (int) eKey ] = (bool) eState;
 
-    if ( eButtonState == ButtonState::Pressed )
+    if ( eState == ButtonState::Pressed )
     {
-        OnKeyDown( eKey, eKeyMod );
+        OnKeyDown( eKey, eMod );
     }
     else
     {
-        OnKeyRelease( eKey, eKeyMod );
+        OnKeyRelease( eKey, eMod );
     }
 }
 
