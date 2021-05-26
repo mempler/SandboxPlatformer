@@ -27,8 +27,6 @@ struct Avatar
 
     uint32_t m_ID = 0;
 
-    Timer m_MovementTimer{};
-
     void CalculateTransform();
 
     void Tick( float fDelta );
@@ -36,6 +34,4 @@ struct Avatar
 
     // Networking
     // This should be never used i think
-    bool PackState( Kokoro::Memory::Buffer &buffer );
-    bool UnpackState( Kokoro::Memory::Buffer &buffer );
 };

@@ -173,8 +173,6 @@ void Server::OnPacket( NetClientPtr pClient, PacketHeader header,
 
     case PacketType::CLN_RequestAvatar:
     {
-        Console::Trace( "A peer requested the local avatar to be send" );
-
         // yeah yeah TODO
         for ( auto &avatar : m_World.m_vAvatars )
         {
@@ -185,8 +183,6 @@ void Server::OnPacket( NetClientPtr pClient, PacketHeader header,
             packet.m_Object = &data;
 
             pClient->Send( packet );
-
-            Console::Log( "Sent local ID: {}", data.m_ID );
         }
 
         Avatar *avatar = new Avatar;
@@ -203,7 +199,14 @@ void Server::OnPacket( NetClientPtr pClient, PacketHeader header,
 
         pClient->Send( packet );
 
-        Console::Log( "Sent local ID: {}", data.m_ID );
+        data.m_bLocal = false;
+
+        for ( auto &client : m_Network.m_vClients )
+        {
+            if ( client == pClient ) continue;
+            client->Send( packet );
+        }
+
         break;
     }
 

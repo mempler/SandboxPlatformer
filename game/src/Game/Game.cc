@@ -75,6 +75,7 @@ void Game::Tick( float fDeltaTime )
     ZoneScoped;
 
     m_World.Tick( fDeltaTime );
+    m_Player.Tick( fDeltaTime );
     m_Network.Tick();
 }
 
@@ -264,14 +265,12 @@ void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
             break;
         }
 
-        Console::Log("ID: {}, {}", m_Player.GetAvatar()->m_ID, data.m_ID);
-
         for ( auto avatar : m_World.m_vAvatars )
         {
             if ( avatar->m_ID == data.m_ID )
             {
-                Console::Log("Yup {}, {}", data.m_v2Velocity.x, data.m_v2Velocity.y);
-                data.InitAvatar( avatar );
+                Console::Log("MS: {}", pClient->Handle()->roundTripTime);
+                data.InitAvatar( avatar, true, (float)pClient->Handle()->roundTripTime / 1000.f );
             }
         }
 

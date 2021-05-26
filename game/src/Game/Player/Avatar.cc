@@ -32,51 +32,9 @@ void Avatar::Tick( float fDelta )
 #if !GAME_SERVER
     CalculateTransform();
 #endif
-
-    if ( ( m_v2Velocity.x != 0.f || m_v2Velocity.y != 0.f )
-         && m_MovementTimer.elapsed() >= .2f )
-    {
-        m_MovementTimer.reset();
-
-        Packets::AvatarStateData data;
-        data.SetAvatar( this );
-
-        Packets::REQ_AvatarState packet {};
-        packet.m_Object = &data;
-
-        auto size = GetGame()->GetClient()->Send( packet );
-
-#if ENGINE_DEBUG
-        GetGame()->GetNetInspector()->HookSendPacket( packet.m_Header.m_eType, size );
-#endif
-    }
 }
 
 void Avatar::Draw()
 {
     GetEngine()->GetBatcher().SubmitRectangle( 0, m_m4Transform );
-}
-
-bool Avatar::PackState( Kokoro::Memory::Buffer &buffer )
-{
-    ZoneScoped;
-
-    buffer.Push( m_v3Position );
-    buffer.Push( m_v2Size );
-    buffer.Push( m_v2Velocity );
-
-    return true;
-}
-
-bool Avatar::UnpackState( Kokoro::Memory::Buffer &buffer )
-{
-    ZoneScoped;
-    if ( !buffer.can_read( 20 ) ) return false;
-
-    m_v3Position = buffer.Pop<glm::vec3>( 12 );
-    m_v2Size = buffer.Pop<glm::vec2>( 8 );
-    m_v2Velocity = buffer.Pop<glm::vec2>( 8 );
-    m_v2TargetVelocity = buffer.Pop<glm::vec2>( 8 );
-
-    return true;
 }
