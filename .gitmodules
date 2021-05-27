@@ -22,3 +22,9 @@
 [submodule "vendor/backward"]
 	path = vendor/backward
 	url = https://github.com/bombela/backward-cpp.git
+[submodule "vendor/mimalloc"]
+	path = vendor/mimalloc
+	url = https://github.com/microsoft/mimalloc.git
+[submodule "vendor/LuaJIT"]
+	path = vendor/LuaJIT
+	url = https://github.com/LuaJIT/LuaJIT.git
