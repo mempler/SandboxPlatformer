@@ -98,7 +98,7 @@ void Server::Tick( float fDeltaTime )
 {
     // Poll messages
 
-    m_Network.Tick();
+    m_Network.Tick(fDeltaTime);
 }
 
 void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState )
@@ -140,7 +140,7 @@ void Server::OnStateChange( NetClientPtr pClient, ConnectionState eState )
 }
 
 void Server::OnPacket( NetClientPtr pClient, PacketHeader header,
-                       Kokoro::Memory::Buffer buffer )
+                       Kokoro::Memory::Buffer buffer, float fDeltaTime )
 {
     auto pPlayer = (SPlayer *) pClient->m_ExtraData;
 

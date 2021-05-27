@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Game/Player/Avatar.hh"
+#include "glm/fwd.hpp"
 
 #include "Network/Packet.hh"
 
@@ -28,18 +29,14 @@ namespace Packets
 
         void InitAvatar( Avatar *pAvatar, bool bInterp = false, float fRTT = 0.f )
         {
-            if ( bInterp )
+            if ( bInterp && fRTT < 1.2f )
             {
                 pAvatar->m_v3Position =
                     glm::lerp( pAvatar->m_v3Position, m_v3Position, fRTT );
-                    
-                pAvatar->m_v2Velocity =
-                    glm::lerp( pAvatar->m_v2Velocity, m_v2Velocity, fRTT );
             }
             else
             {
                 pAvatar->m_v3Position = m_v3Position;
-                pAvatar->m_v2Velocity = m_v2Velocity;
             }
 
             pAvatar->m_v2Size = m_v2Size;

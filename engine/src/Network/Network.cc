@@ -69,7 +69,7 @@ NetClientPtr Network::AddPeer( ENetPeer *peer )
     return pNetClient;
 }
 
-void Network::Tick()
+void Network::Tick(float fDeltaTime)
 {
     ZoneScoped;
 
@@ -106,8 +106,8 @@ void Network::Tick()
             else
             {
                 // Let our signal subscriber handle all this.
-                OnPacket( pClient, header, buffer );
-                pClient->OnPacket( pClient, header, buffer );
+                OnPacket( pClient, header, buffer, fDeltaTime );
+                pClient->OnPacket( pClient, header, buffer, fDeltaTime );
             }
 
             enet_packet_destroy( event.packet );

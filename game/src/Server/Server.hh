@@ -29,7 +29,7 @@ class Server
     std::vector<SPlayer *> m_vPlayers;
 
     void OnStateChange( NetClientPtr pClient, ConnectionState eState );
-    void OnPacket( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer );
+    void OnPacket( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer, float );
 };
 
 Server *GetServer();

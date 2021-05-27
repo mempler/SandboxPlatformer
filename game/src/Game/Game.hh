@@ -80,7 +80,7 @@ class Game
 #endif
 
     void OnStateChange( NetClientPtr, ConnectionState );
-    void OnPacket( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer );
+    void OnPacket( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer, float );
 };
 
 extern Game *GetGame();

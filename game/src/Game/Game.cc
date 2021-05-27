@@ -76,7 +76,7 @@ void Game::Tick( float fDeltaTime )
 
     m_World.Tick( fDeltaTime );
     m_Player.Tick( fDeltaTime );
-    m_Network.Tick();
+    m_Network.Tick( fDeltaTime );
 }
 
 void Game::Draw()
@@ -194,7 +194,7 @@ void Game::OnStateChange( NetClientPtr pClient, ConnectionState eState )
 }
 
 void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
-                     Kokoro::Memory::Buffer buffer )
+                     Kokoro::Memory::Buffer buffer, float fDeltaTime )
 {
     ZoneScoped;
 
@@ -269,8 +269,8 @@ void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
         {
             if ( avatar->m_ID == data.m_ID )
             {
-                Console::Log("MS: {}", pClient->Handle()->roundTripTime);
-                data.InitAvatar( avatar, true, (float)pClient->Handle()->roundTripTime / 1000.f );
+                Console::Log("DT: {}", fDeltaTime * 1000.f);
+                data.InitAvatar( avatar, true, ( fDeltaTime * 1000.f ) / 200.f );
             }
         }
 

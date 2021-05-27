@@ -34,10 +34,10 @@ class Network
 
     // This has to be called to send all remaining packets
     // towards the server (every tick preferable)
-    void Tick();
+    void Tick(float fDeltaTime);
 
     signals::signal<void( NetClientPtr, ConnectionState )> OnStateChange;
-    signals::signal<void( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer )> OnPacket;
+    signals::signal<void( NetClientPtr, PacketHeader, Kokoro::Memory::Buffer, float )> OnPacket;
 
     std::vector<NetClientPtr> m_vClients;
 
