@@ -29,5 +29,8 @@ namespace IceSDK
 
         int32_t X;
         int32_t Y;
+
+        int32_t MouseX;
+        int32_t MouseY;
     };
 }  // namespace IceSDK

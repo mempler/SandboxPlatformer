@@ -1,10 +1,22 @@
+#include <utility>
+
 #include "X11Surface.hh"
 
-#include <IceSDK/Surface/Exception.hh>
-#include <IceSDK/Surface/ISurface.hh>
-#include <IceSDK/Surface/KeyTable.hh>
+#include "IceSDK/Surface/Events.hh"
 
 #if KOKORO_LINUX && !KOKORO_ANDROID
+    #define Font XID
+
+    #include <cassert>
+    #include <cstring>
+    #include <cwctype>
+
+    #include "xkb_unicode.h"
+
+    #include <IceSDK/Surface/Exception.hh>
+    #include <IceSDK/Surface/KeyTable.hh>
+    #include <X11/X.h>
+    #include <X11/Xcursor/Xcursor.h>
     #include <X11/Xlib.h>
     #include <X11/keysym.h>
 
@@ -14,6 +26,7 @@
     #define DISPLAY (Display *) m_hDisplay
     #define WINDOW m_hWindow
     #define SCREEN m_hScreen
+    #define IC ( XIC ) m_hIC
 
     // Window events
     #define UTF8_STRING XInternAtom( DISPLAY, "UTF8_STRING", False )
@@ -37,8 +50,25 @@
     #define Button7 7
 
 using namespace IceSDK;
-using namespace IceSDK::_internal;
 using namespace IceSDK::KeyTable;
+
+// https://github.com/glfw/glfw/blob/master/src/x11_window.c#L466
+static unsigned int decodeUTF8( const char **s )
+{
+    unsigned int ch = 0, count = 0;
+    static const unsigned int offsets [] = { 0x00000000u, 0x00003080u, 0x000e2080u,
+                                             0x03c82080u, 0xfa082080u, 0x82082080u };
+
+    do
+    {
+        ch = ( ch << 6 ) + (unsigned char) **s;
+        ( *s )++;
+        count++;
+    } while ( ( **s & 0xc0 ) == 0x80 );
+
+    assert( count <= 6 );
+    return ch - offsets [ count - 1 ];
+}
 
 Key TranslateXKeySym( KeySym keysyms )
 {
@@ -207,14 +237,16 @@ MouseButton TranslateXButton( uint32_t button )
     return MouseButton::BTN_1;
 }
 
-X11Surface::X11Surface( const IceSDK::SurfaceDesc &desc ) : IceSDK::IBaseSurface( desc )
+_internal::X11Surface::X11Surface( const SurfaceDesc &desc ) : IBaseSurface( desc )
 {
     setlocale( LC_ALL, "" );
+
+    XInitThreads();
 
     Display *display = XOpenDisplay( NULL );
     if ( display == nullptr )
     {
-        throw SURFACE_EXCEPTION( "Failed open X11 Display!" );
+        throw SURFACE_EXCEPTION( "Failed to open X11 Display!" );
     }
 
     m_hDisplay = (uintptr_t) display;
@@ -222,36 +254,8 @@ X11Surface::X11Surface( const IceSDK::SurfaceDesc &desc ) : IceSDK::IBaseSurface
     m_hWindow =
         XCreateSimpleWindow( display, RootWindow( display, m_hScreen ), desc.X, desc.Y,
                              desc.Width, desc.Height, 1, BlackPixel( display, m_hScreen ),
-                             BlackPixel( display, m_hScreen ) );
+                             WhitePixel( display, m_hScreen ) );
 
-    // clang-format off
-    XSelectInput( display, m_hWindow,
-                        KeyPressMask 
-                      | KeyReleaseMask
-                      | ButtonPressMask
-                      | ButtonReleaseMask
-                      | EnterWindowMask
-                      | LeaveWindowMask
-                      | PointerMotionMask
-                      | PointerMotionHintMask
-                      | Button1MotionMask
-                      | Button2MotionMask
-                      | Button3MotionMask
-                      | Button4MotionMask
-                      | Button5MotionMask
-                      | ButtonMotionMask 
-                      | KeymapStateMask 
-                      | ExposureMask
-                      | VisibilityChangeMask 
-                      | StructureNotifyMask 
-                      | ResizeRedirectMask
-                      | SubstructureNotifyMask 
-                      | SubstructureRedirectMask
-                      | FocusChangeMask
-                      | PropertyChangeMask 
-                      | ColormapChangeMask
-                      | OwnerGrabButtonMask );
-    // clang-format on
     XMapWindow( display, m_hWindow );  // Bind our window to our surface
     XSetLocaleModifiers( "" );
 
@@ -264,24 +268,28 @@ X11Surface::X11Surface( const IceSDK::SurfaceDesc &desc ) : IceSDK::IBaseSurface
         xim = XOpenIM( display, 0, 0, 0 );
     }
 
-    XIC xic = XCreateIC( xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
-                         XNClientWindow, m_hWindow, XNFocusWindow, m_hWindow, NULL );
-    XSetICFocus( xic );
-    XSelectInput( display, m_hWindow, KeyPressMask | KeyReleaseMask );
+    XIC ic = XCreateIC( xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
+                        XNClientWindow, m_hWindow, XNFocusWindow, m_hWindow, NULL );
+    XSetICFocus( ic );
+    XSelectInput( display, m_hWindow,
+                  KeyPressMask | KeyReleaseMask | PointerMotionMask | FocusChangeMask
+                      | ButtonPressMask | ButtonReleaseMask );
 
     // Register events
     Atom events [] = { WM_DELETE_WINDOW };
     XSetWMProtocols( display, m_hWindow, events, sizeof( events ) / sizeof( Atom ) );
 
     SetTitle( desc.Title );
+
+    m_hIC = (uintptr_t) ic;
 }
 
-X11Surface::~X11Surface()
+_internal::X11Surface::~X11Surface()
 {
     XCloseDisplay( DISPLAY );
 }
 
-void X11Surface::PollEvents()
+void _internal::X11Surface::PollEvents()
 {
     XEvent event;
     while ( XPending( DISPLAY ) )  // If we have any pending events, handle them
@@ -295,36 +303,20 @@ void X11Surface::PollEvents()
             XConfigureEvent &xce = event.xconfigure;
 
             // Resolution changed
-            // FIXME: Fix blackscreen of death
+            // FIXME: Fix whitescreen of death
             if ( xce.width != m_Desc.Width && xce.height != m_Desc.Height )
             {
                 SurfaceEvent event;
-                event.Resize.Type = SurfaceEventType::Resize;
-                event.Resize.Width = xce.width;
-                event.Resize.Height = xce.height;
 
-                m_Desc.Width = xce.width;
-                m_Desc.Height = xce.height;
+                event.Type = SurfaceEventType::Resize;
+                event.Resize.Width = m_Desc.Width;
+                event.Resize.Height = m_Desc.Width;
 
                 m_vEvents.push_back( event );
             }
 
             break;
         }
-        case ClientMessage:
-        {
-            XClientMessageEvent &xme = event.xclient;
-            if ( xme.data.l [ 0 ] == WM_DELETE_WINDOW )
-            {
-                SurfaceEvent event;
-                event.Exit.Type = SurfaceEventType::Exit;
-
-                m_vEvents.push_back( event );
-            }
-
-            break;
-        }
-
         case KeyRelease:
         case KeyPress:
         {
@@ -355,21 +347,80 @@ void X11Surface::PollEvents()
             default: break;
             }
 
-            if ( event.type == KeyPress )
+            if ( mod != KeyMod::None )
             {
                 m_eLastKeymod |= mod;
-            }
-            else if ( event.type == KeyRelease )
-            {
-                m_eLastKeymod |= ~mod;
+
+                if ( event.type == KeyRelease )
+                {
+                    m_eLastKeymod &= ~mod;
+                }
             }
 
             SurfaceEvent event;
-            event.Keyboard.Type = SurfaceEventType::KeyUpdate;
+            event.Type = SurfaceEventType::KeyUpdate;
             event.Keyboard.Key = key;
             event.Keyboard.Mod = m_eLastKeymod;
             event.Keyboard.State =
                 xke.type == KeyPress ? ButtonState::Pressed : ButtonState::Released;
+
+            m_vEvents.push_back( event );
+
+            {
+                // Magic
+                char buffer [ 100 ];
+                char *chars = buffer;
+
+                bool isCalloc = false;
+
+                Status status;
+                int count = Xutf8LookupString( IC, &xke, buffer, sizeof( buffer ) - 1,
+                                               NULL, &status );
+
+                if ( status == XBufferOverflow )
+                {
+                    isCalloc = true;
+                    chars = (char *) calloc( count + 1, 1 );
+                    count = Xutf8LookupString( IC, &xke, chars, count, NULL, &status );
+                }
+
+                if ( status == XLookupChars || status == XLookupBoth )
+                {
+                    const char *c = chars;
+                    chars [ count ] = '\0';
+                    while ( c - chars < count )
+                    {
+                        SurfaceEvent event;
+                        event.Type = SurfaceEventType::CharSend;
+                        event.Keyboard.Key = key;
+                        event.Keyboard.Mod = m_eLastKeymod;
+                        event.Keyboard.State = xke.type == KeyPress
+                                                   ? ButtonState::Pressed
+                                                   : ButtonState::Released;
+                        event.Keyboard.Char = decodeUTF8( &c );
+
+                        m_vEvents.push_back( event );
+                    }
+
+                    if ( isCalloc ) free( chars );
+                }
+            }
+
+            break;
+        }
+
+        case ButtonPress:
+        case ButtonRelease:
+        {
+            XButtonEvent &xke = event.xbutton;
+
+            SurfaceEvent event;
+            event.Type = SurfaceEventType::PointerTouch;
+            event.Pointer.State =
+                xke.type == ButtonPress ? ButtonState::Pressed : ButtonState::Released;
+            event.Pointer.X = 0;
+            event.Pointer.Y = 0;
+            event.Pointer.Button = TranslateXButton( xke.button );
 
             m_vEvents.push_back( event );
 
@@ -380,63 +431,56 @@ void X11Surface::PollEvents()
         {
             XMotionEvent &xme = event.xmotion;
 
+            const int x = xme.x;
+            const int y = xme.y;
+
             SurfaceEvent event;
-            event.Pointer.Type = SurfaceEventType::PointerMove;
-            event.Pointer.X = xme.x;
-            event.Pointer.Y = xme.y;
+            event.Type = SurfaceEventType::PointerTouch;
+            event.Pointer.X = x;
+            event.Pointer.Y = y;
 
             m_vEvents.push_back( event );
+
+            m_Desc.MouseX = x;
+            m_Desc.MouseY = y;
 
             break;
         }
 
-        case ButtonPress:
-        case ButtonRelease:
+        case ClientMessage:
         {
-            XButtonEvent &xke = event.xbutton;
+            XClientMessageEvent &xme = event.xclient;
+            if ( xme.data.l [ 0 ] == WM_DELETE_WINDOW )
+            {
+                SurfaceEvent event;
+                event.Type = SurfaceEventType::Exit;
 
-            MouseButton button = TranslateXButton( xke.button );
+                m_vEvents.push_back( event );
+            }
 
-            SurfaceEvent event;
-            event.Pointer.Type = SurfaceEventType::PointerTouch;
-            event.Pointer.X = xke.x;
-            event.Pointer.Y = xke.y;
-            event.Pointer.State =
-                xke.type == KeyPress ? ButtonState::Pressed : ButtonState::Released;
-
-            m_vEvents.push_back( event );
             break;
         }
-        default: break;
-        };
+        }
     }
 }
 
-void X11Surface::SetTitle( const std::string_view &sTitle )
+void _internal::X11Surface::SetTitle( const std::string_view &svName )
 {
-    m_Desc.Title = sTitle;
-
-    SET_PROP( WM_NAME, sTitle );
-    SET_PROP( WM_ICON_NAME, sTitle );
+    SET_PROP( WM_NAME, svName );
+    SET_PROP( WM_ICON_NAME, svName );
 }
 
-void X11Surface::SetPosition( const int32_t iX, const int32_t iY )
+void _internal::X11Surface::SetPosition( const int32_t iX, const int32_t iY )
 {
-    m_Desc.X = iX;
-    m_Desc.Y = iY;
-
     XMoveWindow( DISPLAY, WINDOW, iX, iY );
 }
 
-void X11Surface::SetResolution( const uint32_t uWidth, const uint32_t uHeight )
+void _internal::X11Surface::SetResolution( const uint32_t uWidth, const uint32_t uHeight )
 {
-    m_Desc.Width = uWidth;
-    m_Desc.Height = uHeight;
-
     XResizeWindow( DISPLAY, WINDOW, uWidth, uHeight );
 }
 
-std::pair<uint32_t, uint32_t> X11Surface::GetMonitorResolution()
+std::pair<uint32_t, uint32_t> _internal::X11Surface::GetMonitorResolution()
 {
     XWindowAttributes attributes;
     XGetWindowAttributes( DISPLAY, RootWindow( DISPLAY, SCREEN ), &attributes );
@@ -444,7 +488,69 @@ std::pair<uint32_t, uint32_t> X11Surface::GetMonitorResolution()
     return std::make_pair( attributes.width, attributes.height );
 }
 
-SurfacePlatformData X11Surface::GetPlatformData()
+std::pair<uint32_t, uint32_t> _internal::X11Surface::GetCursorPosition()
+{
+    return std::make_pair( this->m_Desc.MouseX, this->m_Desc.MouseY );
+}
+
+void _internal::X11Surface::SetCursorPosition( const std::pair<uint32_t, uint32_t> &pos )
+{
+    XSelectInput( DISPLAY, RootWindow( DISPLAY, WINDOW ), KeyReleaseMask );
+    XWarpPointer( DISPLAY, 0, RootWindow( DISPLAY, WINDOW ), pos.first, pos.second, 0, 0,
+                  100, 100 );
+    XFlush( DISPLAY );
+}
+
+Cursor _internal::X11Surface::BlankCursor()
+{
+    static char data [ 1 ] = { 0 };  // 1 pxl transparent
+    XColor dummy;
+
+    Pixmap blank =
+        XCreateBitmapFromData( DISPLAY, RootWindow( DISPLAY, WINDOW ), data, 1, 1 );
+    if ( blank == 0 ) throw SURFACE_EXCEPTION( "Out of memory" );
+    Cursor cursor = XCreatePixmapCursor( DISPLAY, blank, blank, &dummy, &dummy, 0, 0 );
+    XFreePixmap( DISPLAY, blank );
+
+    return cursor;
+}
+
+void _internal::X11Surface::SetCursor( SurfaceCursor eCursor )
+{
+
+    const char *cursor = "";
+
+    switch ( eCursor )
+    {
+    case SurfaceCursor::Arrow: cursor = "arrow"; break;
+    case SurfaceCursor::TextInput: cursor = "xterm"; break;
+
+    case SurfaceCursor::ResizeAll: cursor = "cross"; break;
+    case SurfaceCursor::ResizeEW: cursor = "sb_h_double_arrow"; break;
+    case SurfaceCursor::ResizeNS: cursor = "sb_v_double_arrow"; break;
+
+    case SurfaceCursor::ResizeNESW: cursor = "bottom_left_corner"; break;  // FIXME:
+    case SurfaceCursor::ResizeNWSE: cursor = "bottom_right_corner"; break;
+
+    case SurfaceCursor::Hand: cursor = "hand1"; break;
+    case SurfaceCursor::NotAllowed: cursor = "X_cursor"; break;
+    case SurfaceCursor::Hidden: cursor = ""; break;
+    }
+
+    Cursor c;
+    if ( strcmp( cursor, "" ) == 0 )
+    {
+        c = BlankCursor();
+    }
+    else
+    {
+        c = XcursorLibraryLoadCursor( DISPLAY, cursor );
+    }
+
+    XDefineCursor( DISPLAY, WINDOW, c );
+}
+
+SurfacePlatformData _internal::X11Surface::GetPlatformData()
 {
     SurfacePlatformData platformData;
     platformData.ndt = (void *) DISPLAY;

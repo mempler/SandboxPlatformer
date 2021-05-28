@@ -22,6 +22,9 @@ namespace IceSDK::_internal
         void SetTitle( const std::string_view &svName ) override;
         void SetPosition( const int32_t iX, const int32_t iY ) override;
         void SetResolution( const uint32_t uWidth, const uint32_t uHeight ) override;
+        std::pair<uint32_t, uint32_t> GetCursorPosition() override;
+        void SetCursor( SurfaceCursor eCursor ) override;
+        void SetCursorPosition( const std::pair<uint32_t, uint32_t> &pos ) override;
         std::pair<uint32_t, uint32_t> GetMonitorResolution() override;
 
       protected:
@@ -30,9 +33,13 @@ namespace IceSDK::_internal
       private:
         IceSDK::KeyTable::KeyMod m_eLastKeymod;
 
+        uintptr_t BlankCursor();
+
         uintptr_t m_hDisplay;
         uintptr_t m_hWindow;
         uintptr_t m_hScreen;
+
+        uintptr_t m_hIC;
     };
 }  // namespace IceSDK::_internal
 

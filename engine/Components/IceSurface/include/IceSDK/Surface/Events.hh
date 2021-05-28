@@ -27,6 +27,7 @@ namespace IceSDK
 
         // Keyboard
         KeyUpdate,
+        CharSend,
     };
 
     namespace _internal
@@ -52,6 +53,7 @@ namespace IceSDK
             uint16_t Y;
 
             IceSDK::KeyTable::ButtonState State;
+            IceSDK::KeyTable::MouseButton Button;
         };
 
         struct KeyboardEvent
@@ -61,6 +63,7 @@ namespace IceSDK
             IceSDK::KeyTable::Key Key;
             IceSDK::KeyTable::KeyMod Mod;
             IceSDK::KeyTable::ButtonState State;
+            int Char;
         };
     }  // namespace _internal
 

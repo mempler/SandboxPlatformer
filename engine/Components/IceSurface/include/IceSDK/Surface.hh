@@ -11,6 +11,6 @@
 
 namespace IceSDK
 {
-    ISurface *CreateSurface( const SurfaceDesc &desc );
-    void DestroySurface( ISurface **ppSurface );
+
+    ISurfacePtr CreateSurface( const SurfaceDesc &desc );
 }  // namespace IceSDK

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <queue>
 #include <string>
 #include <string_view>
@@ -19,6 +20,20 @@ namespace IceSDK
         void *context;       // GL context, or D3D device.
         void *backBuffer;    // GL back-buffer, or D3D render target view.
         void *backBufferDS;  // Backbuffer depth/stencil.
+    };
+
+    enum class SurfaceCursor
+    {
+        Arrow,
+        TextInput,
+        ResizeAll,
+        ResizeEW,
+        ResizeNS,
+        ResizeNESW,
+        ResizeNWSE,
+        Hand,
+        NotAllowed,
+        Hidden,
     };
 
     class IBaseSurface
@@ -57,6 +72,10 @@ namespace IceSDK
 
         virtual std::pair<uint32_t, uint32_t> GetMonitorResolution() = 0;
 
+        virtual std::pair<uint32_t, uint32_t> GetCursorPosition() = 0;
+        virtual void SetCursor( SurfaceCursor eCursor ) = 0;
+        virtual void SetCursorPosition( const std::pair<uint32_t, uint32_t> &pos ) = 0;
+
         virtual SurfacePlatformData GetPlatformData() = 0;
 
       protected:
@@ -68,4 +87,5 @@ namespace IceSDK
     };
 
     typedef IBaseSurface ISurface;
+    typedef std::unique_ptr<ISurface> ISurfacePtr;
 }  // namespace IceSDK

@@ -1,3 +1,5 @@
+#include <memory>
+
 #include <IceSDK/Surface.hh>
 #include <Platform/Linux/X11Surface.hh>
 #include <Platform/Win32/Win32Surface.hh>
@@ -12,20 +14,7 @@ typedef _internal::X11Surface PlatformSurface;
     #error "Platform not implemented!"
 #endif
 
-ISurface *IceSDK::CreateSurface( const IceSDK::SurfaceDesc &desc )
+std::unique_ptr<ISurface> IceSDK::CreateSurface( const IceSDK::SurfaceDesc &desc )
 {
-    PlatformSurface *pSurface = new PlatformSurface( desc );
-
-    return pSurface;
-}
-
-void IceSDK::DestroySurface( ISurface **ppSurface )
-{
-    if ( ppSurface == nullptr ) return;
-    if ( *ppSurface == nullptr ) return;
-
-    PlatformSurface *pSurface = static_cast<PlatformSurface *>( *ppSurface );
-    delete pSurface;
-
-    *ppSurface = nullptr;
+    return std::make_unique<PlatformSurface>( desc );
 }

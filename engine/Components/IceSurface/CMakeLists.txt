@@ -13,7 +13,7 @@ set(RequiredComponents
 if (UNIX AND NOT APPLE) # Linux
     find_package(X11 REQUIRED)
 
-    set(RequiredComponents ${RequiredComponents} X11)
+    set(RequiredComponents ${RequiredComponents} X11 X11::Xkb X11::Xcursor)
 endif()
 #
 ##############################
