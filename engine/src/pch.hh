@@ -37,22 +37,6 @@
 #include <bx/bx.h>
 #include <bx/timer.h>
 
-// Dumb X11
-#define Font X11Font
-#include <SDL.h>
-#include <SDL_events.h>
-#include <SDL_syswm.h>
-
-#undef Font
-
-// Dumb X11
-#ifdef None
-    #undef None
-#endif
-#ifdef DestroyAll
-    #undef DestroyAll
-#endif
-
 // Audio
 #include <AL/al.h>
 #include <AL/alc.h>

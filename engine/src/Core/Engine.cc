@@ -16,7 +16,6 @@
 
 #include "bgfx/bgfx.h"
 
-#include <SDL_keycode.h>
 #include <imgui.h>
 #include <stdint.h>
 

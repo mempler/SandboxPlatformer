@@ -15,8 +15,8 @@ class Application : public BaseApp
         m_pEngine->GetSurface()
             ->OnResolutionChanged.connect<&Application::OnWindowResize>( this );
 
-        m_pFont = m_pEngine->GetFontManager().LoadFromFile( "file://Roboto-Regular.ttf",
-                                                            256, 256, 22.f );
+        m_pFont = m_pEngine->GetFontManager().LoadFromFile(
+            "file://Fonts/Roboto-Regular.ttf", 256, 256, 22.f );
         m_lWatermark.SetText( { 0, 0, 999.f }, "ICESDK DEMO", m_pFont );
         m_lWatermark.SetColor( { 1, 1, 1, .2 } );
 

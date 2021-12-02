@@ -25,8 +25,7 @@ void AudioSystem::Init()
     CHECK( m_alDevice != nullptr, "Failed to open Audio Device!" );
 
     m_alContext = alcCreateContext( m_alDevice, nullptr );
-    if ( m_alContext == nullptr
-         || alcMakeContextCurrent( m_alContext ) == ALC_FALSE )
+    if ( m_alContext == nullptr || alcMakeContextCurrent( m_alContext ) == ALC_FALSE )
     {
         if ( m_alContext != nullptr ) alcDestroyContext( m_alContext );
 
@@ -52,8 +51,7 @@ AudioChannel *AudioSystem::CreateChannel( Identifier const &rIdent )
     return &m_vAudioChannels.emplace_back( rIdent );
 }
 
-Audio *AudioSystem::LoadStereoAudio( AudioChannel *pChannel,
-                                     Identifier const &rIdent,
+Audio *AudioSystem::LoadStereoAudio( AudioChannel *pChannel, Identifier const &rIdent,
                                      Identifier const &rIdentLeft,
                                      Identifier const &rIdentRight )
 {
@@ -95,8 +93,7 @@ Audio *AudioSystem::LoadStereoAudio( AudioChannel *pChannel,
 
     {
         alGenBuffers( 1, &audioBuffLeft );
-        alBufferData( audioBuffLeft, descLeft.m_vPCMFormat,
-                      descLeft.m_vPCMFrames.data(),
+        alBufferData( audioBuffLeft, descLeft.m_vPCMFormat, descLeft.m_vPCMFrames.data(),
                       descLeft.m_vPCMFrames.size(), descLeft.m_vPCMFrequency );
 
         AL_ERROR_CHECK();
@@ -115,8 +112,7 @@ Audio *AudioSystem::LoadStereoAudio( AudioChannel *pChannel,
     {
         alGenBuffers( 1, &audioBuffRight );
         alBufferData( audioBuffRight, descRight.m_vPCMFormat,
-                      descRight.m_vPCMFrames.data(),
-                      descRight.m_vPCMFrames.size(),
+                      descRight.m_vPCMFrames.data(), descRight.m_vPCMFrames.size(),
                       descRight.m_vPCMFrequency );
 
         AL_ERROR_CHECK();
@@ -178,12 +174,11 @@ Audio *AudioSystem::LoadStereoAudio( AudioChannel *pChannel,
         }
     }
 
-    return pChannel->CreateAudio( rIdent, audioSrcLeft, audioSrcRight,
-                                  audioBuffLeft, audioBuffRight );
+    return pChannel->CreateAudio( rIdent, audioSrcLeft, audioSrcRight, audioBuffLeft,
+                                  audioBuffRight );
 }
 
-Audio *AudioSystem::LoadMonoAudio( AudioChannel *pChannel,
-                                   Identifier const &rIdent )
+Audio *AudioSystem::LoadMonoAudio( AudioChannel *pChannel, Identifier const &rIdent )
 {
     return LoadStereoAudio( pChannel, rIdent, rIdent,
                             rIdent );  // *Emulate* Stereo

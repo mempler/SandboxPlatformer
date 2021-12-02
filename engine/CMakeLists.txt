@@ -10,7 +10,6 @@ set(ENGINE_LIBS
     Kokoro::Config
     Kokoro::fmt
     lw
-    SDL2-static
     zlib
     OpenAL
     bgfx-imgui

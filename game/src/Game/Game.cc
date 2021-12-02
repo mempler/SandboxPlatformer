@@ -45,8 +45,8 @@ void Game::Init()
         &m_Player );
 
     // PREINIT RESOURCES
-    m_pFont = GetEngine()->GetFontManager().LoadFromFile( "file://Roboto-Regular.ttf",
-                                                          256, 256, 22.f );
+    m_pFont = GetEngine()->GetFontManager().LoadFromFile(
+        "file://Fonts/Roboto-Regular.ttf", 256, 256, 22.f );
 
 #if ENGINE_DEBUG
     m_pNetworkInspector =
@@ -269,7 +269,7 @@ void Game::OnPacket( NetClientPtr pClient, PacketHeader header,
         {
             if ( avatar->m_ID == data.m_ID )
             {
-                Console::Log("DT: {}", fDeltaTime * 1000.f);
+                Console::Log( "DT: {}", fDeltaTime * 1000.f );
                 data.InitAvatar( avatar, true, ( fDeltaTime * 1000.f ) / 200.f );
             }
         }

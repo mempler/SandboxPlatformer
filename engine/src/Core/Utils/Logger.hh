@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Platform.hh"
 
 #include <spdlog/fmt/ostr.h>
@@ -7,8 +9,6 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
-
-#include <memory>
 
 #define CHECK( expr, fail_msg, ... )                                                     \
     if ( !( expr ) ) Console::Fatal( fail_msg, ##__VA_ARGS__ );
@@ -82,38 +82,38 @@ class Console
         abort();
     }
 
-    template <typename FormatString, typename... Args>
-    static void Log( const FormatString &fmt, Args &&...args )
+    template <typename... Args>
+    static void Log( fmt::format_string<Args...> fmt, Args &&...args )
     {
         s_pCoreLogger->debug( fmt, std::forward<Args>( args )... );
     }
 
-    template <typename FormatString, typename... Args>
-    static void Trace( const FormatString &fmt, Args &&...args )
+    template <typename... Args>
+    static void Trace( fmt::format_string<Args...> fmt, Args &&...args )
     {
         s_pCoreLogger->trace( fmt, std::forward<Args>( args )... );
     }
 
-    template <typename FormatString, typename... Args>
-    static void Info( const FormatString &fmt, Args &&...args )
+    template <typename... Args>
+    static void Info( fmt::format_string<Args...> fmt, Args &&...args )
     {
         s_pCoreLogger->info( fmt, std::forward<Args>( args )... );
     }
 
-    template <typename FormatString, typename... Args>
-    static void Warn( const FormatString &fmt, Args &&...args )
+    template <typename... Args>
+    static void Warn( fmt::format_string<Args...> fmt, Args &&...args )
     {
         s_pCoreLogger->warn( fmt, std::forward<Args>( args )... );
     }
 
-    template <typename FormatString, typename... Args>
-    static void Error( const FormatString &fmt, Args &&...args )
+    template <typename... Args>
+    static void Error( fmt::format_string<Args...> fmt, Args &&...args )
     {
         s_pCoreLogger->error( fmt, std::forward<Args>( args )... );
     }
 
-    template <typename FormatString, typename... Args>
-    static void Fatal( const FormatString &fmt, Args &&...args )
+    template <typename... Args>
+    static void Fatal( fmt::format_string<Args...> fmt, Args &&...args )
     {
         s_pCoreLogger->error( fmt, std::forward<Args>( args )... );
         s_pCoreLogger->flush();

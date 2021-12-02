@@ -25,6 +25,9 @@
 [submodule "vendor/mimalloc"]
 	path = vendor/mimalloc
 	url = https://github.com/microsoft/mimalloc.git
-[submodule "vendor/LuaJIT"]
-	path = vendor/LuaJIT
-	url = https://github.com/LuaJIT/LuaJIT.git
+[submodule "vendor/entt"]
+	path = vendor/entt
+	url = https://github.com/skypjack/entt.git
+[submodule "vendor/fmt"]
+	path = vendor/fmt
+	url = https://github.com/fmtlib/fmt.git
